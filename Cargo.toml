@@ -1,0 +1,17 @@
+[package]
+name = "deno-gui"
+version = "0.1.0"
+edition = "2021"
+build = "src/build.rs"
+
+
+[lib]
+crate-type = ["cdylib"]
+
+[build-dependencies]
+tauri-build = { version = "1.0.0-beta.4" }
+
+
+[dependencies]
+
+tauri = { git = "https://github.com/tauri-apps/tauri",  features = ["api-all"] }
