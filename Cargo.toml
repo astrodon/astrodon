@@ -1,17 +1,22 @@
 [package]
-name = "deno-gui"
+name = "degui"
 version = "0.1.0"
+description = "Tauri bindings"
+authors = ["Marc Espín Sanz <mespinsanz@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/marc2332/degui"
 edition = "2021"
 build = "src/build.rs"
 
-
 [lib]
+name = "degui"
 crate-type = ["cdylib"]
 
 [build-dependencies]
 tauri-build = { version = "1.0.0-beta.4" }
 
-
 [dependencies]
-
-tauri = { git = "https://github.com/tauri-apps/tauri",  features = ["api-all"] }
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+tauri = { version = "1.0.0-beta.8", features = ["api-all"] }
+deno_bindgen = "0.4.1"
