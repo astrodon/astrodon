@@ -45,7 +45,7 @@ export class App<S extends Record<string, Deno.ForeignFunction>> {
 
   public static async withWindows(windows: WindowConfig[]) {
     const name = 'degui';
-    const dir = join(Deno.env.get('APPDATA') || Deno.cwd(), `/${name}`)
+    const dir = join(Deno.env.get('APPDATA') || Deno.env.get('HOME') || Deno.cwd(), name)
     await writeBinary(dir)
     const libPath = await Deno.realPath(join(dir, 'lib'));
 
