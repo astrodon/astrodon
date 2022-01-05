@@ -2,6 +2,15 @@ import { Plug } from "https://deno.land/x/plug/mod.ts";
 import { join } from 'https://deno.land/std/path/mod.ts'
 import { writeBinary } from './utils.ts';
 
+if (Deno.build.os === "windows") {
+  const mod = Deno.dlopen("kernel32.dll", {
+    FreeConsole: {
+      parameters: [],
+      result: "void"
+    }
+  });
+  mod.symbols.FreeConsole();
+}
 
 interface WindowConfig {
   title: string;
