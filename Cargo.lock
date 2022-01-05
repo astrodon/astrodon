@@ -905,9 +905,9 @@ dependencies = [
 
 [[package]]
 name = "generic-array"
-version = "0.14.4"
+version = "0.14.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "501466ecc8a30d1d3b7fc9229b122b2ce8ed6e9d9223f1138d4babb253e51817"
+checksum = "fd48d33ec7f05fbfa152300fdad764757cbded343c1aa1cff2fbaf4134851803"
 dependencies = [
  "typenum",
  "version_check",
@@ -2514,7 +2514,7 @@ dependencies = [
 [[package]]
 name = "tao"
 version = "0.5.2"
-source = "git+https://github.com/marc2332/tao?branch=off-main-thread#13915f55dcff3aee1074a752e2c16f1cd8d1c7ea"
+source = "git+https://github.com/marc2332/tao?branch=off-main-thread#1fb6ba5f44f8a54bbd162d57a594fd14ccccf680"
 dependencies = [
  "bitflags",
  "cairo-rs",
@@ -3199,7 +3199,7 @@ dependencies = [
 [[package]]
 name = "wry"
 version = "0.12.2"
-source = "git+https://github.com/marc2332/wry?branch=off-main-thread#886128d479bd38b25dfef76b86825cd14919faa2"
+source = "git+https://github.com/marc2332/wry?branch=off-main-thread#5e7989f8943ed7f82e612f1c06e1548098a0cd09"
 dependencies = [
  "cocoa",
  "core-graphics 0.22.3",
