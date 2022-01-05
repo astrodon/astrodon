@@ -1,0 +1,22 @@
+{
+  "$schema": "https://x.nest.land/eggs@0.3.10/src/schema.json",
+  "name": "degui2",
+  "entry": "./mod.ts",
+  "description": "Webview module and app framework for Deno",
+  "homepage": "",
+  "version": "1.0.0-alpha",
+  "releaseType": null,
+  "unstable": true,
+  "unlisted": false,
+  "files": [
+    "./binary.b.ts",
+    "./demo/**/**",
+    "./readme.md",
+    "./mod.ts"
+  ],
+  "ignore": [],
+  "checkFormat": false,
+  "checkTests": false,
+  "checkInstallation": false,
+  "check": true
+}
