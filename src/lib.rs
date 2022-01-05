@@ -1,29 +1,60 @@
-use std::sync::{Arc, Mutex};
-
 use serde::Deserialize;
-use tauri::WindowBuilder;
+use std::sync::mpsc::{channel, Receiver, Sender};
+use std::{
+    sync::{Arc, Mutex},
+    thread,
+};
+use tauri::{Window, WindowBuilder};
+
+#[tauri::command]
+fn init_listener(window: Window, state: tauri::State<TauriState>) {
+    let receiver = state.forward_from_deno_to_tauri.clone();
+
+    thread::spawn(move || {
+        let receiver = receiver.lock().unwrap();
+
+        loop {
+            if let Ok(msg) = receiver.recv() {
+                window.emit("fromDeno", msg).unwrap();
+            }
+        }
+    });
+}
 
 #[allow(improper_ctypes_definitions)]
 type AppPtr = Arc<Mutex<App>>;
 
-struct TauriState;
+struct TauriState {
+    forward_from_deno_to_tauri: Arc<Mutex<Receiver<String>>>,
+}
 
 #[repr(C)]
 #[derive(Default)]
 pub struct App {
     config: AppConfig,
+    deno_to_tauri_sender: Option<Sender<String>>,
 }
 
 impl App {
     pub fn new(config: AppConfig) -> Self {
-        App { config }
+        App {
+            config,
+            deno_to_tauri_sender: None,
+        }
     }
 
     pub fn run(&mut self) {
-        // it should probably create the context on the fly
+        let (sender, receiver) = channel::<String>();
+
+        self.deno_to_tauri_sender = Some(sender);
+
         let context = tauri::generate_context!("./tauri.conf.json");
 
-        let mut app_builder = tauri::Builder::default().manage(TauriState);
+        let mut app_builder = tauri::Builder::default()
+            .manage(TauriState {
+                forward_from_deno_to_tauri: Arc::new(Mutex::new(receiver)),
+            })
+            .invoke_handler(tauri::generate_handler![init_listener]);
 
         for window in &self.config.windows {
             app_builder = app_builder.create_window(
@@ -38,9 +69,15 @@ impl App {
             );
         }
 
-        app_builder
-            .run(context)
-            .expect("failed to run tauri application");
+        thread::spawn(move || {
+            app_builder.run(context).unwrap();
+        });
+    }
+
+    pub fn send(&self, message: &str) {
+        if let Some(sender) = &self.deno_to_tauri_sender {
+            sender.send(message.to_string()).unwrap();
+        }
     }
 }
 
@@ -73,6 +110,17 @@ pub extern "C" fn create_app(ptr: *const u8, len: usize) -> AppPtr {
 
 #[allow(improper_ctypes_definitions)]
 #[no_mangle]
-pub extern "C" fn run_app(app: AppPtr) {
+pub extern "C" fn run_app(app: AppPtr) -> AppPtr {
     app.lock().unwrap().run();
+    app
+}
+
+#[allow(clippy::not_unsafe_ptr_arg_deref)]
+#[allow(improper_ctypes_definitions)]
+#[no_mangle]
+pub extern "C" fn send_message(ptr: *const u8, len: usize, app: AppPtr) -> AppPtr {
+    let buf = unsafe { std::slice::from_raw_parts(ptr, len) };
+    let buf_str = std::str::from_utf8(buf).unwrap();
+    app.lock().unwrap().send(buf_str);
+    app
 }

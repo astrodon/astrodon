@@ -1,4 +1,5 @@
 /target/
+dist
 windows.binary.b.ts
 linux.binary.b.ts
 .env

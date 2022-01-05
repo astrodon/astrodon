@@ -1,16 +1,16 @@
 {
   "$schema": "https://x.nest.land/eggs@0.3.10/src/schema.json",
-  "name": "degui2",
+  "name": "astrodon",
   "entry": "./mod.ts",
-  "description": "Webview module and app framework for Deno",
+  "description": "Desktop App Framework for Deno, based in Tauri",
   "homepage": "",
-  "version": "1.0.1-alpha",
+  "version": "0.1.0-alpha",
   "releaseType": null,
   "unstable": true,
   "unlisted": false,
   "files": [
-    "./windows.binary.b.ts",
-    "./linux.binary.b.ts"
+    "./dist/windows.binary.b.ts",
+    "./dist/linux.binary.b.ts"
   ],
   "ignore": [],
   "checkFormat": false,

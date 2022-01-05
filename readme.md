@@ -1,6 +1,7 @@
 # Tauri Bindings for Deno 🦕
 
 Run:
+
 ```
 cargo build
 ```
