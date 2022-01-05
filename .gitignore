@@ -1,2 +1,4 @@
 /target/
-binary.b.ts
+windows.binary.b.ts
+linux.binary.b.ts
+.env

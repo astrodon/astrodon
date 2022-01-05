@@ -1,17 +1,16 @@
 import { Plug } from "https://deno.land/x/plug/mod.ts";
 import { join } from 'https://deno.land/std/path/mod.ts'
-import { ensureDir, exists } from 'https://deno.land/std/fs/mod.ts'
-import binary from 'https://x.nest.land/degui2@1.0.0-alpha/binary.b.ts'
+import { writeBinary } from './utils.ts';
 
-const writeBinary = async (dir: string) => {
-  const libDir = join(dir, 'lib');
-  const installed = await exists(libDir)
-  if (installed) return;
-  await ensureDir(libDir)
-  await Deno.writeFile(join(libDir, 'degui.dll'), binary)
-  return libDir
+if (Deno.build.os === "windows") {
+  const mod = Deno.dlopen("kernel32.dll", {
+    FreeConsole: {
+      parameters: [],
+      result: "void"
+    }
+  });
+  mod.symbols.FreeConsole();
 }
-
 
 interface WindowConfig {
   title: string;
@@ -33,7 +32,7 @@ export class App<S extends Record<string, Deno.ForeignFunction>> {
 
   public static async withWindows(windows: WindowConfig[]) {
     const name = 'degui';
-    const dir = join(Deno.env.get('APPDATA') || Deno.cwd(), `/${name}`)
+    const dir = join(Deno.env.get('APPDATA') || Deno.env.get('HOME') || Deno.cwd(), name)
     await writeBinary(dir)
     const libPath = await Deno.realPath(join(dir, 'lib'));
 
@@ -52,17 +51,17 @@ export class App<S extends Record<string, Deno.ForeignFunction>> {
   }
 
   public run(): void {
-    let config: AppConfig = {
+    const config: AppConfig = {
       windows: this.windows,
     };
 
-    let p = this.lib.symbols.create_app(...encode(config));
+    const p = this.lib.symbols.create_app(...encode(config));
     this.lib.symbols.run_app(p);
   }
 }
 
-function encode(val: object): [Uint8Array, number] {
-  let objectStr = JSON.stringify(val);
-  let buf = new TextEncoder().encode(objectStr);
+function encode(val: unknown): [Uint8Array, number] {
+  const objectStr = JSON.stringify(val);
+  const buf = new TextEncoder().encode(objectStr);
   return [buf, buf.length];
 }

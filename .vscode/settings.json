@@ -1,0 +1,12 @@
+{
+  "deno.enable": true,
+  "deno.lint": true,
+  "deno.unstable": true,
+  "deno.suggest.imports.hosts": {
+    "https://x.nest.land": false
+  },
+  "cSpell.ignoreWords": [
+    "degui",
+    "libdegui"
+  ]
+}
