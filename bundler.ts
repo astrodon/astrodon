@@ -9,7 +9,7 @@ const outOptions: Deno.OpenOptions = {
   truncate: true,
 };
 
-const bundle = async (input: string, output: string) => {
+export const bundle = async (input: string, output: string) => {
   const ps = new PassThrough();
   const compressor = compress(input, ps, console.log);
   const outFile = await Deno.open(output, outOptions);
