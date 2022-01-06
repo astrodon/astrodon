@@ -12,11 +12,22 @@
 
 **Note**: Only Windows and Linux is supported at the moment. Feel free to open an issue if you have any trouble!
 
+### 😎 Features
+- Create webview windows with your own title and URL
+- Send messages from Deno -> Webview
+
 ### 🎁 Demo 
 Easily run the demo:
 ```
 deno run -A --unstable --reload https://raw.githubusercontent.com/astrodon/astrodon/main/demo/demo.ts
 ```
+
+### 📜 To-do 
+- [ ] Port more features from Tauri
+- [ ] Create a Tauri context on the fly instead of relying in `tauri.conf.json`
+- [ ] An optional cli to create and manage Astrodon projects
+- [ ] Support MacOS
+- [ ] Support Webview -> Deno messages 
 
 ### 👩‍💻 Development
 Install the dependencies as indicated in [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
@@ -26,5 +37,7 @@ Run the demo locally:
 cargo build
 deno run -A --unstable demo/demo.ts
 ```
+
+
 
 MIT License
