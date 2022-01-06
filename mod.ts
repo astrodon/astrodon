@@ -1,6 +1,5 @@
 import { Plug } from "https://deno.land/x/plug/mod.ts";
-import { join } from "https://deno.land/std/path/mod.ts";
-import { writeBinary } from "./utils.ts";
+import { getLibraryLocation } from "./utils.ts";
 
 if (Deno.build.os === "windows") {
   const mod = Deno.dlopen("kernel32.dll", {
@@ -10,22 +9,6 @@ if (Deno.build.os === "windows") {
     },
   });
   mod.symbols.FreeConsole();
-}
-
-async function getLibraryLocation(): Promise<string> {
-  if (Deno.env.get("DEV") == "false") {
-    const name = "astrodon";
-    const dir = join(
-      Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
-      name,
-    );
-    await writeBinary(dir);
-    const libPath = await Deno.realPath(join(dir, "lib"));
-    return libPath;
-  } else {
-    const libPath = await Deno.realPath("./target/debug/");
-    return libPath;
-  }
 }
 
 interface WindowConfig {
