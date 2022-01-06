@@ -3,10 +3,11 @@ import { App } from "../mod.ts";
 let indexPath = "";
 const isDev = Deno.env.get("DEV") == "true";
 
-if(isDev){
+if (isDev) {
   indexPath = `file://${await Deno.realPath("./demo/index.html")}`;
 } else {
-  indexPath = 'https://rawcdn.githack.com/astrodon/astrodon/fdf9523e44f78c40290141f0288e0e1b468dc075/demo/index.html'
+  indexPath =
+    "https://rawcdn.githack.com/astrodon/astrodon/fdf9523e44f78c40290141f0288e0e1b468dc075/demo/index.html";
 }
 
 const windows = [

@@ -1,27 +1,35 @@
-import { ensureDir, exists } from "https://deno.land/std/fs/mod.ts";
-import { join } from "https://deno.land/std/path/mod.ts";
-import "https://deno.land/x/dotenv/load.ts";
+import { ensureDir, exists, join } from "./deps.ts";
 
 interface LibConfig {
+  target: string;
   url: string;
   name: string;
 }
 
 const isDev = Deno.env.get("DEV") == "true";
-const isWriteTest = Deno.env.get("WRITE") == "true";
+const usePrebuiltBinaries = Deno.env.get("USE_PREBUILT_BINARIES") == "true";
 
 const libConfigs: Record<string, Partial<LibConfig>> = {
   linux: {
-    url: isWriteTest ? "./dist/linux.binary.b.ts" : "https://x.nest.land/astrodon@0.1.0-alpha/dist/linux.binary.b.ts",
+    target: "./target/release/libastrodon.so",
+    url: isDev && usePrebuiltBinaries || !isDev
+      ? "https://x.nest.land/astrodon@0.1.0-alpha/dist/linux.binary.b.ts"
+      : "./dist/linux.binary.b.ts",
     name: "libastrodon.so",
   },
   windows: {
-    url: isWriteTest ? "./dist/linux.binary.b.ts" : "https://x.nest.land/astrodon@0.1.0-alpha/dist/windows.binary.b.ts",
+    target: "./target/debug/astrodon.dll",
+    url: isDev && usePrebuiltBinaries || !isDev
+      ? "https://x.nest.land/astrodon@0.1.0-alpha/dist/windows.binary.b.ts"
+      : "./dist/linux.binary.b.ts",
     name: "astrodon.dll",
   },
   darwin: {},
 };
 
+/*
+ * Uncompress the shared library if it's not uncompressed yet
+ */
 export const writeBinary = async (dir: string): Promise<string> => {
   const libDir = join(dir, "lib");
   const isInstalled = await exists(libDir);
@@ -34,12 +42,25 @@ export const writeBinary = async (dir: string): Promise<string> => {
   return libDir;
 };
 
+/*
+ * Retrieve the Shared Library location
+ * Also uncompress if it's on production
+ */
 export const getLibraryLocation = async (): Promise<string> => {
   const name = "astrodon";
   const dir = join(
     Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
     name,
   );
+
+  // Use remote binaries in production
   if (!isDev) return await writeBinary(dir);
-  return await Deno.realPath("./target/debug/")
+
+  // Use remote binaries in development and with USE_PREBUILT_BINARIES option,
+  // this is handy if you don't want to compile the shared library yourself while still be able to develop on the Deno side
+  if (usePrebuiltBinaries) return await writeBinary(dir);
+
+  // Use the local version if you are in development without USE_PREBUILT_BINARIES option
+  const libConfig = libConfigs[Deno.build.os] as LibConfig;
+  return await Deno.realPath(libConfig.target);
 };
