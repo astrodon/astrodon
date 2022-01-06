@@ -8,23 +8,21 @@ interface LibConfig {
 }
 
 const isDev = Deno.env.get("DEV") == "true";
+const isWriteTest = Deno.env.get("WRITE") == "true";
 
 const libConfigs: Record<string, Partial<LibConfig>> = {
   linux: {
-    url: isDev
-      ? "./linux.binary.b.ts"
-      : "https://x.nest.land/astrodon@0.1.0-alpha/linux.binary.b.ts",
+    url: isWriteTest ? "./dist/linux.binary.b.ts" : "https://x.nest.land/astrodon@0.1.0-alpha/linux.binary.b.ts",
     name: "libastrodon.so",
   },
   windows: {
-    url: isDev ? "./windows.binary.b.ts"
-    : "https://x.nest.land/astrodon@0.1.0-alpha/windows.binary.b.ts",
+    url: isWriteTest ? "./dist/linux.binary.b.ts" : "https://x.nest.land/astrodon@0.1.0-alpha/windows.binary.b.ts",
     name: "astrodon.dll",
   },
   darwin: {},
 };
 
-export const writeBinary = async (dir: string) => {
+export const writeBinary = async (dir: string): Promise<string> => {
   const libDir = join(dir, "lib");
   const isInstalled = await exists(libDir);
   if (isInstalled) return libDir;
@@ -34,4 +32,14 @@ export const writeBinary = async (dir: string) => {
   await ensureDir(libDir);
   await Deno.writeFile(join(libDir, libConfig.name), binary);
   return libDir;
+};
+
+export const getLibraryLocation = async (): Promise<string> => {
+  const name = "astrodon";
+  const dir = join(
+    Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
+    name,
+  );
+  if (!isDev) return await writeBinary(dir);
+  return await Deno.realPath("./target/debug/")
 };
