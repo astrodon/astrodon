@@ -19,7 +19,7 @@ deno run -A --unstable --reload https://raw.githubusercontent.com/astrodon/astro
 ```
 
 ### 👩‍💻 Development
-Install the dependencies incidated in [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
+Install the dependencies as indicated in [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
 
 Run the demo locally:
 ```
