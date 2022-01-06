@@ -30,6 +30,7 @@ deno run -A --unstable --reload https://raw.githubusercontent.com/astrodon/astro
 - [ ] An optional cli to create and manage Astrodon projects
 - [ ] Support MacOS
 - [ ] Support Webview -> Deno messages 
+- [ ] Fix https://github.com/tauri-apps/tauri/issues/3172 instead of relying in a fork
 
 ### 👩‍💻 Development
 Install the dependencies as indicated in [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
