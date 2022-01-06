@@ -5,7 +5,7 @@
 ### 🎁 Demo 
 You can easily run the demo:
 ```
-deno run -A --unstable https://raw.githubusercontent.com/astrodon/astrodon/main/demo/demo.ts
+deno run -A --unstable --reload https://raw.githubusercontent.com/astrodon/astrodon/main/demo/demo.ts
 ```
 
 ### 👩‍💻 Development
