@@ -12,11 +12,11 @@ const isWriteTest = Deno.env.get("WRITE") == "true";
 
 const libConfigs: Record<string, Partial<LibConfig>> = {
   linux: {
-    url: isWriteTest ? "./dist/linux.binary.b.ts" : "https://x.nest.land/astrodon@0.1.0-alpha/linux.binary.b.ts",
+    url: isWriteTest ? "./dist/linux.binary.b.ts" : "https://x.nest.land/astrodon@0.1.0-alpha/dist/linux.binary.b.ts",
     name: "libastrodon.so",
   },
   windows: {
-    url: isWriteTest ? "./dist/linux.binary.b.ts" : "https://x.nest.land/astrodon@0.1.0-alpha/windows.binary.b.ts",
+    url: isWriteTest ? "./dist/linux.binary.b.ts" : "https://x.nest.land/astrodon@0.1.0-alpha/dist/windows.binary.b.ts",
     name: "astrodon.dll",
   },
   darwin: {},
