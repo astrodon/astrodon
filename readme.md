@@ -3,7 +3,7 @@
 	<img align="center" src="https://avatars.githubusercontent.com/u/97196209?s=200&v=4"  />
 	<br>
     <h1 align="center">🦕 Astrodon  </h1>
-    <p align="center">Desktop App Framework for Deno, based in Tauri</p>
+    <p align="center">Desktop App Framework (not there yet!) for Deno, based in Tauri</p>
 </p>
 
 [![Discord Server](https://discordapp.com/api/guilds/928673465882513430/widget.png)](https://discord.gg/adYYqHHDBA)
@@ -15,6 +15,8 @@
 ### 😎 Features
 - Create webview windows with your own title and URL
 - Send messages from Deno -> Webview
+
+A lot is still missing, but we will get there!
 
 ### 🎁 Demo 
 Easily run the demo:
