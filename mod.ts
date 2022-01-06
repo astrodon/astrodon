@@ -1,7 +1,7 @@
 import { Plug } from "https://deno.land/x/plug/mod.ts";
 import { getLibraryLocation } from "./utils.ts";
 
-if (Deno.build.os === "windows") {
+if (Deno.build.os === "windows" && Deno.env.get("DEV") == "false") {
   const mod = Deno.dlopen("kernel32.dll", {
     FreeConsole: {
       parameters: [],
