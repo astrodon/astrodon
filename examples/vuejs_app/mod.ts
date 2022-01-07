@@ -1,15 +1,17 @@
 import { App } from "https://deno.land/x/deno_koa@v1.0.4/mod.ts";
-import { App as Win } from "../../mod.ts";
+import { App as Astrodon } from "../../mod.ts";
 import { lookup } from "https://deno.land/x/mrmime@v1.0.0/mod.ts";
 import pack from "./dist/snapshot.b.ts";
 import { flat } from "./utils.ts";
 
 const snapshot = flat(pack);
 
-const windows = [
-  { title: "Vue Example", url: "http://localhost:3000/" },
-];
-const win = await Win.withWindows(windows);
+const astrodonApp = await Astrodon.new();
+
+astrodonApp.registerWindow({
+  title: "Vue Example",
+  url: "http://localhost:3000/",
+});
 
 // Render
 
@@ -32,4 +34,4 @@ app.listen({ port: 3000 });
 
 console.log("server has started on http://localhost:3000 🚀");
 console.log("running render process 🚀");
-win.run();
+astrodonApp.run();

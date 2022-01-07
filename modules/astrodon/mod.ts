@@ -12,7 +12,7 @@ if (Deno.build.os === "windows" && Deno.env.get("DEV") != "true") {
       result: "void",
     },
   });
-  mod.symbols.FreeConsole();
+  //mod.symbols.FreeConsole();
 }
 
 interface WindowConfig {

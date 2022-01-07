@@ -55,6 +55,7 @@ export const getLibraryLocation = async (
     }
   }
 
+  await ensureDir(libDir);
   await Deno.writeFile(libDist, options.bin as any);
 
   return libDir;

@@ -9,6 +9,10 @@ import {
 } from "../astrodon/deps.ts";
 import { libConfigs } from "../astrodon/utils.ts";
 
+interface CompileOptions {
+  noCheck?: boolean;
+}
+
 export class Builder {
   private dist: string;
   private root: string;
@@ -54,14 +58,19 @@ export class Builder {
   /*
    * Turn the dist file into an executable
    */
-  public async compile(output: string = Deno.cwd()) {
+  public async compile(
+    output: string = Deno.cwd(),
+    options: CompileOptions = {},
+  ) {
     const modTSDist = join(this.dist, "mod.b.ts");
     const modTSDistTemp = join(this.root, "dist_mod.ts");
 
     await Deno.copyFile(modTSDist, modTSDistTemp);
 
     await exec(
-      `deno compile -A --unstable --output ${output} ${modTSDistTemp} `,
+      `deno compile -A --unstable ${
+        options.noCheck && "--no-check"
+      } --output ${output} ${modTSDistTemp} `,
     );
 
     await Deno.remove(modTSDistTemp);

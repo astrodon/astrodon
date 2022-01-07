@@ -6,4 +6,4 @@ const builder = new Builder(__dirname);
 
 await builder.preBundle("demo.ts");
 
-await builder.compile(join(__dirname, "superapp.exe"));
+await builder.compile(join(__dirname, "superapp"));

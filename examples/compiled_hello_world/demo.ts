@@ -4,7 +4,9 @@ const getIndex = async () => {
   const isDev = Deno.env.get("DEV") == "true";
 
   if (isDev) {
-    return `file://${await Deno.realPath("./examples/compiled_hello_world/index.html")}`;
+    return `file://${await Deno.realPath(
+      "./examples/compiled_hello_world/index.html",
+    )}`;
   } else {
     return "https://rawcdn.githack.com/astrodon/astrodon/fdf9523e44f78c40290141f0288e0e1b468dc075/demo/index.html";
   }

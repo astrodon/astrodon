@@ -9,10 +9,10 @@ apps with Astrodon with any web framework.
 deno run -A --unstable --no-check https://raw.githubusercontent.com/astrodon/astrodon/main/examples/vuejs_app/mod.ts
 ```
 
-## Build front-end snapshot (locally)
+## Bundle front-end snapshot (locally)
 
 ```sh
-deno run -A --unstable --no-check build.ts
+deno run -A --unstable --no-check package.ts
 ```
 
 ## Compile App
