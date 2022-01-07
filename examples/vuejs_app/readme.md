@@ -1,6 +1,7 @@
 # Astrodon + Vue example
 
-This examples implements a large front-end project to show how you can build apps with Astrodon with any web framework.
+This examples implements a large front-end project to show how you can build
+apps with Astrodon with any web framework.
 
 ## Run on the fly
 

@@ -1,4 +1,4 @@
-import ButtonQ from "./Button.js"
+import ButtonQ from "./Button.js";
 
 export default {
   template: `
@@ -11,6 +11,6 @@ export default {
     </div>
   `,
   components: {
-    ButtonQ
-  }
-}
+    ButtonQ,
+  },
+};

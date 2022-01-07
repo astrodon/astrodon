@@ -8,4 +8,12 @@ export default await parse(
       { standard: "Z85" },
     ),
   ),
-) as { "App.js": Uint8Array, components: { "Button.js": Uint8Array, "Header.js": Uint8Array }, "index.html": Uint8Array, "main.css": Uint8Array, "main.js": Uint8Array, "router.js": Uint8Array, views: { "About.js": Uint8Array, "Home.js": Uint8Array } };
+) as {
+  "App.js": Uint8Array;
+  components: { "Button.js": Uint8Array; "Header.js": Uint8Array };
+  "index.html": Uint8Array;
+  "main.css": Uint8Array;
+  "main.js": Uint8Array;
+  "router.js": Uint8Array;
+  views: { "About.js": Uint8Array; "Home.js": Uint8Array };
+};

@@ -1,5 +1,5 @@
-/target/
-/dist
-windows.binary.b.ts
-linux.binary.b.ts
+target
+dist
+*.b.ts
 .env
+*.exe
