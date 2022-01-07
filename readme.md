@@ -42,7 +42,7 @@ deno run -A --unstable --reload https://raw.githubusercontent.com/astrodon/astro
 Requisites:
 - If you want to compile the binaries yourself: install the dependencies as indicated in
 [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
-- Create a `.env` file, use `.env.example` as a template.
+- Create a `.env` file, use `examples/.env.example` as a template.
 
 Run the demo locally:
 ```
