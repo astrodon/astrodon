@@ -1,4 +1,7 @@
-export const flat = (obj: Record<string, Uint8Array>, res?: Record<string, Uint8Array>, extraKey = "") => {
+
+type snapshot = Record<string, Uint8Array | unknown>;
+
+export const flat = (obj: snapshot, res?: snapshot, extraKey = "") => {
   if (!res) res = {};
   for (const key in obj) {
     if (typeof obj[key] !== "object" || obj[key] instanceof Uint8Array) {
