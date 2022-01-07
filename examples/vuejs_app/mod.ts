@@ -19,13 +19,13 @@ app.use((ctx) => {
   const { url } = ctx;
   console.log(url);
   ctx.status = 200;
-  if (url == "/" || url == "index.html") {
+  if (url == "/" || url == "/index.html") {
     ctx.set("Content-Type", "text/html")
-    ctx.body = snapshot["index.html"];
+    ctx.body = snapshot["/index.html"];
     return
   }
   ctx.set("Content-Type", lookup(url.split("/").pop()));
-  ctx.body = snapshot[url.substring(1)];
+  ctx.body = snapshot[url];
 });
 
 app.listen({ port: 3000 });
