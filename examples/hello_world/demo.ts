@@ -1,4 +1,4 @@
-import { App } from "../mod.ts";
+import { App } from "../../mod.ts";
 
 let indexPath = "";
 const isDev = Deno.env.get("DEV") == "true";

@@ -7,18 +7,19 @@ interface LibConfig {
 }
 
 const isDev = Deno.env.get("DEV") == "true";
+
 const usePrebuiltBinaries = Deno.env.get("USE_PREBUILT_BINARIES") == "true";
 
 const libConfigs: Record<string, Partial<LibConfig>> = {
   linux: {
-    target: "./target/release/libastrodon.so",
+    target: "./target/release",
     url: isDev && usePrebuiltBinaries || !isDev
       ? "https://x.nest.land/astrodon@0.1.0-alpha/dist/linux.binary.b.ts"
       : "./dist/linux.binary.b.ts",
     name: "libastrodon.so",
   },
   windows: {
-    target: "./target/debug/astrodon.dll",
+    target: "./target/debug",
     url: isDev && usePrebuiltBinaries || !isDev
       ? "https://x.nest.land/astrodon@0.1.0-alpha/dist/windows.binary.b.ts"
       : "./dist/linux.binary.b.ts",
