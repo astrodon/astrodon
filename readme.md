@@ -16,6 +16,7 @@ an issue if you have any trouble!
 
 - Create webview windows with your own title and URL
 - Send messages from Deno -> Webview
+- Compile your apps as executables
 
 A lot is still missing, but we will get there!
 
@@ -40,11 +41,14 @@ deno run -A --unstable --reload https://raw.githubusercontent.com/astrodon/astro
 ### 👩‍💻 Development
 
 Requisites:
-- If you want to compile the binaries yourself: install the dependencies as indicated in
-[Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
+
+- If you want to compile the binaries yourself: install the dependencies as
+  indicated in
+  [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
 - Create a `.env` file, use `examples/.env.example` as a template.
 
 Run the demo locally:
+
 ```
 cargo build
 deno run -A --unstable demo/demo.ts
