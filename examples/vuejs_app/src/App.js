@@ -1,5 +1,4 @@
-
-import Header from "./components/Header.js"
+import Header from "./components/Header.js";
 
 export default {
   template: `
@@ -11,6 +10,6 @@ export default {
     </div>
   `,
   components: {
-    Header
-  }
-}
+    Header,
+  },
+};
