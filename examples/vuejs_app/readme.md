@@ -12,11 +12,13 @@ deno run -A --unstable --no-check https://raw.githubusercontent.com/astrodon/ast
 ## Bundle front-end snapshot (locally)
 
 ```sh
-deno run -A --unstable --no-check package.ts
+deno run -A --unstable --no-check build.render.ts
 ```
 
 ## Compile App
 
+> Make sure to bundle your assets fists
+
 ```sh
-deno compile -A --unstable --no-check mod.ts
+deno run -A --unstable --no-check build.astrodon.ts
 ```
