@@ -1,5 +1,6 @@
 import { Plug } from "./deps.ts";
 import { getLibraryLocation, getAppOptions } from "./utils.ts";
+import './astrodon.d.ts'
 
 /*
  * This is a bit hacky, it automatically closes the cmd window
@@ -50,7 +51,7 @@ export class App<S extends Record<string, Deno.ForeignFunction>> {
     options = Object.assign(await getAppOptions(), options) as AppOptions;
 
     const context: AppContext = {
-      bin: (globalThis as any).astrodonBin,
+      bin: window.astrodonBin,
       options
     };
 

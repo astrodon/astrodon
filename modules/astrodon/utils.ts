@@ -81,7 +81,7 @@ export const getLibraryLocation = async (
 };
 
 export const getAppOptions = async (): Promise<AppOptions> => {
-  const globalConfig = (globalThis as any).astrodonAppConfig;
+  const globalConfig = window.astrodonAppConfig;
   if (globalConfig) return globalConfig;
   const entry = Deno.mainModule;
   const dir = dirname(entry);
