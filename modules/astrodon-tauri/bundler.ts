@@ -3,11 +3,11 @@ import { ensureDir, exists } from "../astrodon/deps.ts";
 
 const binaries = [
   {
-    input: "./target/debug/astrodon.dll",
+    input: "../../target/debug/astrodon.dll",
     output: "./dist/windows.binary.b.ts",
   },
   {
-    input: "./target/release/libastrodon.so",
+    input: "../..target/release/libastrodon.so",
     output: "./dist/linux.binary.b.ts",
   },
 ];
