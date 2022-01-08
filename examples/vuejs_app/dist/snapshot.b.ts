@@ -4,16 +4,8 @@ import { parse } from "https://raw.githubusercontent.com/trgwii/bundler/master/p
 export default await parse(
   decompress(
     decode(
-      "8&$Ed-j&a.RqEjj?*5@bE4qJ:PF/<0vqNTWE:UN>woSX[A0M]a:?qgGdHwY)L/R+rzqTc0zkYv$wrL>[n$/m9lDrGF.:2@@9ZmlmcZ#Blr#Ft6hfnldZTxJ:KJ-*u3g!1yP#VRjB8cfXnPet(5<*CAKKaj90Vm3*I4EA8=<XYBNl@TEh-5vZ*n)tCZNd}XIVN(x4=p0D0tcrVM0>3I(0u#URc6f[KG-3C4Gpy!rmnX$x4Ek!NG4R7r#-CdG7h+fP53*}D3Z9Lr2p%%OAx0#E5oUc=T^+:U{lR<w94%5?&d#@3iGY$hOZo+b.SP%:qg0:)Y(N4V42#zYq&OPYE.Y*{:TbJt%DwD)u5)j^)F?:L8!dvQ4xWiBd6Iy!(GZ/52Jktoz[)kZTZ#X[S%}(pU#F$U@IXqgJ([fIU%8epjaD8O*[1C&a+$iQuuMsK0WZ*fOR5d7BWXrpBQQ-1h*OMckTH(h#a<Fk=WrbSmBD1eBPod^{F%iI[HafX:({K5)0tdrpniwSHS*FG#fpzEAI)s9^82@7Xn#b-J[%8J&=((7uG7(5i.!rP9-nUMvM4H8iHhbhR6ko[C3MJ*y/5bXQVL<ADu-cc>gGN9&FiLEa*X&Cpf}$QZfwyj#2(3WzTO<3&JxV/[]JJK}mAeJkS>p8VbVFc7[J9jr2r:@&e{r1L]3crD=o^CBypqq=<u!hq-Kz*uJHc4/*rYuNqS$lvVS(5m199!^w{2Khth+wlAZ7X:*^@np!fd}+m/ASjR(hb0qW%uuVi?VqJqqFix168bei-YzCKs^qxFgqahFdrP.fc@R/22g3[CHh0(epJ.3:>fa$Ic*=lTNM2.%Jw<I%m3c#S}@A+*dnExeVv<V?bu1Qn%+8bkVmVG:t.vCxLPf+yFW<0?g)L8>&<XlOY(K%8[Dou.UFISA%Fe-@Bj&?F/xh{yl7!)nmr#3wi]+]aJdGz2U9DV@SPiJ+{o:$2r-7sf:mv2R-GG@YM2Z9c!-Az4+=s<#oClsL6Lg-AZ2*7w2ImGgSbVI$N[]x/3!lMf.}+nk}<7P[vJs/-Df53^o&>U1yWO1XP.Y]FdtathNzi}9cVtMXn78-rm)us7=]>M6[0I@Svf}c:m/<0gwmO.-0c?=k[<C]wjzAtB({v#9<([or]ZUzb)u/8uXj)PnkInuZOj1MnVDU.q%apy50kA$DH^.SD-z12NLmfW86a.KqCmkbDlWumMM2wtR(L<Xqv<bW!mxQ1zYnRNFvm&NCvoSvzyj=3>f?BK}%kjj>SdV4<MPxuVUx101z(E/M}8M^ec:g$/3PhQBKDn{P*rWXH*5RbMm7?0!orUrm$vm&b<13wt)/WmsyxDZj%",
+      "8$Byq-q!e(r#-W=D/1=!.5:}sHFtAXtvu%N9HH10Qd-$iSNB(yZCej[e0gKBK:T<{)j:/Paj&Fy!>1?zn$/m9.J}cj4?g!&lg8^qNODTN*PE-cRhwi+z8$zOzwFU82gZX=vYpD>[Jfai^iWXb&-8aEgAajV4WfRZTP:UP>=<M6v]Oepha#RQ[YeG8tX<)yXf5#qI{.+*Oq@<Oh5j)/S#I:/ey/F3R^mt0Ml.3TAnIQ-7E1/^wI7CQL8QQ(9sIbI^m#54k{+0G=tGXCiZp{iZKe(qVcT-!nJow%Q)#GDM2&70-k.oLNCS#FzJ@svtDQneXk6n4<DtwvGvtMBjufg-N^LS5ZcKs}R7E6t&^W:W*.M{tGyRl>/ZO4*5}tOhkCtI<x@m&lt3*JTs8waZ&ydPt:iN-=6GuKtq[BWCyQn%7qtqT-h*{R*O^uo=<dncaq{GWLKhXKh7?7$h3/{.vI9ee)Fi^09<varfy%z4]m%&io+V-8QzD%Eh]dNbc?fC1@EdVCEDx1BFD*Z5HIiafgHqG*w8xqAJ=FQk:LDz}M:KX7PiYoEjsJ3z*oe3CjPS3]zA#f+f:oor97[(YF[h9}f6d%+L7L3%/{gUsZI5FnY8{SX6kmrt{8b9wJ:}ror}OCGa-s&hoT)M.pQs?wgpR]z8(J7iS<t<5c2o>&lHIw-UpN1[+>MpcGt^Acy[87m@k*{@JUX?O%HF}#/L4BZqmgy+nxs[gQiSX>@p1R9CLIkpcLWWpd!%-/AA!26{Yd0/j.2do#l>K)Z>B=-ud]y*48x4)orBjhDpT97HiJQ($-pk[glJ1^VPs@Tij)3aT=@QMAXuiE0pa6#/joRAIN&Om7b.QJcLFY9l[fQ%se%<XsUt^B3Mo.AUTvjD.XwFtwVw]vHwFr>peNZ@(q$=w!?IgL7M*NUzxeSq3xRTST0fOoTR3pjChweJMv$Wl]d$GbbGOCz6XZ0.FcDcP9rha%-Wa-CpHKNz0&zW:V::]QHHFVtu7q5(.3HaZa@)h(!WQ?kX/RgyZ+eqj)Mk(.l[dFtsBd14zufua@mAT/q8[<j+/yj<tH6Z%k<sBI}9VU(p*ny!#zCEz)tVCMwXl])!X?6:*T^1L<w+9SG^p^1eAC$pFJP!9XWqS8/=[bgcup/49{KzsUsc.*ruA^#X[pD5(xW@T!JGHVM7^$5Pz^3k/-f.[uv>th#MS5.6?!K6?JmM7zjCd0wXk(4wN8WF-KCj.n)F3xcK.KCPQL{zuQ.hA7+=BC#Mpp@QviuV95+=YAeh@6qXs8cM!co.IuZkcv9$g#JH4Y3N&1k:JoCQsiO5N6-b+%9X8a71g3J9Z+nlFTjBs.b-0@VBJ^vFRrYv-LN",
       { standard: "Z85" },
     ),
   ),
-) as {
-  "App.js": Uint8Array;
-  components: { "Button.js": Uint8Array; "Header.js": Uint8Array };
-  "index.html": Uint8Array;
-  "main.css": Uint8Array;
-  "main.js": Uint8Array;
-  "router.js": Uint8Array;
-  views: { "About.js": Uint8Array; "Home.js": Uint8Array };
-};
+) as { "App.js": Uint8Array, components: { "Button.js": Uint8Array, "Header.js": Uint8Array }, "index.html": Uint8Array, "main.css": Uint8Array, "main.js": Uint8Array, "router.js": Uint8Array, views: { "About.js": Uint8Array, "Home.js": Uint8Array } };

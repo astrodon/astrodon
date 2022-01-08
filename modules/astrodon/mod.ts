@@ -1,5 +1,5 @@
 import { Plug } from "./deps.ts";
-import { getLibraryLocation } from "./utils.ts";
+import { getLibraryLocation, getAppOptions } from "./utils.ts";
 
 /*
  * This is a bit hacky, it automatically closes the cmd window
@@ -24,8 +24,15 @@ interface AppConfig {
   windows: WindowConfig[];
 }
 
-export interface AppOptions {
+export interface AppContext {
   bin?: unknown;
+  options?: AppOptions
+}
+
+export interface AppOptions {
+  name?: string;
+  version?: string;
+  entry?: string 
 }
 
 export class App<S extends Record<string, Deno.ForeignFunction>> {
@@ -38,20 +45,24 @@ export class App<S extends Record<string, Deno.ForeignFunction>> {
     this.lib = lib;
   }
 
-  public static async new() {
-    const config: AppOptions = {
+  public static async new(options = {}) {
+
+    options = Object.assign(await getAppOptions(), options) as AppOptions;
+
+    const context: AppContext = {
       bin: (globalThis as any).astrodonBin,
+      options
     };
 
-    const libPath = await getLibraryLocation(config);
+    const libPath = await getLibraryLocation(context);
 
-    const options: Plug.Options = {
+    const plugOptions: Plug.Options = {
       name: "astrodon",
       url: libPath,
       policy: Plug.CachePolicy.NONE,
     };
 
-    const library = await Plug.prepare(options, {
+    const library = await Plug.prepare(plugOptions, {
       create_app: { parameters: ["pointer", "usize"], result: "pointer" },
       run_app: { parameters: ["pointer"], result: "pointer" },
       send_message: {
@@ -68,12 +79,12 @@ export class App<S extends Record<string, Deno.ForeignFunction>> {
   }
 
   public run(): void {
-    const config: AppConfig = {
+    const context: AppConfig = {
       windows: this.windows,
     };
 
     this.app_ptr = this.lib.symbols.create_app(
-      ...encode(config),
+      ...encode(context),
     ) as Deno.UnsafePointer;
     this.app_ptr = this.lib.symbols.run_app(this.app_ptr) as Deno.UnsafePointer;
   }

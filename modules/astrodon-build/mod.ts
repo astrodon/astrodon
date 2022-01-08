@@ -1,5 +1,6 @@
-import { download } from "https://deno.land/x/download/mod.ts";
 import { exec } from "https://deno.land/x/exec/mod.ts";
+import { yellow } from "https://deno.land/std/fmt/colors.ts";
+import { normalize } from "https://deno.land/std/path/mod.ts"
 import {
   ast,
   compress,
@@ -33,25 +34,36 @@ export class Builder {
     // download bin
 
     await Deno.mkdir(this.dist, { recursive: true });
-    const currentOS = Deno.build.os;
-    const currentBin = libConfigs[currentOS].url;
-    if (currentBin) {
-      await download(currentBin, {
-        dir: this.dist,
-      });
-    }
 
     // Create /dist/mod.ts
 
     const modTSContent = await Deno.readTextFile(join(this.root, entry));
-
-    const template = `
-        import bin from "${binUrl}";
-        (globalThis as any).astrodonBin = bin;
-        ${modTSContent}
-    `.trim();
-
     const modTSDist = join(this.dist, "mod.b.ts");
+    const configFile = join(this.root, "astrodon.config.ts")
+
+    let template = ``;
+
+    try {
+      await Deno.stat(configFile);      
+      template = `
+          import bin from "${binUrl}";
+          import appConfig from "./astrodon.config.ts"
+          (globalThis as any).astrodonBin = bin;
+          (globalThis as any).astrodonAppConfig = appConfig
+          ${modTSContent}
+      `.trim();
+    } catch (_e) {
+      console.log(
+        `${
+          yellow("WARNING:")
+        } astrodon.config.ts not found, apps is building with default settings.`,
+      );
+      template = `
+          import bin from "${binUrl}";
+          (globalThis as any).astrodonBin = bin;
+          ${modTSContent}
+      `.trim();
+    }
     await Deno.writeTextFile(modTSDist, template);
   }
 
