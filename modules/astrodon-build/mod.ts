@@ -31,7 +31,6 @@ export class Builder {
     entry: string,
     binUrl: string = libConfigs[Deno.build.os].url as string,
   ) {
-    // download bin
 
     await Deno.mkdir(this.dist, { recursive: true });
 
@@ -81,7 +80,7 @@ export class Builder {
 
     await exec(
       `deno compile -A --unstable ${
-        options.noCheck && "--no-check"
+        options.noCheck ? "--no-check" : ""
       } --output ${output} ${modTSDistTemp} `,
     );
 
