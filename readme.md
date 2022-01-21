@@ -26,6 +26,7 @@ Easily run the demo:
 ```
 deno run -A --unstable --reload https://raw.githubusercontent.com/astrodon/astrodon/main/examples/hello_world/demo.ts
 ```
+**Note**: Using Deno v1.18.0 might give you TypeScript errors, read [this](https://github.com/astrodon/astrodon/issues/6#issuecomment-1018451152).
 
 ### 📜 To-do
 
