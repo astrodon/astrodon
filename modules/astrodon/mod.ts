@@ -36,12 +36,21 @@ export interface AppOptions {
   entry?: string 
 }
 
-export class App<S extends Record<string, Deno.ForeignFunction>> {
+interface AppMethods extends Record<string, Deno.ForeignFunction> {
+  create_app: { parameters: ["pointer", "usize"], result: "pointer" },
+  run_app: { parameters: ["pointer"], result: "pointer" },
+  send_message: {
+    parameters: ["pointer", "usize", "pointer"],
+    result: "pointer",
+  },
+}
+
+export class App {
   private windows: WindowConfig[];
-  private lib: Deno.DynamicLibrary<S>;
+  private lib: Deno.DynamicLibrary<AppMethods>;
   private app_ptr: Deno.UnsafePointer | undefined;
 
-  constructor(lib: Deno.DynamicLibrary<S>, windows: WindowConfig[]) {
+  constructor(lib: Deno.DynamicLibrary<AppMethods>, windows: WindowConfig[]) {
     this.windows = windows;
     this.lib = lib;
   }
@@ -63,14 +72,16 @@ export class App<S extends Record<string, Deno.ForeignFunction>> {
       policy: Plug.CachePolicy.NONE,
     };
 
-    const library = await Plug.prepare(plugOptions, {
+    const libraryMethods: AppMethods = {
       create_app: { parameters: ["pointer", "usize"], result: "pointer" },
       run_app: { parameters: ["pointer"], result: "pointer" },
       send_message: {
         parameters: ["pointer", "usize", "pointer"],
         result: "pointer",
       },
-    });
+    };
+    
+    const library = await Plug.prepare(plugOptions, libraryMethods);
 
     return new App(library, []);
   }
@@ -83,7 +94,6 @@ export class App<S extends Record<string, Deno.ForeignFunction>> {
     const context: AppConfig = {
       windows: this.windows,
     };
-
     this.app_ptr = this.lib.symbols.create_app(
       ...encode(context),
     ) as Deno.UnsafePointer;
@@ -91,10 +101,12 @@ export class App<S extends Record<string, Deno.ForeignFunction>> {
   }
 
   public send(msg: string): void {
-    this.app_ptr = this.lib.symbols.send_message(
-      ...encode(msg),
-      this.app_ptr,
-    ) as Deno.UnsafePointer;
+    if(this.app_ptr){
+      this.app_ptr = this.lib.symbols.send_message(
+        ...encode(msg),
+        this.app_ptr,
+      ) as Deno.UnsafePointer;
+    }
   }
 }
 
