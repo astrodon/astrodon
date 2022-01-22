@@ -49,7 +49,7 @@ Run the demo locally:
 
 ```
 cargo build
-deno run -A --unstable demo/demo.ts
+deno run -A --unstable examples/hello_world/demo.ts
 ```
 
 MIT License
