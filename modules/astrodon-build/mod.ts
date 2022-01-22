@@ -106,7 +106,7 @@ export class Builder {
       } --output ${output} ${modTSDistTemp} `,
     );
 
-    //await Deno.remove(modTSDistTemp);
+    await Deno.remove(modTSDistTemp);
   }
 
   /*
