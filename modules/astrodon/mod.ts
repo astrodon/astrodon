@@ -1,5 +1,5 @@
 import { Plug } from "./deps.ts";
-import { getLibraryLocation, getAppOptions } from "./utils.ts";
+import { getLibraryLocation, getAppOptions, prepareUrl } from "./utils.ts";
 import './astrodon.d.ts'
 
 /*
@@ -33,7 +33,8 @@ export interface AppContext {
 export interface AppOptions {
   name?: string;
   version?: string;
-  entry?: string 
+  entry?: string;
+  preventUnpack?: boolean;
 }
 
 interface AppMethods extends Record<string, Deno.ForeignFunction> {
@@ -50,7 +51,7 @@ export class App {
   private lib: Deno.DynamicLibrary<AppMethods>;
   private app_ptr: Deno.UnsafePointer | undefined;
 
-  constructor(lib: Deno.DynamicLibrary<AppMethods>, windows: WindowConfig[]) {
+  constructor(lib: Deno.DynamicLibrary<AppMethods>, windows: WindowConfig[], public globalContext: AppContext) {
     this.windows = windows;
     this.lib = lib;
   }
@@ -83,14 +84,15 @@ export class App {
     
     const library = await Plug.prepare(plugOptions, libraryMethods);
 
-    return new App(library, []);
+    return new App(library, [], context);
   }
 
-  public registerWindow(window: WindowConfig) {
+  public async registerWindow(window: WindowConfig) {
+    window.url = await prepareUrl(window.url, this.globalContext);
     this.windows.push(window);
   }
-
-  public run(): void {
+  
+  public run(): void {    
     const context: AppConfig = {
       windows: this.windows,
     };

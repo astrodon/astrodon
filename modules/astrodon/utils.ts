@@ -1,4 +1,5 @@
 import { dirname, ensureDir, exists, join, semver } from "./deps.ts";
+import { unpackAssets } from "../astrodon-build/mod.ts";
 import { AppContext, AppOptions } from "./mod.ts";
 import meta from "../../astrodon.meta.ts";
 
@@ -47,14 +48,7 @@ export const getLibraryLocation = async (
   if (customBinary) return customBinary;
 
   // Usingi installed binary
-  const name = "astrodon";
-  const dir = join(
-    Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
-    context?.options?.name || "",
-    context.options?.version || "",
-    name,
-    cleanVersion || version,
-  );
+  const dir = getAppPathByContext(context);
   const libConfig = libConfigs[Deno.build.os] as LibConfig;
   const libDir = join(dir, "lib");
   const isInstalled = await exists(libDir);
@@ -93,3 +87,30 @@ export const getAppOptions = async (): Promise<AppOptions> => {
     return {};
   }
 };
+
+export const prepareUrl = async  (url: string, context: AppContext) => {
+  if (url.startsWith("http")) return url;  
+  const production = window.astrodonProduction;  
+  const preventUnpack = window?.astrodonAppConfig?.preventUnpack;
+  if (!production || production && preventUnpack) return url;  
+  const assets = window.astrodonAssets;
+  if (!assets) return url;
+  const dir = getAppPathByContext(context);
+  const assetsFolder = join(dir, "../../assets");
+  const existFolder = await exists(assetsFolder);
+  if (!existFolder) {
+    await ensureDir(assetsFolder);
+    await unpackAssets(assets, assetsFolder);
+  }  
+  return `file://${join(assetsFolder, url.split("/").pop() as string)}`;
+}
+
+const getAppPathByContext = (context: AppContext) => join(
+  Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
+  context?.options?.name || "",
+  context.options?.version || "",
+  window.astrodonProduction && !context?.options?.name ? `astrodon_unsigned_builds/${dirname(Deno.mainModule)}` : '', 
+  meta.name,
+  cleanVersion || version,
+);
+  

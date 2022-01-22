@@ -8,7 +8,7 @@ const snapshot = flat(pack);
 
 const astrodonApp = await Astrodon.new();
 
-astrodonApp.registerWindow({
+await astrodonApp.registerWindow({
   title: "Vue Example",
   url: "http://localhost:3000/",
 });

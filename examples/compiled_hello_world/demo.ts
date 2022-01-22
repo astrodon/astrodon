@@ -16,7 +16,7 @@ const indexPath = await getIndex();
 
 const app = await App.new();
 
-app.registerWindow({ title: "spaghettis > ravioli", url: indexPath });
+await app.registerWindow({ title: "spaghettis > ravioli", url: indexPath });
 
 setInterval(() => {
   app.send(`Hello Tauri: ${Math.random()}`);
