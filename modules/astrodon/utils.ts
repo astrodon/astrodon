@@ -69,9 +69,13 @@ export const getLibraryLocation = async (
   }
 
   await ensureDir(libDir);
+  // deno-lint-ignore no-explicit-any
   await Deno.writeFile(libDist, context.bin as any);  
   return libDir;
 };
+
+
+// Retrieve the App Options
 
 export const getAppOptions = async (): Promise<AppOptions> => {
   const globalConfig = window.astrodonAppConfig;
@@ -87,10 +91,15 @@ export const getAppOptions = async (): Promise<AppOptions> => {
   }
 };
 
+/** 
+ * Gets the path of the entry url
+ * Also uncompress assets if it's on production
+*/
+
 export const prepareUrl = async  (url: string, context: AppContext): Promise<string> => {
   if (url.startsWith("http")) return url;  
   const production = window.astrodonProduction;  
-  const preventUnpack = window?.astrodonAppConfig?.preventUnpack;
+  const preventUnpack = window?.astrodonAppConfig?.build?.preventUnpack;
   if (!production || production && preventUnpack) return url;  
   const assets = window.astrodonAssets;
   if (!assets) return url;

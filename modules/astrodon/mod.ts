@@ -33,8 +33,10 @@ export interface AppContext {
 export interface AppOptions {
   name?: string;
   version?: string;
-  entry?: string;
-  preventUnpack?: boolean;
+  build?: { 
+    entry?: string;
+    preventUnpack?: boolean;
+  }
 }
 
 interface AppMethods extends Record<string, Deno.ForeignFunction> {

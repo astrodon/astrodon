@@ -21,7 +21,7 @@ await new Command()
     .option("-i, --entry [type:string]", "Entry point for the app.", {
       required: true,
     })
-    .option("-d, --out [type:string]", "Output directory.")
+    .option("-d, --out [type:string]", "Output directory (default: /dist).")
     .action(async (options) => await build(options)),
   )
   .parse(Deno.args);
