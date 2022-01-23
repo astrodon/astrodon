@@ -39,7 +39,8 @@ export class Builder {
     assetsPath: string = join(this.root, "dist", 'snapshot.b.ts'),
   ) {
     await Deno.mkdir(this.dist, { recursive: true });
-    console.log(this.root, this.dist);
+
+    console.log(`${yellow("INFO:")} Crating entry point...`);
     
     // Create /dist/mod.ts
 

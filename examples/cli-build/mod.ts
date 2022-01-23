@@ -1,14 +1,18 @@
-import { App as Astrodon } from "../../mod.ts";
-import { dirname, fromFileUrl, join } from "https://deno.land/std/path/mod.ts";
-const __dirname = dirname(fromFileUrl(import.meta.url));
+import { App } from "../../mod.ts";
 
+const getIndex = async () => {
+  const isDev = Deno.env.get("DEV") == "true";
+  if (isDev) {
+    return `file://${await Deno.realPath("./examples/cli-build/renderer/src/index.html")}`;
+  } else {
+    return "https://rawcdn.githack.com/astrodon/astrodon/fdf9523e44f78c40290141f0288e0e1b468dc075/demo/index.html";
+  }
+};
 
-const astrodonApp = await Astrodon.new();
+const indexPath = await getIndex();
 
+const app = await App.new();
 
-await astrodonApp.registerWindow({
-  title: "Vue Example",
-  url: `file://${join(__dirname,'./renderer/src/index.html')}`,
-});
+await app.registerWindow({ title: "Fua", url: indexPath });
 
-astrodonApp.run();
+app.run();

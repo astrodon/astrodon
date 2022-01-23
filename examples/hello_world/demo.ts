@@ -12,6 +12,9 @@ const getIndex = async () => {
 
 const indexPath = await getIndex();
 
+console.log(indexPath);
+
+
 const app = await App.new();
 
 await app.registerWindow({ title: "spaghettis > ravioli", url: indexPath });

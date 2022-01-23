@@ -47,7 +47,7 @@ export const getLibraryLocation = async (
   const customBinary = Deno.env.get("CUSTOM_BINARY");
   if (customBinary) return customBinary;
 
-  // Usingi installed binary
+  // Using installed binary
   const dir = getAppPathByContext(context);
   const libConfig = libConfigs[Deno.build.os] as LibConfig;
   const libDir = join(dir, "lib");
@@ -69,8 +69,7 @@ export const getLibraryLocation = async (
   }
 
   await ensureDir(libDir);
-  await Deno.writeFile(libDist, context.bin as any);
-
+  await Deno.writeFile(libDist, context.bin as any);  
   return libDir;
 };
 
@@ -88,7 +87,7 @@ export const getAppOptions = async (): Promise<AppOptions> => {
   }
 };
 
-export const prepareUrl = async  (url: string, context: AppContext) => {
+export const prepareUrl = async  (url: string, context: AppContext): Promise<string> => {
   if (url.startsWith("http")) return url;  
   const production = window.astrodonProduction;  
   const preventUnpack = window?.astrodonAppConfig?.preventUnpack;

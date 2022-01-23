@@ -91,7 +91,7 @@ export class App {
     window.url = await prepareUrl(window.url, this.globalContext);
     this.windows.push(window);
   }
-  
+
   public run(): void {    
     const context: AppConfig = {
       windows: this.windows,
@@ -99,7 +99,7 @@ export class App {
     this.app_ptr = this.lib.symbols.create_app(
       ...encode(context),
     ) as Deno.UnsafePointer;
-    this.app_ptr = this.lib.symbols.run_app(this.app_ptr) as Deno.UnsafePointer;
+    this.app_ptr = this.lib.symbols.run_app(this.app_ptr) as Deno.UnsafePointer;    
   }
 
   public send(msg: string): void {
