@@ -1,0 +1,14 @@
+<html>
+    <body>
+        Hello Tauri!
+    </body>
+    <script type="module">
+        import { event, invoke } from 'https://cdn.jsdelivr.net/npm/@tauri-apps/api@1.0.0-beta.8/index.js';
+
+        invoke('init_listener').then(() => {
+            event.listen("fromDeno", ({ payload }) => {
+                document.body.innerText = payload
+            })
+        })  
+    </script>
+</html>

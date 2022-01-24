@@ -113,7 +113,7 @@ export const prepareUrl = async  (url: string, context: AppContext): Promise<str
   return `file://${join(assetsFolder, url.split("/").pop() as string)}`;
 }
 
-const getAppPathByContext = (context: AppContext) => join(
+export const getAppPathByContext = (context: AppContext) => join(
   Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
   context?.options?.name || "",
   context.options?.version || "",

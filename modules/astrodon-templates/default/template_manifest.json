@@ -1,0 +1,6 @@
+{
+  "type": "astrodon",
+  "name": "default",
+  "description": "Default Astrodon template",
+  "version": "1.0.0"
+}
