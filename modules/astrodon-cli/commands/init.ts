@@ -22,8 +22,8 @@ export const init = async (options: Record<string, string>) => {
   initLogger.log(`Initializing template from ${templateUrl}`);
   if (templateUrl.endsWith(".template.b.ts")) {
     try {
-      await ensureDir(endPath);
       const { default: template } = await import(templateUrl);
+      await ensureDir(endPath);
       await unpackAssets(template, endPath);
       const templateName = templateUrl.split("/").pop() as string;
       await Deno.remove(join(endPath, templateName));
@@ -36,6 +36,7 @@ export const init = async (options: Record<string, string>) => {
     }
   }
   if (
+    !templateUrl.endsWith(".template.b.ts") &&
     templateUrl.startsWith("https://github.com") ||
     templateUrl.startsWith("http://github.com") ||
     templateUrl.startsWith("https://gitlab.com") ||
@@ -66,8 +67,8 @@ export const init = async (options: Record<string, string>) => {
     const templateInMonorepo =
       `${homepage}/raw/main/modules/astrodon-templates/${templateUrl}/${templateUrl}.template.b.ts`;
     try {
-      await ensureDir(endPath);
       const { default: template } = await import(templateInMonorepo);
+      await ensureDir(endPath);
       await unpackAssets(template, endPath);
       await Deno.remove(join(endPath, `${templateUrl}.template.b.ts`));
     } catch (_e) {

@@ -3,14 +3,14 @@ import { yellow } from "https://deno.land/std/fmt/colors.ts";
 import {
   ast,
   compress,
+  dirname,
+  ensureDir,
   exists,
   extract,
   join,
-  dirname,
   PassThrough,
   tsBundle,
   unparse,
-  ensureDir,
 } from "../astrodon/deps.ts";
 import { libConfigs } from "../astrodon/utils.ts";
 
@@ -36,16 +36,16 @@ export class Builder {
   public async preBundle(
     entry: string,
     binUrl: string = libConfigs[Deno.build.os].url as string,
-    assetsPath: string = join(this.root, "dist", 'snapshot.b.ts'),
+    assetsPath: string = join(this.root, "dist", "snapshot.b.ts"),
   ) {
     await Deno.mkdir(this.dist, { recursive: true });
-    
+
     // Create /dist/mod.ts
 
     const modTSContent = await Deno.readTextFile(join(this.root, entry));
     const modTSDist = join(this.dist, "mod.b.ts");
     const configFile = join(this.root, "astrodon.config.ts");
-    
+
     const assetsImport = await exists(assetsPath)
       ? `import { default as assets } from "./dist/snapshot.b.ts";`
       : "";
@@ -96,8 +96,6 @@ export class Builder {
     const modTSDistTemp = join(this.root, "dist_mod.ts");
 
     await Deno.copyFile(modTSDist, modTSDistTemp);
-
-    console.log(`${yellow("INFO:")} Compiling...`);
 
     await exec(
       `deno compile -A --unstable ${
