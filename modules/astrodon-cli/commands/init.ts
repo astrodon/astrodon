@@ -3,7 +3,7 @@ import { unpackAssets } from "../../astrodon-build/mod.ts";
 import { exec } from "https://deno.land/x/exec/mod.ts";
 import { join } from "https://deno.land/std/path/mod.ts";
 import { ensureDir, exists } from "https://deno.land/std/fs/mod.ts";
-import { Logger, isSupportedGitPlatform } from "../utils.ts";
+import { Logger, isSupportedGitPlatform, generateRandomHashByTime } from "../utils.ts";
 import meta from "../../../astrodon.meta.ts";
 import "https://deno.land/x/dotenv/load.ts";
 
@@ -22,7 +22,8 @@ export const init = async (options: Record<string, string>) => {
   initLogger.log(`Initializing template from ${templateUrl}`);
   if (templateUrl.endsWith(".template.b.ts")) {
     try {
-      const { default: template } = await import(templateUrl);
+      await exec(`deno cache --reload=${templateUrl}`);
+      const { default: template } = await import(`${templateUrl}#${generateRandomHashByTime()}`);
       await ensureDir(endPath);
       await unpackAssets(template, endPath);
       const templateName = templateUrl.split("/").pop() as string;
@@ -58,10 +59,11 @@ export const init = async (options: Record<string, string>) => {
   }
   if (
     !templateUrl.startsWith("http") && !templateUrl.endsWith(".template.b.ts")
-  ) {
+  ) {    
     const templateInMonorepo =
-      `${homepage}/raw/main/modules/astrodon-templates/${templateUrl}/${templateUrl}.template.b.ts`;
+      `${homepage}/raw/main/modules/astrodon-templates/${templateUrl}/${templateUrl}.template.b.ts#${ generateRandomHashByTime() }`;
     try {
+      await exec(`deno cache --reload=${templateInMonorepo}`);
       const { default: template } = await import(templateInMonorepo);
       await ensureDir(endPath);
       await unpackAssets(template, endPath);

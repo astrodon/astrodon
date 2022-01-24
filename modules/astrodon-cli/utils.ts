@@ -29,3 +29,9 @@ templateUrl.startsWith("https://gitlab.com") ||
 templateUrl.startsWith("http://gitlab.com") ||
 templateUrl.startsWith("https://bitbucket.com") ||
 templateUrl.startsWith("http://bitbucket.com")
+
+export const generateRandomHashByTime = (): string => {
+  const date = new Date();
+  const time = date.getTime();
+  return time.toString(36);
+}
