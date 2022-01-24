@@ -1,6 +1,5 @@
 import { dirname, join } from "https://deno.land/std/path/mod.ts";
 import { Builder } from "../../astrodon-build/mod.ts";
-import { green } from "https://deno.land/std/fmt/colors.ts";
 import { Logger } from "../utils.ts";
 
 const buildLogger = new Logger("build");

@@ -22,3 +22,10 @@ export class Logger {
   }
   
 }
+
+export const isSupportedGitPlatform = (templateUrl: string): boolean => templateUrl.startsWith("https://github.com") ||
+templateUrl.startsWith("http://github.com") ||
+templateUrl.startsWith("https://gitlab.com") ||
+templateUrl.startsWith("http://gitlab.com") ||
+templateUrl.startsWith("https://bitbucket.com") ||
+templateUrl.startsWith("http://bitbucket.com")

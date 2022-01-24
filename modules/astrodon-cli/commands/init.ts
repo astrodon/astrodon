@@ -3,7 +3,7 @@ import { unpackAssets } from "../../astrodon-build/mod.ts";
 import { exec } from "https://deno.land/x/exec/mod.ts";
 import { join } from "https://deno.land/std/path/mod.ts";
 import { ensureDir, exists } from "https://deno.land/std/fs/mod.ts";
-import { Logger } from "../utils.ts";
+import { Logger, isSupportedGitPlatform } from "../utils.ts";
 import meta from "../../../astrodon.meta.ts";
 import "https://deno.land/x/dotenv/load.ts";
 
@@ -37,12 +37,7 @@ export const init = async (options: Record<string, string>) => {
   }
   if (
     !templateUrl.endsWith(".template.b.ts") &&
-    templateUrl.startsWith("https://github.com") ||
-    templateUrl.startsWith("http://github.com") ||
-    templateUrl.startsWith("https://gitlab.com") ||
-    templateUrl.startsWith("http://gitlab.com") ||
-    templateUrl.startsWith("https://bitbucket.com") ||
-    templateUrl.startsWith("http://bitbucket.com")
+    isSupportedGitPlatform(templateUrl)
   ) {
     try {
       const formattedUrl = templateUrl.endsWith("/") ? templateUrl.slice(0, -1) : templateUrl;
