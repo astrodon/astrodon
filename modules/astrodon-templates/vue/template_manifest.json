@@ -1,0 +1,6 @@
+{
+  "type": "astrodon",
+  "name": "vue",
+  "description": "Vue3 Astrodon template",
+  "version": "1.0.0"
+}
