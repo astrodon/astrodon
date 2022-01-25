@@ -8,6 +8,7 @@ interface AcceptedModules {
 interface States {
   success: string;
   error: string;
+  info: string;
 }
 
 export class Logger {
@@ -17,6 +18,7 @@ export class Logger {
     const states = {
       success: green(`✅`),
       error: red(`❌`),
+      info: yellow(`ℹ`),
     };
     console.log(`${states[type]} ${yellow(`[astrodon ${this.module}]:`)} ${message}`);
   }

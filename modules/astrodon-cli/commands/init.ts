@@ -3,7 +3,11 @@ import { unpackAssets } from "../../astrodon-build/mod.ts";
 import { exec } from "https://deno.land/x/exec/mod.ts";
 import { join } from "https://deno.land/std/path/mod.ts";
 import { ensureDir, exists } from "https://deno.land/std/fs/mod.ts";
-import { Logger, isSupportedGitPlatform, generateRandomHashByTime } from "../utils.ts";
+import {
+  generateRandomHashByTime,
+  isSupportedGitPlatform,
+  Logger,
+} from "../utils.ts";
 import meta from "../../../astrodon.meta.ts";
 import "https://deno.land/x/dotenv/load.ts";
 
@@ -23,7 +27,9 @@ export const init = async (options: Record<string, string>) => {
   if (templateUrl.endsWith(".template.b.ts")) {
     try {
       await exec(`deno cache --reload=${templateUrl}`);
-      const { default: template } = await import(`${templateUrl}#${generateRandomHashByTime()}`);
+      const { default: template } = await import(
+        `${templateUrl}#${generateRandomHashByTime()}`
+      );
       await ensureDir(endPath);
       await unpackAssets(template, endPath);
       const templateName = templateUrl.split("/").pop() as string;
@@ -41,9 +47,13 @@ export const init = async (options: Record<string, string>) => {
     isSupportedGitPlatform(templateUrl)
   ) {
     try {
-      const formattedUrl = templateUrl.endsWith("/") ? templateUrl.slice(0, -1) : templateUrl;
+      const formattedUrl = templateUrl.endsWith("/")
+        ? templateUrl.slice(0, -1)
+        : templateUrl;
+      const templateManifest = await axiod.get(
+        `${formattedUrl}/raw/main/template_manifest.json`,
       // deno-lint-ignore no-explicit-any
-      const templateManifest = await axiod.get(`${formattedUrl}/raw/main/template_manifest.json`) as any;
+      ) as any;
       if (templateManifest.type == "astrodon") {
         return initLogger.log(
           "Astrodon template detected on supported Git platform, starting download...",
@@ -52,16 +62,19 @@ export const init = async (options: Record<string, string>) => {
       await exec(`git clone ${templateUrl} ${endPath}`);
       const templateName = `${templateManifest.name}.template.b.ts`;
       await Deno.remove(join(endPath, templateName));
-    } catch (_e) {      
-      initLogger.log("This is not a valid repo for an Astrodon template, aborting...", "error");
+    } catch (_e) {
+      initLogger.log(
+        "This is not a valid repo for an Astrodon template, aborting...",
+        "error",
+      );
       return;
     }
   }
   if (
     !templateUrl.startsWith("http") && !templateUrl.endsWith(".template.b.ts")
-  ) {    
+  ) {
     const templateInMonorepo =
-      `${homepage}/raw/main/modules/astrodon-templates/${templateUrl}/${templateUrl}.template.b.ts#${ generateRandomHashByTime() }`;
+      `${homepage}/raw/main/modules/astrodon-templates/${templateUrl}/${templateUrl}.template.b.ts#${generateRandomHashByTime()}`;
     try {
       await exec(`deno cache --reload=${templateInMonorepo}`);
       const { default: template } = await import(templateInMonorepo);

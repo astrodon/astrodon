@@ -12,7 +12,7 @@ const getIndex = () => {
   const isDev = Deno.env.get("DEV") == "true";
 
   if (isDev) {
-    return toFileUrl(`${join(__dirname, './renderer/index.html')}`).href;
+    return toFileUrl(`${join(__dirname, './renderer/src/index.html')}`).href;
   } else {
     return 'https://raw.githack.com/denyncrawford/astrodon-template-demo/main/renderer/index.html' //"<your_remote_html>";
   }

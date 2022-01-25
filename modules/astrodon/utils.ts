@@ -70,10 +70,9 @@ export const getLibraryLocation = async (
 
   await ensureDir(libDir);
   // deno-lint-ignore no-explicit-any
-  await Deno.writeFile(libDist, context.bin as any);  
+  await Deno.writeFile(libDist, context.bin as any);
   return libDir;
 };
-
 
 // Retrieve the App Options
 
@@ -91,34 +90,48 @@ export const getAppOptions = async (): Promise<AppOptions> => {
   }
 };
 
-/** 
+/**
  * Gets the path of the entry url
  * Also uncompress assets if it's on production
-*/
+ */
 
-export const prepareUrl = async  (url: string, context: AppContext): Promise<string> => {
-  if (url.startsWith("http")) return url;  
-  const production = window.astrodonProduction;  
+export const prepareUrl = async (
+  url: string,
+  context: AppContext,
+): Promise<string> => {
+  if (url.startsWith("http")) return url;
+  const production = window.astrodonProduction;
   const preventUnpack = window?.astrodonAppConfig?.build?.preventUnpack;
-  if (!production || production && preventUnpack) return url;  
+  if (!production || production && preventUnpack) return url;
   const assets = window.astrodonAssets;
   if (!assets) return url;
+  console.log("assets");
   const dir = getAppPathByContext(context);
   const assetsFolder = join(dir, "../../assets");
   const existFolder = await exists(assetsFolder);
   if (!existFolder) {
     await ensureDir(assetsFolder);
     await unpackAssets(assets, assetsFolder);
-  }  
-  return `file://${join(assetsFolder, url.split("/").pop() as string)}`;
-}
+  }
+  return `file://${
+    join(
+      assetsFolder,
+      Deno.build.os === "windows"
+        ? url.split("\\").pop() as string
+        : url.split("/").pop() as string,
+    )
+  }`;
+};
 
-export const getAppPathByContext = (context: AppContext) => join(
-  Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
-  context?.options?.name || "",
-  context.options?.version || "",
-  window.astrodonProduction && !context?.options?.name ? `astrodon_unsigned_builds/${dirname(Deno.mainModule)}` : '', 
-  meta.name,
-  cleanVersion || version,
-);
-  
+export const getAppPathByContext = (context: AppContext) =>
+  join(
+    Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
+    context?.options?.name || "",
+    context.options?.version || "",
+    window.astrodonProduction &&
+      !context?.options?.name
+      ? `astrodon_unsigned_builds/${dirname(Deno.mainModule)}`
+      : "",
+    meta.name,
+    cleanVersion || version,
+  );
