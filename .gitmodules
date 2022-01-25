@@ -1,7 +1,7 @@
-[submodule default]
-        path = "modules/astrodon-templates/templates/default"
-        url = "git://github.com/astrodon/astrodon-default-template.git"
+[submodule "default"]
+        path = modules/astrodon-templates/templates/default
+        url = git://github.com/astrodon/astrodon-default-template.git
 
 [submodule "vue"]
-        path = "modules/astrodon-templates/vue"
-        url = "git://github.com/astrodon/astrodon-vue-template.git"
+        path = modules/astrodon-templates/vue
+        url = git://github.com/astrodon/astrodon-vue-template.git
