@@ -10,13 +10,9 @@ All templates in this repository can be accessed by the astrodon cli tool, to in
 
 Here is a table of all available templates:
 
-| Template name | Description      | Module URL                                                                                                 |
-| ------------- | ---------------- | ---------------------------------------------------------------------------------------------------------- |
-| default       | Default template | `https://github.com/astrodon/astrodon/raw/master/modules/astrodon-templates/default/default.template.b.ts` |
-| react         | React template   | `https://github.com/astrodon/astrodon/raw/master/modules/astrodon-templates/react/react.template.b.ts`     |
-| svelte        | Svelte template  | `https://github.com/astrodon/astrodon/raw/master/modules/astrodon-templates/svelte/svelte.template.b.ts`   |
-| vue           | Vue template     | `https://github.com/astrodon/astrodon/raw/master/modules/astrodon-templates/vue/vue.template.b.ts`         |
+| Template name | Description      | Module URL                                            |
+| ------------- | ---------------- | ------------------------------------------------------|
+| default       | Default template | https://github.com/astrodon/astrodon-default-template |
+| vue           | React template   | https://github.com/astrodon/astrodon-vue-template     |
 
 If you want to create a new template, please open an issue on the Astrodon repository.
-
-> Please note: For building the templates, the astrodon cli tool is used.
