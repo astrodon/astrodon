@@ -1,4 +1,4 @@
-import { Plug } from "./deps.ts";
+import { dirname, Plug } from "./deps.ts";
 import {
   getAppOptions,
   getAppPathByContext,
@@ -103,22 +103,28 @@ export class App {
     this.windows.push(window);
   }
 
-  public getDataPath() {
+  // Gets the app data folder by checking the binPath
+
+  public async getDataPath() {
+    const osSlash = Deno.build.os == "windows" ? "\\" : "/";
     const homePath = Deno.env.get("HOME") || Deno.env.get("APPDATA") ||
       Deno.cwd();
-    const binPath = getAppPathByContext(this.globalContext);
+    const customBinary = Deno.env.get("CUSTOM_BINARY");    
+    const binPath = customBinary
+      ? dirname(await Deno.realPath(customBinary))
+      : getAppPathByContext(this.globalContext);
+    const signaTurePath = `${meta.name}${osSlash}${meta.version}`;
     const removedHome = binPath.replace(homePath, "");
-    const root = Deno.build.os == "windows"
-      ? removedHome.split("\\")[1]
-      : removedHome.split("/")[1];
 
-    if (root == meta.name) {
+    if (removedHome.startsWith(`${osSlash}${signaTurePath}`)) {
+      const root = removedHome.split(osSlash)[1];
       return binPath.substring(0, homePath.length + root.length + 1);
     }
 
-    if (!binPath.includes(meta.name)) return binPath;
-    const astrodonIndex = binPath.indexOf(meta.name) - 1;
-    return binPath.substring(0, astrodonIndex);
+    if (!binPath.includes(signaTurePath)) return binPath;
+
+    const astrodonIndex = binPath.indexOf(signaTurePath);
+    return binPath.substring(0, astrodonIndex - 1);
   }
 
   public run(): void {

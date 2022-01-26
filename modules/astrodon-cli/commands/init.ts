@@ -36,6 +36,8 @@ export const init = async (options: InitOptions) => {
       const formattedUrl = templateUrl.endsWith("/")
         ? templateUrl.slice(0, -1)
         : templateUrl;
+
+      // For checking if the template is valid we pre-fetch the manifest to prevent cloning from untrusted repositories
       const { data: templateManifest } = await axiod.get(
         `${formattedUrl}/raw/main/template_manifest.json`,
         // deno-lint-ignore no-explicit-any

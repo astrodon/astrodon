@@ -11,6 +11,8 @@ interface States {
   info: string;
 }
 
+// Logger is an agnostic logger that can be used in any module of the CLI to show messages with different states.
+
 export class Logger {
   constructor(private readonly module: keyof AcceptedModules) {}
 
@@ -20,7 +22,8 @@ export class Logger {
       error: red(`❌`),
       info: yellow(`ℹ`),
     };
-    console.log(`${states[type]} ${yellow(`[astrodon ${this.module}]:`)} ${message}`);
+    console.log(
+      `${states[type]} ${yellow(`[astrodon ${this.module}]:`)} ${message}`,
+    );
   }
-  
 }

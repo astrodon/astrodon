@@ -8,6 +8,8 @@ import { build } from "./commands/build.ts";
 import { init } from "./commands/init.ts";
 import { join } from "https://deno.land/std/path/mod.ts";
 
+// CLI configuration
+
 await new Command()
   .name(meta.name)
   .version(meta.version)
@@ -15,9 +17,11 @@ await new Command()
   .description(`Project manager for Astrodon`)
   .command("help", new HelpCommand().global())
   .command("completions", new CompletionsCommand())
+  // Start of CLI commands
   .command(
     "build",
     new Command()
+      //Build command
       .description("Build the app.")
       .allowEmpty(false)
       .option("-i, --entry [type:string]", "Entry point for the app.", {
@@ -34,6 +38,7 @@ await new Command()
   .command(
     "init",
     new Command()
+      //Init command
       .description("Initialize a new project.")
       .allowEmpty(false)
       .option("-t, --template [type:string]", "Template to use.", {

@@ -132,6 +132,8 @@ export class Builder {
   }
 }
 
+// Pack and unpack methods should be exported: Future work
+
 export const unpackAssets = async (
   data: bundle,
   output: string,

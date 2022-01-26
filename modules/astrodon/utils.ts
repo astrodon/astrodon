@@ -90,6 +90,8 @@ export const getAppOptions = async (): Promise<AppOptions> => {
   }
 };
 
+// Note: This is running at runtime, maybe we can use it the build process?
+
 /**
  * Gets the path of the entry url
  * Also uncompress assets if it's on production
@@ -99,20 +101,26 @@ export const prepareUrl = async (
   url: string,
   context: AppContext,
 ): Promise<string> => {
+  // Checks if url is remote and returns it
   if (url.startsWith("http")) return url;
+  // If url is local, checks if is in production or explicitly set to prevent unpack on instance configurations
   const production = window.astrodonProduction;
   const preventUnpack = window?.astrodonAppConfig?.build?.preventUnpack;
   if (!production || production && preventUnpack) return url;
+  // If url is local, checks if assets are already in memory
   const assets = window.astrodonAssets;
   if (!assets) return url;
-  console.log("assets");
+  // Gets binary directory from binary location
   const dir = getAppPathByContext(context);
+  // assets are always located two levels up from the binary
   const assetsFolder = join(dir, "../../assets");
   const existFolder = await exists(assetsFolder);
   if (!existFolder) {
     await ensureDir(assetsFolder);
     await unpackAssets(assets, assetsFolder);
   }
+  // creates file url from assets in appData folder
+  // Note: This is a temporary solution, we should map the original assets folder to the appData folder
   return `file://${
     join(
       assetsFolder,
@@ -122,6 +130,12 @@ export const prepareUrl = async (
     )
   }`;
 };
+
+/**
+ * Retrieve the binary path, this is placed outside to be used in other modules
+ * This is defines where the binary is located by the context of the app
+ * This is intentionally dynamic, so we can run app both locally or remotely
+ */
 
 export const getAppPathByContext = (context: AppContext) =>
   join(

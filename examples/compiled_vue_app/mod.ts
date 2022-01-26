@@ -13,6 +13,8 @@ const app = await App.new();
 
 await app.registerWindow({ title: "Compile example", url: indexPath });
 
+console.log(await app.getDataPath());
+
 setInterval(() => {
   app.send(`Hello Tauri: ${Math.random()}`);
 }, 500);
