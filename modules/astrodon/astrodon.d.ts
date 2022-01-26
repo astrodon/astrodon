@@ -9,5 +9,9 @@ declare global {
     astrodonAppConfig: AppOptions;
     // deno-lint-ignore no-explicit-any
     astrodonBin: any;
+    // deno-lint-ignore no-explicit-any
+    astrodonAssets: any;
+    astrodonProduction?: boolean;
+    astrodonOrigin?: string;
   }
 }

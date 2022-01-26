@@ -1,6 +1,12 @@
-import { Plug } from "./deps.ts";
-import { getLibraryLocation, getAppOptions } from "./utils.ts";
-import './astrodon.d.ts'
+import { dirname, Plug } from "./deps.ts";
+import {
+  getAppOptions,
+  getAppPathByContext,
+  getLibraryLocation,
+  prepareUrl,
+} from "./utils.ts";
+import meta from "../../astrodon.meta.ts";
+import "./astrodon.d.ts";
 
 /*
  * This is a bit hacky, it automatically closes the cmd window
@@ -27,22 +33,27 @@ interface AppConfig {
 
 export interface AppContext {
   bin?: unknown;
-  options?: AppOptions
+  options?: AppOptions;
 }
 
 export interface AppOptions {
   name?: string;
   version?: string;
-  entry?: string 
+  build?: {
+    entry?: string;
+    preventUnpack?: boolean;
+    out?: string;
+    assets?: string;
+  };
 }
 
 interface AppMethods extends Record<string, Deno.ForeignFunction> {
-  create_app: { parameters: ["pointer", "usize"], result: "pointer" },
-  run_app: { parameters: ["pointer"], result: "pointer" },
+  create_app: { parameters: ["pointer", "usize"]; result: "pointer" };
+  run_app: { parameters: ["pointer"]; result: "pointer" };
   send_message: {
-    parameters: ["pointer", "usize", "pointer"],
-    result: "pointer",
-  },
+    parameters: ["pointer", "usize", "pointer"];
+    result: "pointer";
+  };
 }
 
 export class App {
@@ -50,18 +61,21 @@ export class App {
   private lib: Deno.DynamicLibrary<AppMethods>;
   private app_ptr: Deno.UnsafePointer | undefined;
 
-  constructor(lib: Deno.DynamicLibrary<AppMethods>, windows: WindowConfig[]) {
+  constructor(
+    lib: Deno.DynamicLibrary<AppMethods>,
+    windows: WindowConfig[],
+    public globalContext: AppContext,
+  ) {
     this.windows = windows;
     this.lib = lib;
   }
 
   public static async new(options = {}) {
-
     options = Object.assign(await getAppOptions(), options) as AppOptions;
 
     const context: AppContext = {
       bin: window.astrodonBin,
-      options
+      options,
     };
 
     const libPath = await getLibraryLocation(context);
@@ -80,14 +94,39 @@ export class App {
         result: "pointer",
       },
     };
-    
+
     const library = await Plug.prepare(plugOptions, libraryMethods);
 
-    return new App(library, []);
+    return new App(library, [], context);
   }
 
-  public registerWindow(window: WindowConfig) {
+  public async registerWindow(window: WindowConfig) {
+    window.url = await prepareUrl(window.url, this.globalContext);
     this.windows.push(window);
+  }
+
+  // Gets the app data folder by checking the binPath
+
+  public async getDataPath() {
+    const osSlash = Deno.build.os == "windows" ? "\\" : "/";
+    const homePath = Deno.env.get("HOME") || Deno.env.get("APPDATA") ||
+      Deno.cwd();
+    const customBinary = Deno.env.get("CUSTOM_BINARY");    
+    const binPath = customBinary
+      ? dirname(await Deno.realPath(customBinary))
+      : getAppPathByContext(this.globalContext);
+    const signaTurePath = `${meta.name}${osSlash}${meta.version}`;
+    const removedHome = binPath.replace(homePath, "");
+
+    if (removedHome.startsWith(`${osSlash}${signaTurePath}`)) {
+      const root = removedHome.split(osSlash)[1];
+      return binPath.substring(0, homePath.length + root.length + 1);
+    }
+
+    if (!binPath.includes(signaTurePath)) return binPath;
+
+    const astrodonIndex = binPath.indexOf(signaTurePath);
+    return binPath.substring(0, astrodonIndex - 1);
   }
 
   public run(): void {
@@ -101,7 +140,7 @@ export class App {
   }
 
   public send(msg: string): void {
-    if(this.app_ptr){
+    if (this.app_ptr) {
       this.app_ptr = this.lib.symbols.send_message(
         ...encode(msg),
         this.app_ptr,

@@ -6,6 +6,8 @@
 </p>
 
 [![Discord Server](https://discordapp.com/api/guilds/928673465882513430/widget.png)](https://discord.gg/adYYqHHDBA)
+[![deno module](https://shield.deno.dev/x/astrodon)](https://deno.land/x/astrodon)
+![deno compatibility](https://shield.deno.dev/deno/^1.17)
 
 ---
 

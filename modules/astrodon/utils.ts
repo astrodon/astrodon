@@ -1,4 +1,13 @@
-import { dirname, ensureDir, exists, join, semver } from "./deps.ts";
+import {
+  dirname,
+  ensureDir,
+  exists,
+  fromFileUrl,
+  join,
+  semver,
+  basename
+} from "./deps.ts";
+import { unpackAssets } from "../astrodon-build/mod.ts";
 import { AppContext, AppOptions } from "./mod.ts";
 import meta from "../../astrodon.meta.ts";
 
@@ -46,15 +55,8 @@ export const getLibraryLocation = async (
   const customBinary = Deno.env.get("CUSTOM_BINARY");
   if (customBinary) return customBinary;
 
-  // Usingi installed binary
-  const name = "astrodon";
-  const dir = join(
-    Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
-    context?.options?.name || "",
-    context.options?.version || "",
-    name,
-    cleanVersion || version,
-  );
+  // Using installed binary
+  const dir = getAppPathByContext(context);
   const libConfig = libConfigs[Deno.build.os] as LibConfig;
   const libDir = join(dir, "lib");
   const isInstalled = await exists(libDir);
@@ -75,10 +77,12 @@ export const getLibraryLocation = async (
   }
 
   await ensureDir(libDir);
+  // deno-lint-ignore no-explicit-any
   await Deno.writeFile(libDist, context.bin as any);
-
   return libDir;
 };
+
+// Retrieve the App Options
 
 export const getAppOptions = async (): Promise<AppOptions> => {
   const globalConfig = window.astrodonAppConfig;
@@ -92,4 +96,76 @@ export const getAppOptions = async (): Promise<AppOptions> => {
   } catch (_e) {
     return {};
   }
+};
+
+// Note: This is running at runtime, maybe we can use it the build process?
+
+/**
+ * Gets the path of the entry url
+ * Also uncompress assets if it's on production
+ */
+
+export const prepareUrl = async (
+  url: string,
+  context: AppContext,
+): Promise<string> => {
+  // Checks if url is remote and returns it
+  if (url.startsWith("http")) return url;
+  // If url is local, checks if is in production or explicitly set to prevent unpack on instance configurations
+  const production = window.astrodonProduction;
+  const preventUnpack = window?.astrodonAppConfig?.build?.preventUnpack;
+  if (!production || production && preventUnpack) return url;
+  // If url is local, checks if assets are already in memory
+  const assets = window.astrodonAssets;
+  // If custom assets folder isn't set, astrodon assumes the assets are relative to the entry url
+  if (!assets) return url;
+  // Gets binary directory from binary location
+  const dir = getAppPathByContext(context);
+  // assets are always located two levels up from the binary
+  const assetsFolder = join(dir, "../../assets");
+  const existFolder = await exists(assetsFolder);
+  if (!existFolder) {
+    await ensureDir(assetsFolder);
+    await unpackAssets(assets, assetsFolder);
+  }
+
+  const parseUrl = fromFileUrl(url).replaceAll('\\', '/');
+
+  const originFolder = window.astrodonOrigin as string;
+  const customAssetFolder = window.astrodonAppConfig?.build?.assets || dirname(parseUrl.replace(originFolder, ''));
+
+  // If customAssetFolder is relative, it's assumed to be relative to the origin folder
+
+  const assetFolder = isRelative(customAssetFolder)
+    ? join(originFolder, customAssetFolder)
+    : customAssetFolder.replaceAll('\\', '/');
+  
+  // We map the original url to the new one with the assets folder
+  
+  const assetUrl = parseUrl.replace(assetFolder.replaceAll("\\", "/"), assetsFolder);
+
+  return `file://${assetUrl}`;
+};
+
+/**
+ * Retrieve the binary path, this is placed outside to be used in other modules
+ * This is defines where the binary is located by the context of the app
+ * This is intentionally dynamic, so we can run app both locally or remotely
+ */
+
+export const getAppPathByContext = (context: AppContext) =>
+  join(
+    Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
+    context?.options?.name || "",
+    context.options?.version || "",
+    window.astrodonProduction &&
+      !context?.options?.name
+      ? `astrodon_unsigned_builds/${ basename(window.astrodonOrigin as string) || basename(Deno.mainModule)}`
+      : "",
+    meta.name,
+    cleanVersion || version,
+  );
+
+const isRelative = (url: string) => {
+  return url.startsWith(".") || url.startsWith("/");
 };

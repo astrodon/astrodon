@@ -1,5 +1,6 @@
 target
 dist
 *.b.ts
+!*modules/astrodon-templates/**/*.b.ts
 .env
 *.exe
