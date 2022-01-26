@@ -22,6 +22,19 @@ if (Deno.build.os === "windows" && Deno.env.get("DEV") != "true") {
   mod.symbols.FreeConsole();
 }
 
+/*
+ * MacOS is not supported yet
+ * See https://github.com/astrodon/astrodon/issues/11
+ */
+if (Deno.build.os === "darwin" ) {
+  console.log(
+`
+MacOS is not supported sorry :(
+See https://github.com/astrodon/astrodon/issues/11
+`
+  );
+}
+
 interface WindowConfig {
   title: string;
   url: string;
