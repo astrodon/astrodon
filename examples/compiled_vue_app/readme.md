@@ -7,6 +7,6 @@ This is a template for a how to build with astrodon with any web framework, in t
 ## Build
 
 ```shell
-deno run -A --unstable --no-check build.renderer.ts
+deno run -A --unstable build.renderer.ts
 astrodon build
 ```
