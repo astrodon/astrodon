@@ -1,4 +1,12 @@
-import { dirname, ensureDir, exists, join, semver } from "./deps.ts";
+import {
+  dirname,
+  ensureDir,
+  exists,
+  fromFileUrl,
+  join,
+  semver,
+  basename
+} from "./deps.ts";
 import { unpackAssets } from "../astrodon-build/mod.ts";
 import { AppContext, AppOptions } from "./mod.ts";
 import meta from "../../astrodon.meta.ts";
@@ -109,6 +117,7 @@ export const prepareUrl = async (
   if (!production || production && preventUnpack) return url;
   // If url is local, checks if assets are already in memory
   const assets = window.astrodonAssets;
+  // If custom assets folder isn't set, astrodon assumes the assets are relative to the entry url
   if (!assets) return url;
   // Gets binary directory from binary location
   const dir = getAppPathByContext(context);
@@ -119,16 +128,23 @@ export const prepareUrl = async (
     await ensureDir(assetsFolder);
     await unpackAssets(assets, assetsFolder);
   }
-  // creates file url from assets in appData folder
-  // Note: This is a temporary solution, we should map the original assets folder to the appData folder
-  return `file://${
-    join(
-      assetsFolder,
-      Deno.build.os === "windows"
-        ? url.split("\\").pop() as string
-        : url.split("/").pop() as string,
-    )
-  }`;
+
+  const parseUrl = fromFileUrl(url).replaceAll('\\', '/');
+
+  const originFolder = window.astrodonOrigin as string;
+  const customAssetFolder = window.astrodonAppConfig?.build?.assets || dirname(parseUrl.replace(originFolder, ''));
+
+  // If customAssetFolder is relative, it's assumed to be relative to the origin folder
+
+  const assetFolder = isRelative(customAssetFolder)
+    ? join(originFolder, customAssetFolder)
+    : customAssetFolder.replaceAll('\\', '/');
+  
+  // We map the original url to the new one with the assets folder
+  
+  const assetUrl = parseUrl.replace(assetFolder.replaceAll("\\", "/"), assetsFolder);
+
+  return `file://${assetUrl}`;
 };
 
 /**
@@ -144,8 +160,12 @@ export const getAppPathByContext = (context: AppContext) =>
     context.options?.version || "",
     window.astrodonProduction &&
       !context?.options?.name
-      ? `astrodon_unsigned_builds/${dirname(Deno.mainModule)}`
+      ? `astrodon_unsigned_builds/${ basename(window.astrodonOrigin as string) || basename(Deno.mainModule)}`
       : "",
     meta.name,
     cleanVersion || version,
   );
+
+const isRelative = (url: string) => {
+  return url.startsWith(".") || url.startsWith("/");
+};

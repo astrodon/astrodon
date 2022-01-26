@@ -46,11 +46,11 @@ export class Builder {
     const modTSDist = join(this.dist, "mod.b.ts");
     const configFile = join(this.root, "astrodon.config.ts");
 
-    const assetsImport = await exists(assetsPath)
-      ? `import { default as assets } from "./dist/snapshot.b.ts";`
-      : "";
-    const globalThisAssets = await exists(assetsPath)
-      ? `(globalThis as any).astrodonAssets = assets`
+    const assets = await exists(assetsPath)
+      ? 
+      `import { default as assets } from "./dist/snapshot.b.ts";
+      (globalThis as any).astrodonAssets = assets;
+      (globalThis as any).astrodonOrigin = "${Deno.realPathSync(this.root).replaceAll('\\', '/')}";`
       : "";
 
     let template = ``;
@@ -60,11 +60,10 @@ export class Builder {
       template = `
           import bin from "${binUrl}";
           import appConfig from "./astrodon.config.ts"
-          ${assetsImport}
+          ${assets}
           (globalThis as any).astrodonBin = bin;
           (globalThis as any).astrodonAppConfig = appConfig;
           (globalThis as any).astrodonProduction = true;
-          ${globalThisAssets}          
           ${modTSContent}
       `.trim();
     } catch (_e) {
@@ -75,10 +74,9 @@ export class Builder {
       );
       template = `
           import bin from "${binUrl}";
-          ${assetsImport}
+          ${assets}
           (globalThis as any).astrodonBin = bin;
           (globalThis as any).astrodonProduction = true;
-          ${globalThisAssets}
           ${modTSContent}
       `.trim();
     }

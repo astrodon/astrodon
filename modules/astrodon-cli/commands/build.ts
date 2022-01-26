@@ -1,14 +1,14 @@
-import { dirname, join, toFileUrl } from "https://deno.land/std/path/mod.ts";
+import { dirname, join, toFileUrl, basename } from "https://deno.land/std/path/mod.ts";
 import { Builder } from "../../astrodon-build/mod.ts";
 import { Logger } from "../utils.ts";
 
 // Build options are located in the astrodon.config.ts file and can be passed to the cli build command
 
 interface BuildOptions {
-  name: string;
-  entry: string;
-  assets?: string;
-  out: string;
+  name: string; // default: "my-astrodon-app"
+  entry: string; // default: join(Deno.cwd(), 'mod.ts')
+  assets: string; // default: join(Deno.cwd(), 'renderer/src')
+  out: string; // default: join(Deno.cwd(), 'dist')
 }
 
 const buildLogger = new Logger("build");
@@ -19,7 +19,7 @@ export const build = async (options: BuildOptions) => {
 
   // Getting options and filling in default values
 
-  options = Object.assign(options, await getBuidOptions());
+  options = Object.assign(options, await getBuildOptions());
 
   buildLogger.log(`Building ${options.name} with this configurations:`, "info");
 
@@ -33,33 +33,31 @@ export const build = async (options: BuildOptions) => {
 
   // Entry file is the main file of the project
 
-  const entry = Deno.realPathSync(options.entry);
-  const customAssetsPath = options.assets;
+  const entry = options.entry;
+  const assetsPath = options.assets
+  const output = options.out;
 
   // Initializing the builder from @astrodon-builder
 
   const builder = new Builder(dirname(entry));
-  const assetsPath = customAssetsPath
-    ? customAssetsPath
-    : join(dirname(entry), "renderer", "src");
 
   // Package assets into a TypeScript bundle
 
   buildLogger.log("Packaging assets...");
 
-  await Builder.packageAssets(assetsPath, join(options.out, "snapshot.b.ts"));
+  await Builder.packageAssets(assetsPath, join(output, "snapshot.b.ts"));
 
   // Pre-bundling code generation
 
   buildLogger.log("Creating temporal entry file...");
 
-  await builder.preBundle("mod.ts");
+  await builder.preBundle(basename(entry));
 
   // Compiling the project into an executable
 
   buildLogger.log("Compiling...");
 
-  await builder.compile(join(options.out, options.name), {
+  await builder.compile(join(output, options.name), {
     noCheck: true,
   });
 
@@ -68,7 +66,7 @@ export const build = async (options: BuildOptions) => {
 
 // Handler for getting the build options
 
-const getBuidOptions = async (): Promise<BuildOptions> => {
+const getBuildOptions = async (): Promise<BuildOptions> => {
   try {
     const { default: configFile } = await import(
       toFileUrl(join(Deno.cwd(), "./astrodon.config.ts")).href

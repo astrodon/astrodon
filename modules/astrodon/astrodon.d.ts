@@ -12,5 +12,6 @@ declare global {
     // deno-lint-ignore no-explicit-any
     astrodonAssets: any;
     astrodonProduction?: boolean;
+    astrodonOrigin?: string;
   }
 }

@@ -6,7 +6,7 @@ import {
 import meta from "../../astrodon.meta.ts";
 import { build } from "./commands/build.ts";
 import { init } from "./commands/init.ts";
-import { join } from "https://deno.land/std/path/mod.ts";
+import { join, basename } from "https://deno.land/std/path/mod.ts";
 
 // CLI configuration
 
@@ -25,14 +25,17 @@ await new Command()
       .description("Build the app.")
       .allowEmpty(false)
       .option("-i, --entry [type:string]", "Entry point for the app.", {
-        default: join(Deno.cwd(), 'mod.ts'),
+        default: join(Deno.cwd(), './mod.ts'),
       })
       .option("-d, --out [type:string]", "Output directory.", {
-        default: join(Deno.cwd(), 'dist')
+        default: join(Deno.cwd(), './dist')
       })
       .option("-n, --name [type:string]", "Custom name for build.", {
-        default: Deno.cwd().split('/').pop()
+        default: basename(Deno.cwd())
       })
+      .option("-a, --assets [type:string]", "Custom assets path.",{
+        default: join(Deno.cwd(), './renderer/src')
+       })
       .action(async (options) => await build(options)),
   )
   .command(
@@ -45,7 +48,7 @@ await new Command()
         default: "default",
       })
       .option("-n, --name [type:string]", "Name of the project.", {
-        default: "my_astrodon_app",
+        default: "my-astrodon-app",
       })
       .action(async (options) => await init(options))
   )

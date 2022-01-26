@@ -42,6 +42,8 @@ export interface AppOptions {
   build?: {
     entry?: string;
     preventUnpack?: boolean;
+    out?: string;
+    assets?: string;
   };
 }
 
