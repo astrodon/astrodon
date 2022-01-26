@@ -21,6 +21,8 @@ A lot is still missing, but we will get there!
 
 ### 🎁 Demo
 
+**Note**: Only Windows and Linux are supported, MacOS isn't supported **yet** (see https://github.com/astrodon/astrodon/issues/11)
+
 Easily run the demo:
 
 ```
