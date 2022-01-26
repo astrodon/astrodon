@@ -3,10 +3,12 @@
 This examples implements a large front-end project to show how you can build
 apps with Astrodon with any web framework.
 
+> You cannot build this project with Astrodon builder but you can create a custom builder instead: see build.astrodon.ts
+
 ## Run on the fly
 
 ```sh
-deno run -A --unstable --no-check https://raw.githubusercontent.com/astrodon/astrodon/main/examples/vuejs_app/mod.ts
+deno run -A --unstable --no-check https://raw.githubusercontent.com/astrodon/astrodon/main/examples/served_vuejs_app/mod.ts
 ```
 
 ## Bundle front-end snapshot (locally)

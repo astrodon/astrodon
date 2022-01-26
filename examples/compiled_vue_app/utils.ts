@@ -3,10 +3,12 @@ const __dirname = dirname(fromFileUrl(import.meta.url));
 
 export const getIndex = () => {
   const isDev = Deno.env.get("DEV") == "true";
+  //deno-lint-ignore no-explicit-any
+  const isProd = (globalThis as any).astrodonProduction
 
-  if (!isDev) {
+  if (isDev || isProd) {
     return `file://${join(__dirname, './renderer/dist/index.html')}`;
   } else {
-    return `https://github.com/denyncrawford/astrodon/raw/main/examples/vuejs_app/src/index.html` //"<your_remote_html>";
+    return `https://raw.githack.com/denyncrawford/astrodon/main/examples/compiled_vuejs_app/renderer/dist/index.html` //"<your_remote_html>";
   }
 };
