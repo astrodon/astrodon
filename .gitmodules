@@ -1,6 +1,8 @@
-[submodule "vue"]
+[submodule "modules/astrodon-templates/vue"]
 	path = modules/astrodon-templates/vue
 	url = https://github.com/astrodon/astrodon-vue-template
-[submodule "default"]
+	branch = main
+[submodule "modules/astrodon-templates/default"]
 	path = modules/astrodon-templates/default
 	url = https://github.com/astrodon/astrodon-default-template
+	branch = main
