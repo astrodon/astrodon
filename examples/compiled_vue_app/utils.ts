@@ -1,4 +1,4 @@
-import { dirname, join, fromFileUrl} from "https://deno.land/std/path/mod.ts";
+import { dirname, join, fromFileUrl } from "https://deno.land/std/path/mod.ts";
 const __dirname = dirname(fromFileUrl(import.meta.url));
 
 export const getIndex = () => {
@@ -9,6 +9,6 @@ export const getIndex = () => {
   if (isDev || isProd) {
     return `file://${join(__dirname, './renderer/dist/index.html')}`;
   } else {
-    return `https://raw.githack.com/denyncrawford/astrodon/main/examples/compiled_vuejs_app/renderer/src/index.html` //"<your_remote_html>";
+    return `https://raw.githack.com/astrodon/astrodon/dev/examples/compiled_vue_app/renderer/src/index.html` //"<your_remote_html>";
   }
 };
