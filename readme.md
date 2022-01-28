@@ -28,7 +28,7 @@ A lot is still missing, but we will get there!
 Easily run the demo:
 
 ```
-deno run -A --unstable --reload https://raw.githubusercontent.com/astrodon/astrodon/main/examples/hello_world/demo.ts
+deno run -A --unstable --reload https://deno.land/x/astrodon/demo/demo.ts
 ```
 
 ### 📜 To-do
