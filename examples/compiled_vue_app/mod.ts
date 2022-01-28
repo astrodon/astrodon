@@ -7,7 +7,7 @@ import { getIndex } from "./utils.ts";
  * Please feel free to change this to your own url or set the DEV environment variable to true to use the local index.html file.
  */
 
-const indexPath = getIndex();
+const indexPath = await getIndex();
 
 const app = await App.new();
 
