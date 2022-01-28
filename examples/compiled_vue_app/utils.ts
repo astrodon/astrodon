@@ -9,6 +9,6 @@ export const getIndex = () => {
   if (isDev || isProd) {
     return `file://${join(__dirname, './renderer/dist/index.html')}`;
   } else {
-    return `https://raw.githack.com/denyncrawford/astrodon/main/examples/compiled_vuejs_app/renderer/dist/index.html` //"<your_remote_html>";
+    return `https://raw.githack.com/denyncrawford/astrodon/main/examples/compiled_vuejs_app/renderer/src/index.html` //"<your_remote_html>";
   }
 };

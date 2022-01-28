@@ -1,5 +1,5 @@
 
-import { dirname, join, fromFileUrl } from 'https://deno.land/std/path/mod.ts';
+import { dirname, join, fromFileUrl, basename } from 'https://deno.land/std/path/mod.ts';
 const __dirname = dirname(fromFileUrl(import.meta.url));
 import { copy } from 'https://deno.land/std/fs/copy.ts';
 import { ensureDir } from 'https://deno.land/std/fs/mod.ts';
@@ -16,9 +16,11 @@ await Promise.all(
   assets.map(async (asset) => {
     const dest = join(__dirname, './renderer/dist', Deno.build.os == 'windows' ? asset.split('\\').pop() as string : asset.split('/').pop() as string);  
     await ensureDir(dirname(dest));
-    await copy(asset, dest, {
+    if (!basename(asset).includes('.html')) return await copy(asset, dest, {
       overwrite: true,
     });
+    const assetContents = await Deno.readTextFile(asset);
+    await Deno.writeTextFile(dest, assetContents.replaceAll('type="module"', ''));
   })
 );
 
