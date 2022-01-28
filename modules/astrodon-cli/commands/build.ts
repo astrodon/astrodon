@@ -1,4 +1,4 @@
-import { dirname, join, toFileUrl, basename } from "https://deno.land/std/path/mod.ts";
+import { dirname, join, toFileUrl, basename } from "../deps.ts";
 import { Builder } from "../../astrodon-build/mod.ts";
 import { Logger } from "../utils.ts";
 

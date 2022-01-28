@@ -1,7 +1,4 @@
-import axiod from "https://deno.land/x/axiod/mod.ts";
-import { exec } from "https://deno.land/x/exec/mod.ts";
-import { join } from "https://deno.land/std/path/mod.ts";
-import { exists } from "https://deno.land/std/fs/mod.ts";
+import { exec, axiod, exists, join } from "../deps.ts";
 import { Logger } from "../utils.ts";
 import "https://deno.land/x/dotenv/load.ts";
 

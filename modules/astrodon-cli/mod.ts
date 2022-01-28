@@ -2,11 +2,12 @@ import {
   Command,
   CompletionsCommand,
   HelpCommand,
-} from "https://deno.land/x/cliffy/mod.ts";
+  join, 
+  basename
+} from "./deps.ts";
 import meta from "../../astrodon.meta.ts";
 import { build } from "./commands/build.ts";
 import { init } from "./commands/init.ts";
-import { join, basename } from "https://deno.land/std/path/mod.ts";
 
 // CLI configuration
 

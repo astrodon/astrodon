@@ -98,11 +98,12 @@ export const getAppOptions = async (): Promise<AppOptions> => {
   }
 };
 
-// Note: This is running at runtime, maybe we can use it the build process?
+// Note: This is creating file at runtime, maybe we can use it the build process?
 
 /**
  * Gets the path of the entry url
  * Also uncompress assets if it's on production
+ * Uncompress isn't (by now) part of the build process but it's a good idea to move it when we have an installer
  */
 
 export const prepareUrl = async (
@@ -124,10 +125,15 @@ export const prepareUrl = async (
   // assets are always located two levels up from the binary
   const assetsFolder = join(dir, "../../assets");
   const existFolder = await exists(assetsFolder);
+
+  // If assets folder doesn't exist, we create it and uncompress assets
+
   if (!existFolder) {
     await ensureDir(assetsFolder);
     await unpackAssets(assets, assetsFolder);
   }
+
+  // Parse url is built int executable so it won't change on execution, because this we can map it to the assets folder
 
   const parseUrl = fromFileUrl(url).replaceAll('\\', '/');
 
