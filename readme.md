@@ -28,8 +28,10 @@ A lot is still missing, but we will get there!
 Easily run the demo:
 
 ```
-deno run -A --unstable --reload https://deno.land/x/astrodon/demo/demo.ts
+deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examples/hello_world/demo.ts
 ```
+
+> This snippet always contains the most stable latest version of Astrodon, but you can always use the unstable versions by using github raw urls on dev branch
 
 ### 📜 To-do
 
