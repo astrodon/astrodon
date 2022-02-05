@@ -1,14 +1,20 @@
 import { exec } from "https://deno.land/x/exec/mod.ts";
 import { yellow } from "https://deno.land/std/fmt/colors.ts";
-import { normalize } from "https://deno.land/std/path/mod.ts"
 import {
   ast,
   compress,
+  dirname,
+  ensureDir,
+  exists,
+  extract,
   join,
   PassThrough,
   tsBundle,
+  unparse,
 } from "../astrodon/deps.ts";
 import { libConfigs } from "../astrodon/utils.ts";
+
+type bundle = Uint8Array | { [k: string]: bundle };
 
 interface CompileOptions {
   noCheck?: boolean;
@@ -30,25 +36,34 @@ export class Builder {
   public async preBundle(
     entry: string,
     binUrl: string = libConfigs[Deno.build.os].url as string,
+    assetsPath: string = join(this.root, "dist", "snapshot.b.ts"),
   ) {
-
     await Deno.mkdir(this.dist, { recursive: true });
 
     // Create /dist/mod.ts
 
     const modTSContent = await Deno.readTextFile(join(this.root, entry));
     const modTSDist = join(this.dist, "mod.b.ts");
-    const configFile = join(this.root, "astrodon.config.ts")
+    const configFile = join(this.root, "astrodon.config.ts");
+
+    const assets = await exists(assetsPath)
+      ? 
+      `import { default as assets } from "./dist/snapshot.b.ts";
+      (globalThis as any).astrodonAssets = assets;
+      (globalThis as any).astrodonOrigin = "${Deno.realPathSync(this.root).replaceAll('\\', '/')}";`
+      : "";
 
     let template = ``;
 
     try {
-      await Deno.stat(configFile);      
+      await Deno.stat(configFile);
       template = `
           import bin from "${binUrl}";
           import appConfig from "./astrodon.config.ts"
+          ${assets}
           (globalThis as any).astrodonBin = bin;
-          (globalThis as any).astrodonAppConfig = appConfig
+          (globalThis as any).astrodonAppConfig = appConfig;
+          (globalThis as any).astrodonProduction = true;
           ${modTSContent}
       `.trim();
     } catch (_e) {
@@ -59,7 +74,9 @@ export class Builder {
       );
       template = `
           import bin from "${binUrl}";
+          ${assets}
           (globalThis as any).astrodonBin = bin;
+          (globalThis as any).astrodonProduction = true;
           ${modTSContent}
       `.trim();
     }
@@ -103,6 +120,7 @@ export class Builder {
   ) {
     const ps = new PassThrough();
     const compressor = compress(input, ps, console.log);
+    await ensureDir(dirname(output));
     const outFile = await Deno.open(output, outOptions);
     const bundler = tsBundle(ps, outFile, await ast(input));
     await compressor;
@@ -111,3 +129,24 @@ export class Builder {
     outFile.close();
   }
 }
+
+// Pack and unpack methods should be exported: Future work
+
+export const unpackAssets = async (
+  data: bundle,
+  output: string,
+  outOptions: Deno.OpenOptions = {
+    create: true,
+    write: true,
+    truncate: true,
+  },
+) => {
+  const tmpFileName = output + ".bin.tmp";
+  const outTmpFile = await Deno.open(tmpFileName, outOptions);
+  await unparse(await data, outTmpFile);
+  outTmpFile.close();
+  const tmpFile = await Deno.open(tmpFileName);
+  await extract(tmpFile, output);
+  tmpFile.close();
+  Deno.remove(tmpFileName);
+};

@@ -1,4 +1,4 @@
-const { createRouter, createWebHistory } = VueRouter;
+const { createRouter, createWebHashHistory } = VueRouter;
 import Home from "./views/Home.js";
 import About from "./views/About.js";
 
@@ -16,6 +16,6 @@ const routes = [
 ];
 
 export default createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 });

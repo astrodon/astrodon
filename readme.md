@@ -6,6 +6,8 @@
 </p>
 
 [![Discord Server](https://discordapp.com/api/guilds/928673465882513430/widget.png)](https://discord.gg/adYYqHHDBA)
+[![deno module](https://shield.deno.dev/x/astrodon)](https://deno.land/x/astrodon)
+![deno compatibility](https://shield.deno.dev/deno/^1.17)
 
 ---
 
@@ -26,8 +28,10 @@ A lot is still missing, but we will get there!
 Easily run the demo:
 
 ```
-deno run -A --unstable --reload https://raw.githubusercontent.com/astrodon/astrodon/main/examples/hello_world/demo.ts
+deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examples/hello_world/demo.ts
 ```
+
+> This snippet always contains the most stable latest version of Astrodon, but you can always use the unstable versions by using github raw urls on dev branch
 
 ### 📜 To-do
 
