@@ -5,6 +5,8 @@
   "deno.suggest.imports.hosts": {
     "https://x.nest.land": false
   },
+  "typescript.validate.enable": false,
+  "javascript.validate.enable": false,
   "cSpell.ignoreWords": [
     "astrodon",
     "libastrodon"
