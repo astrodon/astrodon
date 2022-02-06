@@ -13,6 +13,7 @@ import {
   unparse,
 } from "../astrodon/deps.ts";
 import { libConfigs } from "../astrodon/utils.ts";
+import { change_subsystem } from "./change_subsystem.ts"
 
 type bundle = Uint8Array | { [k: string]: bundle };
 
@@ -102,6 +103,7 @@ export class Builder {
     );
 
     await Deno.remove(modTSDistTemp);
+    if (Deno.build.os === "windows") await change_subsystem(join(`${output}.exe`));
   }
 
   /*
