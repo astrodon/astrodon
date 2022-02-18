@@ -25,7 +25,7 @@ export const init = async (options: InitOptions) => {
   const endPath = join(directory, name);
 
   // We check if the directory exists before cloning to handle with our own error
-  if (await exists(endPath)) return initLogger.log(`Directory ${endPath} already exists.`, "error");
+  if (await exists(endPath)) return initLogger.error(`Directory ${endPath} already exists.`);
 
   // Check if template is from a remote unofficial repository
   if (templateUrl.startsWith("http")) {
@@ -41,9 +41,8 @@ export const init = async (options: InitOptions) => {
       ) as any;      
 
       // Checks if the template is has a valid manifest
-      if (!(templateManifest.type === "astrodon")) return initLogger.log(
-          `The url provided is not an astrodon template.`,
-          "error",
+      if (!(templateManifest.type === "astrodon")) return initLogger.error(
+          `The url provided is not an astrodon template.`
         );
       // start cloning
       initLogger.log("Astrodon template detected on supported Git platform, starting download...");
@@ -51,18 +50,16 @@ export const init = async (options: InitOptions) => {
       return success(name)
     } catch (_e) {
       // Ends the process if the template is not from a supported Git platform
-      return initLogger.log(
+      return initLogger.error(
         "This is not a valid repo for an Astrodon template, aborting...",
-        "error",
       );
     }
   }
 
   // If the template is from the official registry:
 
-  if (!(templateUrl in availableTemplates)) return initLogger.log(
+  if (!(templateUrl in availableTemplates)) return initLogger.error(
     `${templateUrl} is not an official astrodon template.`,
-    "error",
   );
 
   const template = availableTemplates[templateUrl];
@@ -70,9 +67,8 @@ export const init = async (options: InitOptions) => {
   try {
     await executeClone(template, endPath);
   } catch (_e) {
-    return initLogger.log(
+    return initLogger.error(
       "This is not a valid repo for an Astrodon template, aborting...",
-      "error",
     );
   }
   success(name);
@@ -86,6 +82,6 @@ const executeClone = async (templateUrl: string, endPath: string) => {
 }
 
 const success = (name: string) => {
-  initLogger.log("Template initialization succeed.", "success");
+  initLogger.log("Template initialization succeed.");
   initLogger.log(`\ncd ${name} \ndeno run -A --unstable mod.ts`);
 };

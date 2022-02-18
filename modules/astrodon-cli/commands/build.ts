@@ -21,14 +21,14 @@ export const build = async (options: BuildOptions) => {
 
   options = Object.assign(options, await getBuildOptions());
 
-  buildLogger.log(`Building ${options.name} with this configurations:`, "info");
+  buildLogger.log(`Building ${options.name} with this configurations:`);
 
   const formattedOptions = Object.entries(options).map(([key, value]) => {
     return `${key}: ${value}`;
   });
 
   formattedOptions.forEach((option) => {
-    buildLogger.log(option, "info");
+    buildLogger.info(option);
   });
 
   // Entry file is the main file of the project
@@ -45,7 +45,7 @@ export const build = async (options: BuildOptions) => {
 
   buildLogger.log("Packaging assets...");
 
-  await Builder.packageAssets(assetsPath, join(output, "snapshot.b.ts"));
+  await Builder.packageAssets(assetsPath, join(output, "snapshot.b.ts"), undefined, buildLogger.info);
 
   // Pre-bundling code generation
 
@@ -57,7 +57,7 @@ export const build = async (options: BuildOptions) => {
 
   buildLogger.log("Compiling...");
 
-  await builder.compile(join(output, options.name), {
+  await builder.compile(join(output, options.name.replaceAll(" ", "_")), {
     noCheck: true,
   });
 
@@ -71,6 +71,7 @@ const getBuildOptions = async (): Promise<BuildOptions> => {
     const { default: configFile } = await import(
       toFileUrl(join(Deno.cwd(), "./astrodon.config.ts")).href
     );
+    
     return { ...configFile.build, name: configFile.name };
   } catch (_) {
     return {} as BuildOptions;

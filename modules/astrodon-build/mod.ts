@@ -1,5 +1,5 @@
-import { exec } from "https://deno.land/x/exec/mod.ts";
-import { yellow } from "https://deno.land/std/fmt/colors.ts";
+import { exec } from "https://deno.land/x/exec@0.0.5/mod.ts";
+import { yellow } from "https://deno.land/std@0.125.0/fmt/colors.ts";
 import {
   ast,
   compress,
@@ -13,6 +13,7 @@ import {
   unparse,
 } from "../astrodon/deps.ts";
 import { libConfigs } from "../astrodon/utils.ts";
+import { change_subsystem } from "./change_subsystem.ts"
 
 type bundle = Uint8Array | { [k: string]: bundle };
 
@@ -93,7 +94,7 @@ export class Builder {
     const modTSDist = join(this.dist, "mod.b.ts");
     const modTSDistTemp = join(this.root, "dist_mod.ts");
 
-    await Deno.copyFile(modTSDist, modTSDistTemp);
+    await Deno.copyFile(modTSDist, modTSDistTemp);    
 
     await exec(
       `deno compile -A --unstable ${
@@ -102,6 +103,7 @@ export class Builder {
     );
 
     await Deno.remove(modTSDistTemp);
+    if (Deno.build.os === "windows") await change_subsystem(join(`${output}.exe`));
   }
 
   /*
@@ -117,9 +119,10 @@ export class Builder {
       write: true,
       truncate: true,
     },
+    logger: (...args: unknown[]) => void = console.log,
   ) {
     const ps = new PassThrough();
-    const compressor = compress(input, ps, console.log);
+    const compressor = compress(input, ps, logger);
     await ensureDir(dirname(output));
     const outFile = await Deno.open(output, outOptions);
     const bundler = tsBundle(ps, outFile, await ast(input));

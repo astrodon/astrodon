@@ -8,6 +8,7 @@ import {
 import meta from "../../astrodon.meta.ts";
 import { build } from "./commands/build.ts";
 import { init } from "./commands/init.ts";
+import { upgrade } from "./commands/upgrade.ts";
 
 // CLI configuration
 
@@ -52,5 +53,16 @@ await new Command()
         default: "my-astrodon-app",
       })
       .action(async (options) => await init(options))
+  )
+  .command(
+    "upgrade",
+    new Command()
+      //Upgrade command
+      .description("Upgrade astrodon to the latest version.")
+      .allowEmpty(false)
+      .option("-t, --toolchain [type:string]", "Toolchain to upgrade to.", {
+        default: "stable",
+      })
+      .action(async (options) => await upgrade(options))
   )
   .parse(Deno.args);

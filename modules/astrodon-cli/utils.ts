@@ -1,8 +1,9 @@
-import { green, red, yellow } from "https://deno.land/std/fmt/colors.ts";
+import { brightGreen, red, yellow } from "https://deno.land/std/fmt/colors.ts";
 
 interface AcceptedModules {
   init: string;
   build: string;
+  upgrade: string;
 }
 
 interface States {
@@ -16,14 +17,33 @@ interface States {
 export class Logger {
   constructor(private readonly module: keyof AcceptedModules) {}
 
-  public log(message: string, type: keyof States = "success") {
-    const states = {
-      success: green(`✅`),
-      error: red(`❌`),
-      info: yellow(`ℹ`),
-    };
+  states = {
+    success: brightGreen(`✅`),
+    error: red(`❌`),
+    info: yellow(`🔅`),
+  };
+
+  public log = (...args: unknown[]) => {
     console.log(
-      `${states[type]} ${yellow(`[astrodon ${this.module}]:`)} ${message}`,
+      `${this.states.success} ${
+        brightGreen(`[astrodon ${this.module}]:`)
+      } ${args.join(" ")}`,
+    );
+  };
+
+  public error = (...args: unknown[]) => {
+    console.error(
+      `${this.states.error} ${
+        red(`[astrodon ${this.module}]:`)
+      } ${args.join(" ")}`,
+    );
+  }
+
+  public info = (...args: unknown[]) => {
+    console.info(
+      `${this.states.info} ${
+        yellow(`[astrodon ${this.module}]:`)
+      } ${args.join(" ")}`,
     );
   }
 }
