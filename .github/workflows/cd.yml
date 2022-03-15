@@ -1,0 +1,90 @@
+name: Release libs
+
+on:
+  workflow_dispatch:
+    branches: [ main ]
+    inputs:
+      version:
+        description: 'Version'     
+        required: true
+
+jobs:
+  build:
+    name: Release libs
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Build runtimes
+      uses: actions-rs/cargo@v1
+      with:
+        command: build
+        args: --release
+
+    - name: Release MacOS standalone runtime
+      if: runner.os == 'MacOS'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/astrodon-tauri-standalone
+        tag: ${{ github.event.inputs.version }}
+        asset_name:  astrodon-tauri-standalone-darwin
+        overwrite: true
+
+    - name: Release MacOS development runtime
+      if: runner.os == 'MacOS'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/astrodon-taurione-development
+        tag: ${{ github.event.inputs.version }}
+        asset_name:  astrodon-tauri-development-darwin
+        overwrite: true
+
+    - name:  Release Linux standalone runtime
+      if: runner.os == 'Linux'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/astrodon-standalone-tauri
+        tag: ${{ github.event.inputs.version }}
+        asset_name:  astrodon-tauri-standalone-linux
+        overwrite: true
+
+    - name:  Release Linux development runtime
+      if: runner.os == 'Linux'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/astrodon-development-tauri
+        tag: ${{ github.event.inputs.version }}
+        asset_name:  astrodon-tauri-development-linux
+        overwrite: true
+
+    - name:  Release Windows standalone runtime
+      if: runner.os == 'Windows'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/astrodon-standalone-tauri.exe
+        tag: ${{ github.event.inputs.version }}
+        asset_name: astrodon-tauri-standalone-windows.exe
+        overwrite: true
+
+    - name:  Release Windows development runtime
+      if: runner.os == 'Windows'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: target/release/astrodon-tauri-development.exe
+        tag: ${{ github.event.inputs.version }}
+        asset_name: astrodon-tauri-development-windows.exe
+        overwrite: true

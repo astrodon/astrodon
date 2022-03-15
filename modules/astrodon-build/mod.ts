@@ -1,155 +1,127 @@
-import { exec } from "https://deno.land/x/exec@0.0.5/mod.ts";
-import { yellow } from "https://deno.land/std@0.125.0/fmt/colors.ts";
-import {
-  ast,
-  compress,
-  dirname,
-  ensureDir,
-  exists,
-  extract,
-  join,
-  PassThrough,
-  tsBundle,
-  unparse,
-} from "../astrodon/deps.ts";
-import { libConfigs } from "../astrodon/utils.ts";
-import { change_subsystem } from "./change_subsystem.ts"
+import { build } from "https://raw.githubusercontent.com/denoland/eszip/main/lib/mod.ts";
+import { writeAll } from "https://deno.land/std@0.128.0/streams/conversion.ts";
+import { AppConfig, AppInfo } from "../astrodon/mod.ts";
+import { Installer } from "https://deno.land/x/installer@0.1.0/mod.ts";
+import { getBinaryPath } from "../astrodon-manager/mod.ts";
+import { join } from "https://deno.land/std@0.122.0/path/win32.ts";
 
-type bundle = Uint8Array | { [k: string]: bundle };
+const exec = async (cmd: string) => {
+  const p = Deno.run({
+    cmd: cmd.split(" "),
+  });
 
-interface CompileOptions {
-  noCheck?: boolean;
+  await p.status();
+};
+
+export class Develop {
+  private config: AppConfig;
+  private info: AppInfo;
+
+  constructor(config: AppConfig) {
+    this.config = config;
+    this.info = config.info;
+  }
+
+  async run() {
+    // Cache modules
+    await exec(`${Deno.execPath()} cache ${this.config.entry}`);
+
+    // Launch the runtime
+    const binPath = await getBinaryPath("development");
+    await exec(`${binPath} ${this.config.entry}`);
+  }
 }
 
 export class Builder {
-  private dist: string;
-  private root: string;
+  private config: AppConfig;
+  private info: AppInfo;
 
-  constructor(root: string) {
-    this.root = root;
-    this.dist = join(root, "dist");
+  constructor(config: AppConfig) {
+    this.config = config;
+    this.info = config.info;
   }
 
-  /*
-   * Download if not done yet, the necessary binary for your OS
-   * And inject a small script into the entry file to statically import the downloaded binary
+  /**
+   * Like `deno compile` but for our custom runtime
    */
-  public async preBundle(
-    entry: string,
-    binUrl: string = libConfigs[Deno.build.os].url as string,
-    assetsPath: string = join(this.root, "dist", "snapshot.b.ts"),
-  ) {
-    await Deno.mkdir(this.dist, { recursive: true });
+  async compile() {
+    const binPath = await getBinaryPath("standalone");
 
-    // Create /dist/mod.ts
+    const entrypoint = new URL(`file://${this.config.entry}`).href;
 
-    const modTSContent = await Deno.readTextFile(join(this.root, entry));
-    const modTSDist = join(this.dist, "mod.b.ts");
-    const configFile = join(this.root, "astrodon.config.ts");
+    // Bundle the soure code
+    const eszip = await build([entrypoint]);
 
-    const assets = await exists(assetsPath)
-      ? 
-      `import { default as assets } from "./dist/snapshot.b.ts";
-      (globalThis as any).astrodonAssets = assets;
-      (globalThis as any).astrodonOrigin = "${Deno.realPathSync(this.root).replaceAll('\\', '/')}";`
-      : "";
+    // Get the base runtime
+    const original_bin = await Deno.readFile(binPath);
 
-    let template = ``;
+    // Create the dist folder
+    Deno.mkdir(this.config.dist, { recursive: true });
 
-    try {
-      await Deno.stat(configFile);
-      template = `
-          import bin from "${binUrl}";
-          import appConfig from "./astrodon.config.ts"
-          ${assets}
-          (globalThis as any).astrodonBin = bin;
-          (globalThis as any).astrodonAppConfig = appConfig;
-          (globalThis as any).astrodonProduction = true;
-          ${modTSContent}
-      `.trim();
-    } catch (_e) {
-      console.log(
-        `${
-          yellow("WARNING:")
-        } astrodon.config.ts not found, apps is building with default settings.`,
-      );
-      template = `
-          import bin from "${binUrl}";
-          ${assets}
-          (globalThis as any).astrodonBin = bin;
-          (globalThis as any).astrodonProduction = true;
-          ${modTSContent}
-      `.trim();
-    }
-    await Deno.writeTextFile(modTSDist, template);
-  }
-
-  /*
-   * Turn the dist file into an executable
-   */
-  public async compile(
-    output: string = Deno.cwd(),
-    options: CompileOptions = {},
-  ) {
-    const modTSDist = join(this.dist, "mod.b.ts");
-    const modTSDistTemp = join(this.root, "dist_mod.ts");
-
-    await Deno.copyFile(modTSDist, modTSDistTemp);    
-
-    await exec(
-      `deno compile -A --unstable ${
-        options.noCheck ? "--no-check" : ""
-      } --output ${output} ${modTSDistTemp} `,
+    // Preatere the final executable
+    const final_bin_path = join(this.config.dist, this.info.name);
+    const final_bin = await Deno.create(
+      `${final_bin_path}${Deno.build.os === "windows" ? ".exe" : ""}`,
     );
 
-    await Deno.remove(modTSDistTemp);
-    if (Deno.build.os === "windows") await change_subsystem(join(`${output}.exe`));
+    const eszip_pos = original_bin.length;
+    const metadata_pos = eszip_pos + eszip.length;
+
+    const trailer = new Uint8Array([
+      ...new TextEncoder().encode("4str0d0n"),
+      ...numberToByteArray(eszip_pos),
+      ...numberToByteArray(metadata_pos),
+    ]);
+
+    const metadata = {
+      entrypoint,
+      info: this.info,
+    };
+
+    // Put it all together into the final executable
+    await writeAll(final_bin, original_bin);
+    await writeAll(final_bin, eszip);
+    await writeAll(
+      final_bin,
+      new TextEncoder().encode(JSON.stringify(metadata)),
+    );
+    await writeAll(final_bin, trailer);
+
+    await final_bin.close();
   }
 
-  /*
-   * Package assets into TypeScript files
-   *
-   * From .so to .b.ts
+  /**
+   * Create an installer for the compiled executable
    */
-  public static async packageAssets(
-    input: string,
-    output: string,
-    outOptions: Deno.OpenOptions = {
-      create: true,
-      write: true,
-      truncate: true,
-    },
-    logger: (...args: unknown[]) => void = console.log,
-  ) {
-    const ps = new PassThrough();
-    const compressor = compress(input, ps, logger);
-    await ensureDir(dirname(output));
-    const outFile = await Deno.open(output, outOptions);
-    const bundler = tsBundle(ps, outFile, await ast(input));
-    await compressor;
-    ps.close();
-    await bundler;
-    outFile.close();
+  async makeInstaller() {
+    const installer = new Installer({
+      out_path: this.config.dist,
+      src_path: this.config.entry,
+      package: {
+        product_name: this.info.name,
+        version: this.info.version,
+        description: this.info.shortDescription,
+        homepage: this.info.homepage,
+        authors: [this.info.author],
+        default_run: this.info.name,
+      },
+      bundle: {
+        identifier: this.info.id,
+        icon: this.info.icon,
+        resources: this.info.resources,
+        copyright: this.info.copyright,
+        short_description: this.info.shortDescription,
+        long_description: this.info.longDescription,
+      },
+    });
+
+    await installer.createInstaller();
   }
 }
 
-// Pack and unpack methods should be exported: Future work
-
-export const unpackAssets = async (
-  data: bundle,
-  output: string,
-  outOptions: Deno.OpenOptions = {
-    create: true,
-    write: true,
-    truncate: true,
-  },
-) => {
-  const tmpFileName = output + ".bin.tmp";
-  const outTmpFile = await Deno.open(tmpFileName, outOptions);
-  await unparse(await data, outTmpFile);
-  outTmpFile.close();
-  const tmpFile = await Deno.open(tmpFileName);
-  await extract(tmpFile, output);
-  tmpFile.close();
-  Deno.remove(tmpFileName);
+const numberToByteArray = (x: number) => {
+  const y = Math.floor(x / 2 ** 32);
+  return [y, y << 8, y << 16, y << 24, x, x << 8, x << 16, x << 24].map((z) =>
+    z >>> 24
+  );
 };

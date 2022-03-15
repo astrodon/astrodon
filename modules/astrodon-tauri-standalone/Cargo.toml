@@ -1,0 +1,9 @@
+[package]
+name = "astrodon-tauri-standalone"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+astrodon-tauri = { path = "../astrodon-tauri"}
+tokio = "1.10.1"
+eszip = "0.17.0"

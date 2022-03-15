@@ -4,3 +4,4 @@ dist
 !*modules/astrodon-templates/**/*.b.ts
 .env
 *.exe
+WixTools

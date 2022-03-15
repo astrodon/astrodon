@@ -1,15 +1,14 @@
-import { exec, axiod, exists, join } from "../deps.ts";
+import { axiod, exec, exists, join } from "../deps.ts";
 import { Logger } from "../utils.ts";
-import "https://deno.land/x/dotenv/load.ts";
 
 // List of official templates
 
 const availableTemplates = {
-  default: 'https://github.com/astrodon/astrodon-default-template',
-  vue: 'https://github.com/astrodon/astrodon-vue-template',
-  react: 'https://github.com/astrodon/astrodon-react-template',
-  svelte: 'https://github.com/astrodon/astrodon-svelte-template',
-}
+  default: "https://github.com/astrodon/astrodon-default-template",
+  vue: "https://github.com/astrodon/astrodon-vue-template",
+  react: "https://github.com/astrodon/astrodon-react-template",
+  svelte: "https://github.com/astrodon/astrodon-svelte-template",
+};
 
 interface InitOptions {
   template: keyof typeof availableTemplates;
@@ -25,7 +24,9 @@ export const init = async (options: InitOptions) => {
   const endPath = join(directory, name);
 
   // We check if the directory exists before cloning to handle with our own error
-  if (await exists(endPath)) return initLogger.error(`Directory ${endPath} already exists.`);
+  if (await exists(endPath)) {
+    return initLogger.error(`Directory ${endPath} already exists.`);
+  }
 
   // Check if template is from a remote unofficial repository
   if (templateUrl.startsWith("http")) {
@@ -38,16 +39,20 @@ export const init = async (options: InitOptions) => {
       const { data: templateManifest } = await axiod.get(
         `${formattedUrl}/raw/main/template_manifest.json`,
         // deno-lint-ignore no-explicit-any
-      ) as any;      
+      ) as any;
 
       // Checks if the template is has a valid manifest
-      if (!(templateManifest.type === "astrodon")) return initLogger.error(
-          `The url provided is not an astrodon template.`
+      if (!(templateManifest.type === "astrodon")) {
+        return initLogger.error(
+          `The url provided is not an astrodon template.`,
         );
+      }
       // start cloning
-      initLogger.log("Astrodon template detected on supported Git platform, starting download...");
+      initLogger.log(
+        "Astrodon template detected on supported Git platform, starting download...",
+      );
       await executeClone(templateUrl, endPath);
-      return success(name)
+      return success(name);
     } catch (_e) {
       // Ends the process if the template is not from a supported Git platform
       return initLogger.error(
@@ -58,9 +63,11 @@ export const init = async (options: InitOptions) => {
 
   // If the template is from the official registry:
 
-  if (!(templateUrl in availableTemplates)) return initLogger.error(
-    `${templateUrl} is not an official astrodon template.`,
-  );
+  if (!(templateUrl in availableTemplates)) {
+    return initLogger.error(
+      `${templateUrl} is not an official astrodon template.`,
+    );
+  }
 
   const template = availableTemplates[templateUrl];
 
@@ -79,7 +86,7 @@ export const init = async (options: InitOptions) => {
 const executeClone = async (templateUrl: string, endPath: string) => {
   await exec(`git clone ${templateUrl} ${endPath}`);
   await Deno.remove(join(endPath, "template_manifest.json"));
-}
+};
 
 const success = (name: string) => {
   initLogger.log("Template initialization succeed.");
