@@ -59,10 +59,8 @@ export class Builder {
     Deno.mkdir(this.config.dist, { recursive: true });
 
     // Preatere the final executable
-    const final_bin_path = join(this.config.dist, this.info.name);
-    const final_bin = await Deno.create(
-      `${final_bin_path}${Deno.build.os === "windows" ? ".exe" : ""}`,
-    );
+    const final_bin_path = `${join(this.config.dist, this.info.name)}${Deno.build.os === "windows" ? ".exe" : ""}`;
+    const final_bin = await Deno.create(final_bin_path);
 
     const eszip_pos = original_bin.length;
     const metadata_pos = eszip_pos + eszip.length;
@@ -94,9 +92,12 @@ export class Builder {
    * Create an installer for the compiled executable
    */
   async makeInstaller() {
+    const src_path = `${join(this.config.dist, this.info.name)}${Deno.build.os === "windows" ? ".exe" : ""}`;
+    const out_path = join(this.config.dist, "installer");
+
     const installer = new Installer({
-      out_path: this.config.dist,
-      src_path: this.config.entry,
+      out_path,
+      src_path,
       package: {
         product_name: this.info.name,
         version: this.info.version,
