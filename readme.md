@@ -31,6 +31,8 @@ to-do
 - [ ] Typescript checking in the background
 - [ ] Organize project a little bit better (e.g move dependencies to deps.ts)
 - [ ] A real-world app example
+- [ ] Update the templates
+- [ ] Match `deno_runtime` version (and also things like `Deno.build`) with Deno's releases
 
 ### 👩‍💻 Development
 
