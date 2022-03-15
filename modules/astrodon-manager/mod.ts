@@ -19,7 +19,7 @@ const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
     fileFormat(os)
   }`;
   return [
-    `https://github.com/astrodon/astrodon/releases/download/${meta.version}/${binName}`,
+    `https://github.com/marc2332/astrodon/releases/download/${meta.version}/${binName}`,
     binName,
   ];
 };
