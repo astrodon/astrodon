@@ -1,6 +1,6 @@
 export { default as meta } from "../../astrodon.meta.ts";
 export { Logger } from "../astrodon-cli/utils.ts";
-export { default as getHomeDir } from "https://deno.land/x/dir/home_dir/mod.ts";
+export { default as getHomeDir } from "https://deno.land/x/dir@v1.2.0/home_dir/mod.ts";
 
 export {
   Command,

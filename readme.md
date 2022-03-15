@@ -13,10 +13,10 @@
 
 ### 😎 Features
 
-- TypeScript built-in
 - Create webview windows with your own title and URL
 - Bidirectional communication between your frontend and backend
 - Compile your apps as executables and even make installers
+- And all that you get with Deno, e.g, TypeScript out of the box...
 
 A lot is still missing, but we will get there!
 
@@ -28,8 +28,9 @@ to-do
 
 - [ ] Unit tests
 - [ ] Cross-platform compiling
-- [ ] Typechecking for TypeScript code in the background
+- [ ] Typescript checking in the background
 - [ ] Organize project a little bit better (e.g move dependencies to deps.ts)
+- [ ] A real-world app example
 
 ### 👩‍💻 Development
 

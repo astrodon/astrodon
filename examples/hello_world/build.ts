@@ -5,4 +5,5 @@ const builder = new Builder(manifest);
 
 await builder.compile();
 
-await builder.makeInstaller();
+// Icons are missing :)
+// await builder.makeInstaller();
