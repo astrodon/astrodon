@@ -39,6 +39,7 @@ jobs:
     - name: Build runtimes
       uses: actions-rs/cargo@v1
       with:
+        toolchain: nightly
         command: build
         args: --release
 
