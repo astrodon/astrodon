@@ -28,7 +28,8 @@ to-do
 
 - [ ] Unit tests
 - [ ] Cross-platform compiling
-- [ ] Typescript checking in the background
+- [ ] Typescript checking in the background (astrodon-build's Develop should manage this)
+- [ ] Pass permission and arguments as flags and also put them in the executable metadata
 - [ ] Organize project a little bit better (e.g move dependencies to deps.ts)
 - [ ] A real-world app example
 - [ ] Update the templates
