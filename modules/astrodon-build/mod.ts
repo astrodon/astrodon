@@ -17,18 +17,20 @@ const exec = async (cmd: string) => {
 export class Develop {
   private config: AppConfig;
   private info: AppInfo;
+  private logger: Logger;
 
-  constructor(config: AppConfig) {
+  constructor(config: AppConfig, logger = new Logger("run")) {
     this.config = config;
     this.info = config.info;
+    this.logger = logger;
   }
 
-  async run(logger?: Logger) {
+  async run() {
     // Cache modules
     await exec(`${Deno.execPath()} cache ${this.config.entry}`);
 
     // Launch the runtime
-    const binPath = await getBinaryPath("development", logger);
+    const binPath = await getBinaryPath("development", this.logger);
     await exec(`${binPath} ${this.config.entry}`);
   }
 }
@@ -36,17 +38,19 @@ export class Develop {
 export class Builder {
   private config: AppConfig;
   private info: AppInfo;
+  private logger: Logger;
 
-  constructor(config: AppConfig) {
+  constructor(config: AppConfig, logger = new Logger("build")) {
     this.config = config;
     this.info = config.info;
+    this.logger = logger;
   }
 
   /**
    * Like `deno compile` but for our custom runtime
    */
-  async compile(logger?: Logger) {
-    const binPath = await getBinaryPath("standalone", logger);
+  async compile() {
+    const binPath = await getBinaryPath("standalone", this.logger);
 
     const entrypoint = new URL(`file://${this.config.entry}`).href;
 
