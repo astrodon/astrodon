@@ -1,8 +1,4 @@
 #![feature(map_try_insert)]
-#![cfg_attr(
-    all(not(debug_assertions), target_os = "windows"),
-    windows_subsystem = "windows"
-)]
 
 use crate::deno_runtime::DenoRuntime;
 use events_manager::EventsManager;

@@ -1,3 +1,8 @@
+#![cfg_attr(
+    all(not(debug_assertions), target_os = "windows"),
+    windows_subsystem = "windows"
+)]
+
 use std::{env, thread};
 
 use astrodon_tauri::{deno_core::ModuleSpecifier, AppInfo, Metadata};
