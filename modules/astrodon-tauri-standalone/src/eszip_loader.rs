@@ -1,9 +1,10 @@
 use std::pin::Pin;
 
 use astrodon_tauri::deno_core::{
+    self,
     error::{type_error, AnyError},
     futures::FutureExt,
-    ModuleLoader, ModuleSpecifier, self,
+    ModuleLoader, ModuleSpecifier,
 };
 
 pub struct EszipModuleLoader {
@@ -34,9 +35,10 @@ impl ModuleLoader for EszipModuleLoader {
         _is_dynamic: bool,
     ) -> Pin<Box<deno_core::ModuleSourceFuture>> {
         let module_specifier = module_specifier.clone();
-        let module = self.eszip
-                .get_module(module_specifier.as_str())
-                .ok_or_else(|| type_error("Module not found"));
+        let module = self
+            .eszip
+            .get_module(module_specifier.as_str())
+            .ok_or_else(|| type_error("Module not found"));
 
         async move {
             let module = module?;

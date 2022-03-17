@@ -1,6 +1,9 @@
 use deno_core::ModuleSpecifier;
 use serde::{Deserialize, Serialize};
 
+/**
+ * Information primarily used for deno_installer (tauri-bundler)
+ */
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct AppInfo {
     pub name: String,
@@ -8,11 +11,13 @@ pub struct AppInfo {
     pub copyright: String,
     pub version: String,
     pub author: String,
-    pub shortDescription: String,
-    pub longDescription: String,
+    #[serde(rename = "shortDescription")]
+    pub short_description: String,
+    #[serde(rename = "longDescription")]
+    pub long_description: String,
     pub homepage: String,
     pub icon: Vec<String>,
-    pub resources: Vec<String>
+    pub resources: Vec<String>,
 }
 
 // Inspired by https://github.com/denoland/deno/blob/8b2989c417db9090913f1cb6074ae961f4c14d5e/cli/standalone.rs#L46

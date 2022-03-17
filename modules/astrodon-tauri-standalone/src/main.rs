@@ -1,9 +1,14 @@
-use std::{env::current_exe, io::SeekFrom};
 use astrodon_tauri::{
-    Metadata, deno_core::{error::AnyError, anyhow::Context, serde_json},
+    deno_core::{anyhow::Context, error::AnyError, serde_json},
+    Metadata,
 };
+use std::{env::current_exe, io::SeekFrom, thread};
 
-use tokio::io::{AsyncSeekExt, AsyncReadExt};
+use tokio::{
+    fs::File,
+    io::{AsyncReadExt, AsyncSeekExt, BufReader},
+    runtime::Runtime,
+};
 
 mod eszip_loader;
 
@@ -13,10 +18,15 @@ use eszip_loader::EszipModuleLoader;
 async fn main() {
     if let Ok(Some((metadata, eszip))) = extract_standalone().await {
         let module_loader = EszipModuleLoader::new(eszip);
-        astrodon_tauri::run(metadata, module_loader).await;
+        let (deno_runtime, wry_runtime) = astrodon_tauri::prepare(metadata);
+        thread::spawn(move || {
+            Runtime::new()
+                .unwrap()
+                .block_on(deno_runtime.run_deno(module_loader));
+        });
+        wry_runtime.run_wry().await;
     }
 }
-
 
 fn u64_from_bytes(arr: &[u8]) -> Result<u64, AnyError> {
     let fixed_arr: &[u8; 8] = arr
@@ -30,9 +40,9 @@ const MAGIC_TRAILER: &[u8; 8] = b"4str0d0n";
 async fn extract_standalone() -> Result<Option<(Metadata, eszip::EszipV2)>, AnyError> {
     let current_exe_path = current_exe()?;
 
-    let file = tokio::fs::File::open(&current_exe_path).await?;
+    let file = File::open(&current_exe_path).await?;
 
-    let mut bufreader = tokio::io::BufReader::new(file);
+    let mut bufreader = BufReader::new(file);
 
     let trailer_pos = bufreader.seek(SeekFrom::End(-24)).await?;
 
