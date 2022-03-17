@@ -13,9 +13,7 @@ use std::pin::Pin;
 use std::sync::Arc;
 
 use astrodon_tauri::deno_core::{
-    error::{AnyError},
-    futures::FutureExt,
-    ModuleLoader, ModuleSpecifier,
+    error::AnyError, futures::FutureExt, ModuleLoader, ModuleSpecifier,
 };
 use tokio::fs;
 
