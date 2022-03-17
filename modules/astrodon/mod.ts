@@ -1,4 +1,4 @@
-export { AppWindow } from "./app_window.ts";
+export { AppWindow } from "./window.ts";
 export interface AppInfo {
   name: string;
   id: string;
