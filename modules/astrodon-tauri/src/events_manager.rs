@@ -6,14 +6,14 @@ use tokio::sync::{
 };
 use uuid::Uuid;
 
-type EventsListeners = HashMap<Uuid, Sender<String>>;
+type EventGroup = HashMap<Uuid, Sender<String>>;
 
 /**
  * Manages the events bridge from Deno to Wry
  */
 #[derive(Clone, Default)]
 pub struct EventsManager {
-    listeners: Arc<Mutex<HashMap<String, EventsListeners>>>,
+    listeners: Arc<Mutex<HashMap<String, EventGroup>>>,
 }
 
 impl EventsManager {
@@ -50,6 +50,8 @@ impl EventsManager {
             .get_mut(&name)
             .unwrap()
             .remove(&listener_id);
+
+        // It should also remove the event group if it's empty
     }
 
     /**
