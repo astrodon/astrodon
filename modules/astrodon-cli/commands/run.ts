@@ -15,6 +15,6 @@ export async function run(options: RunOptions) {
   const { default: projectInfo }: { default: AppConfig } = await import(
     configPath
   );
-  const dev = new Develop(projectInfo);
-  await dev.run(runLogger);
+  const dev = new Develop(projectInfo, runLogger);
+  await dev.run();
 }
