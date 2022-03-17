@@ -36,6 +36,9 @@ await new Command()
     new Command()
       .description("Initialize a new project.")
       .allowEmpty(false)
+      .option("-y, --yes [type:boolean]", "Skip prompts", {
+        default: false,
+      })
       .option("-t, --template [type:string]", "Template to use.", {
         default: "default",
       })

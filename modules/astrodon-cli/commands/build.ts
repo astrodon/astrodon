@@ -19,6 +19,6 @@ export async function build(options: BuildOptions) {
   buildLogger.info(
     `Compiling ${projectInfo.info.name} v${projectInfo.info.version}...`,
   );
-  await builder.compile();
+  await builder.compile(buildLogger);
   buildLogger.log("Compiled successfully!");
 }

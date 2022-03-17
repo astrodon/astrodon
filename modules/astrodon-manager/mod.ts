@@ -24,22 +24,14 @@ const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
   ];
 };
 
-export const getAstrodonPath = (): string => {
-  return join(
-    Deno.env.get("APPDATA") || Deno.env.get("HOME") || Deno.cwd(),
-    `.${meta.name}`,
-  );
-};
-
 /**
  * Return the path to the runtime for this version and OS
  * Cache the mathching runtime binary, if not done yet
  */
 export const getBinaryPath = async (
   mode: "standalone" | "development",
+  logger?: Logger,
 ): Promise<string> => {
-  const logger = new Logger("upgrade");
-
   // Return the local runtime if running in development mode
   if (Deno.env.get("DEV") === "true") {
     const [_, binaryName] = getBinaryInfo(Deno.build.os, mode, true);
@@ -47,7 +39,7 @@ export const getBinaryPath = async (
   }
 
   const homeDir = getHomeDir() as string;
-  const outputDir = join(homeDir, "astrodon", meta.version);
+  const outputDir = join(homeDir, `.${meta.name}`, meta.version);
 
   const [binaryURL, binaryName] = getBinaryInfo(Deno.build.os, mode);
   const binaryPath = join(outputDir, binaryName);

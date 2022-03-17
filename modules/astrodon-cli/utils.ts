@@ -1,30 +1,27 @@
 import {
-  brightGreen,
-  red,
-  yellow,
+  bgYellow,
+  bgBlack,
+  black,
+  bgRed,
+  bgBrightGreen
 } from "https://deno.land/std@0.125.0/fmt/colors.ts";
 
 interface AcceptedModules {
   init: string;
   build: string;
-  upgrade: string;
+  run: string;
 }
 
 /**
  * Agnostic logger that can be used in any module of the CLI to show messages with different states.
  */
 export class Logger {
-  constructor(private readonly module: keyof AcceptedModules) {}
 
-  states = {
-    success: brightGreen(`✅`),
-    error: red(`❌`),
-    info: yellow(`🔅`),
-  };
+  constructor(private readonly module: keyof AcceptedModules) {}
 
   public log = (...args: unknown[]) => {
     console.log(
-      `${this.states.success} ${brightGreen(`[astrodon ${this.module}]:`)} ${
+      `${bgBlack(' astrodon ')}${bgBrightGreen(black(` ${this.module} `))} ${
         args.join(" ")
       }`,
     );
@@ -32,7 +29,7 @@ export class Logger {
 
   public error = (...args: unknown[]) => {
     console.error(
-      `${this.states.error} ${red(`[astrodon ${this.module}]:`)} ${
+      `${bgBlack(' astrodon ')}${bgRed(black(` ${this.module} `))} ${
         args.join(" ")
       }`,
     );
@@ -40,7 +37,7 @@ export class Logger {
 
   public info = (...args: unknown[]) => {
     console.info(
-      `${this.states.info} ${yellow(`[astrodon ${this.module}]:`)} ${
+      `${bgBlack(' astrodon ')}${bgYellow(black(` ${this.module} `))} ${
         args.join(" ")
       }`,
     );

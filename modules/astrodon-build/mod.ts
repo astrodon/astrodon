@@ -4,6 +4,7 @@ import { AppConfig, AppInfo } from "../astrodon/mod.ts";
 import { Installer } from "https://deno.land/x/installer@0.1.0/mod.ts";
 import { getBinaryPath } from "../astrodon-manager/mod.ts";
 import { join } from "https://deno.land/std@0.122.0/path/win32.ts";
+import { Logger } from "../astrodon-manager/deps.ts";
 
 const exec = async (cmd: string) => {
   const p = Deno.run({
@@ -22,12 +23,12 @@ export class Develop {
     this.info = config.info;
   }
 
-  async run() {
+  async run(logger?: Logger) {
     // Cache modules
     await exec(`${Deno.execPath()} cache ${this.config.entry}`);
 
     // Launch the runtime
-    const binPath = await getBinaryPath("development");
+    const binPath = await getBinaryPath("development", logger);
     await exec(`${binPath} ${this.config.entry}`);
   }
 }
@@ -44,8 +45,8 @@ export class Builder {
   /**
    * Like `deno compile` but for our custom runtime
    */
-  async compile() {
-    const binPath = await getBinaryPath("standalone");
+  async compile(logger?: Logger) {
+    const binPath = await getBinaryPath("standalone", logger);
 
     const entrypoint = new URL(`file://${this.config.entry}`).href;
 
