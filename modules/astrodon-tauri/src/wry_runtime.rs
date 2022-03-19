@@ -51,6 +51,11 @@ impl WryRuntime {
                             .send_event(WryEvent::NewWindow(msg))
                             .expect("Could not open a new window");
                     }
+                    AstrodonMessage::CloseWindow(msg) => {
+                        proxy
+                            .send_event(WryEvent::CloseWindow(msg))
+                            .expect("Could not close the window");
+                    }
                     AstrodonMessage::SentToDeno(name, content) => self
                         .events_manager
                         .send(name, content.clone())
@@ -103,6 +108,13 @@ impl WryRuntime {
                     ));
                     custom_id_mapper.insert(msg.id, new_window.0);
                     webviews.insert(new_window.0, new_window.1);
+                }
+                Event::UserEvent(WryEvent::CloseWindow(msg)) => {
+                    let id = custom_id_mapper.get(&msg.id);
+                    if let Some(window_id) = id {
+                        webviews.remove(&window_id);
+                        custom_id_mapper.remove(&msg.id);
+                    }
                 }
                 _ => (),
             }

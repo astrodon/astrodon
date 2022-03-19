@@ -13,6 +13,7 @@ use tokio::sync::mpsc::Sender;
 use uuid::Uuid;
 
 use crate::events_manager::EventsManager;
+use crate::messages::CloseWindowMessage;
 use crate::messages::RunWindowMessage;
 use crate::messages::SentToWindowMessage;
 use crate::AstrodonMessage;
@@ -24,6 +25,7 @@ pub fn new(sender: Sender<AstrodonMessage>, events_manager: EventsManager) -> Ex
     Extension::builder()
         .ops(vec![
             ("runWindow", op_async(run_window)),
+            ("closeWindow", op_async(close_window)),
             ("sendToWindow", op_async(send_to_window)),
             ("listenEvent", op_async(listen_event)),
         ])
@@ -109,6 +111,27 @@ async fn send_to_window(
         .send(AstrodonMessage::SentToWindow(args))
         .await
         .unwrap();
+
+    Ok(())
+}
+
+/**
+ * Close a webview window
+ */
+async fn close_window(
+    state: Rc<RefCell<OpState>>,
+    args: CloseWindowMessage,
+    _: (),
+) -> Result<(), AnyError> {
+    let sender: Sender<AstrodonMessage> = {
+        let state = state.borrow();
+        state
+            .try_borrow::<Sender<AstrodonMessage>>()
+            .unwrap()
+            .clone()
+    };
+
+    sender.send(AstrodonMessage::CloseWindow(args)).await?;
 
     Ok(())
 }

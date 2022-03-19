@@ -45,4 +45,10 @@ export class AppWindow {
       yield await (Deno as any).core.opAsync("listenEvent", { name });
     }
   };
+
+  close(){
+    return (Deno as any).core.opAsync("closeWindow", {
+      id: this.id,
+    });
+  }
 }
