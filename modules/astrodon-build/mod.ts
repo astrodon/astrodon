@@ -1,8 +1,8 @@
 import { build } from "https://raw.githubusercontent.com/denoland/eszip/main/lib/mod.ts";
 import { writeAll } from "https://deno.land/std@0.128.0/streams/conversion.ts";
-import { AppConfig, AppInfo } from "../astrodon/mod.ts";
+import { AppBuildOptions, AppConfig, AppInfo } from "../astrodon/mod.ts";
 import { Installer } from "https://deno.land/x/installer@0.1.0/mod.ts";
-import { getBinaryPath } from "../astrodon-manager/mod.ts";
+import { fileFormat, getBinaryPath, OSNames } from "../astrodon-manager/mod.ts";
 import { join } from "https://deno.land/std@0.122.0/path/win32.ts";
 import { Logger } from "../astrodon-manager/deps.ts";
 
@@ -15,14 +15,10 @@ const exec = async (cmd: string) => {
 };
 
 export class Develop {
-  private config: AppConfig;
   private info: AppInfo;
-  private logger: Logger;
 
-  constructor(config: AppConfig, logger = new Logger("run")) {
-    this.config = config;
+  constructor(private config: AppConfig, private logger = new Logger("run")) {
     this.info = config.info;
-    this.logger = logger;
   }
 
   async run() {
@@ -36,21 +32,22 @@ export class Develop {
 }
 
 export class Builder {
-  private config: AppConfig;
   private info: AppInfo;
-  private logger: Logger;
 
-  constructor(config: AppConfig, logger = new Logger("build")) {
-    this.config = config;
+  constructor(
+    private config: AppConfig,
+    private logger = new Logger("build"),
+    private os: OSNames = Deno.build.os,
+  ) {
     this.info = config.info;
-    this.logger = logger;
   }
 
   /**
    * Like `deno compile` but for our custom runtime
    */
+
   async compile() {
-    const binPath = await getBinaryPath("standalone", this.logger);
+    const binPath = await getBinaryPath("standalone", this.logger, this.os);
 
     const entrypoint = new URL(`file://${this.config.entry}`).href;
 
@@ -64,7 +61,13 @@ export class Builder {
     Deno.mkdir(this.config.dist, { recursive: true });
 
     // Preatere the final executable
-    const final_bin_path = `${join(this.config.dist, this.info.name)}${Deno.build.os === "windows" ? ".exe" : ""}`;
+
+    const final_bin_path = `${join(this.config.dist, this.info.name)}${
+      ["darwin", "linux"].includes(this.os)
+        ? `_${this.config?.build?.targets?.[this.os]?.sufix ?? this.os}`
+        : ""
+    }${fileFormat(this.os)}`;
+
     const final_bin = await Deno.create(final_bin_path);
 
     const eszip_pos = original_bin.length;
@@ -97,7 +100,13 @@ export class Builder {
    * Create an installer for the compiled executable
    */
   async makeInstaller() {
-    const src_path = `${join(this.config.dist, this.info.name)}${Deno.build.os === "windows" ? ".exe" : ""}`;
+    
+    const src_path = `${join(this.config.dist, this.info.name)}${
+      ["darwin", "linux"].includes(this.os)
+        ? `_${this.config?.build?.targets?.[this.os]?.sufix ?? this.os}`
+        : ""
+    }${fileFormat(this.os)}`;
+
     const out_path = join(this.config.dist, "installer");
 
     const installer = new Installer({

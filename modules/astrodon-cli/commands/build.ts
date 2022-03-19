@@ -2,9 +2,11 @@ import { Builder } from "../../astrodon-build/mod.ts";
 import { Logger } from "../utils.ts";
 import { AppConfig } from "../../astrodon/mod.ts";
 import { resolve } from "https://deno.land/std@0.122.0/path/mod.ts";
+import { OSNames } from "../../astrodon-manager/mod.ts";
 
 interface BuildOptions {
   config: string;
+  target?: OSNames;
 }
 
 const buildLogger = new Logger("build");
@@ -15,7 +17,7 @@ export async function build(options: BuildOptions) {
   const { default: projectInfo }: { default: AppConfig } = await import(
     configPath
   );
-  const builder = new Builder(projectInfo, buildLogger);
+  const builder = new Builder(projectInfo, buildLogger, options.target);
   buildLogger.info(
     `Compiling ${projectInfo.info.name} v${projectInfo.info.version}...`,
   );

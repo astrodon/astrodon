@@ -8,9 +8,9 @@ import {
   readerFromStreamReader,
 } from "./deps.ts";
 
-const fileFormat = (os: string) => os === "windows" ? ".exe" : "";
+export const fileFormat = (os: string) => os === "windows" ? ".exe" : "";
 
-type OSNames = "windows" | "darwin" | "linux";
+export type OSNames = "windows" | "darwin" | "linux";
 type buildModes = "standalone" | "development";
 
 const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
@@ -31,17 +31,18 @@ const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
 export const getBinaryPath = async (
   mode: "standalone" | "development",
   logger?: Logger,
+  os: OSNames = Deno.build.os,
 ): Promise<string> => {
   // Return the local runtime if running in development mode
   if (Deno.env.get("DEV") === "true") {
-    const [_, binaryName] = getBinaryInfo(Deno.build.os, mode, true);
+    const [_, binaryName] = getBinaryInfo(os, mode, true);
     return join(Deno.cwd(), "target", "release", binaryName);
   }
 
   const homeDir = getHomeDir() as string;
   const outputDir = join(homeDir, `.${meta.name}`, meta.version);
 
-  const [binaryURL, binaryName] = getBinaryInfo(Deno.build.os, mode);
+  const [binaryURL, binaryName] = getBinaryInfo(os, mode);
   const binaryPath = join(outputDir, binaryName);
 
   // Return the binary's location if it is already downloaded
@@ -53,7 +54,9 @@ export const getBinaryPath = async (
 
   const response = await fetch(binaryURL);
   if (logger) {
-    logger.log(`Downloading Astrodon runtime v${meta.version} [${mode}]`);
+    logger.log(
+      `Downloading Astrodon runtime v${meta.version} (${os}) [${mode}]`,
+    );
   }
   if (!response.ok) {
     throw new Error(`${response.status} ${response.statusText}`);
