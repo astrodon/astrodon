@@ -1,6 +1,7 @@
 use crate::events_manager::EventsManager;
 use crate::AstrodonMessage;
 use crate::Metadata;
+use deno_core::anyhow::Error;
 use deno_core::error::AnyError;
 use deno_core::located_script_name;
 use deno_core::v8_set_flags;
@@ -87,21 +88,28 @@ impl DenoRuntime {
 
         worker.js_runtime.sync_ops_cache();
 
+        let error_handler = |err| {
+            // TO-DO: Also display a small window with the error when running in astrodon-tauri-standalone
+            println!("{err}");
+            std::process::exit(1);
+        };
+
         worker
             .execute_main_module(&self.metadata.entrypoint)
             .await
-            .expect("Could not run the application.");
+            .unwrap_or_else(error_handler);
 
-        worker.dispatch_load_event(&located_script_name!()).unwrap();
+        worker.dispatch_load_event(&located_script_name!())
+            .unwrap_or_else(error_handler);
 
         worker
             .run_event_loop(true)
             .await
-            .expect("Could not run the application.");
+            .unwrap_or_else(error_handler);
 
-        worker.dispatch_load_event(&located_script_name!()).unwrap();
+        worker.dispatch_load_event(&located_script_name!())
+            .unwrap_or_else(error_handler);
 
-        std::process::exit(0);
     }
 }
 
