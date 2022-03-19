@@ -35,6 +35,9 @@ to-do
 - [ ] Update the templates
 - [ ] Match `deno_runtime` version (and also things like `Deno.build`) with Deno's releases
 - [ ] Implement Web Workers
+- [ ] Schematize and create plugin system
+- [ ] Cross process reactivity module (plugin)
+- [ ] Env variable manager and injection for builds (plugin)
 
 ### 👩‍💻 Development
 
