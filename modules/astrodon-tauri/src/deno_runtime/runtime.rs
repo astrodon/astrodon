@@ -1,7 +1,6 @@
 use crate::events_manager::EventsManager;
 use crate::AstrodonMessage;
 use crate::Metadata;
-use deno_core::anyhow::Error;
 use deno_core::error::AnyError;
 use deno_core::located_script_name;
 use deno_core::v8_set_flags;

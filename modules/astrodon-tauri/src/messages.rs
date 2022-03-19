@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 pub enum AstrodonMessage {
     SentToWindow(SentToWindowMessage),
     RunWindow(RunWindowMessage),
+    CloseWindow(CloseWindowMessage),
     SentToDeno(String, String),
 }
 
@@ -11,6 +12,7 @@ pub enum AstrodonMessage {
 pub enum WryEvent {
     RunScript(String, String),
     NewWindow(RunWindowMessage),
+    CloseWindow(CloseWindowMessage),
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -25,6 +27,11 @@ pub struct RunWindowMessage {
     pub id: String,
     pub title: String,
     pub content: WindowContent,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct CloseWindowMessage {
+    pub id: String
 }
 
 #[derive(Serialize, Deserialize)]
