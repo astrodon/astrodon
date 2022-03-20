@@ -60,15 +60,19 @@ export class Builder {
     // Create the dist folder
     Deno.mkdir(this.config.dist, { recursive: true });
 
-    // Preatere the final executable
+    // Prepare the final executable
+    
+    const binName = join(this.config.dist, this.info.name);
+    
+    // Put the OS name as sufix, this prevents overwriting between the darwin and linux builds
+    const binSufix = this.config?.build?.targets?.[this.os]?.sufix ?? this.os;
+    
+    // Simply add .exe on the Windows build
+    const binExtension = fileFormat(this.os);
 
-    const final_bin_path = `${join(this.config.dist, this.info.name)}${
-      ["darwin", "linux"].includes(this.os)
-        ? `_${this.config?.build?.targets?.[this.os]?.sufix ?? this.os}`
-        : ""
-    }${fileFormat(this.os)}`;
+    const finalBinPath = `${binName}_${binSufix}${binExtension}`;
 
-    const final_bin = await Deno.create(final_bin_path);
+    const binalBin = await Deno.create(final_bin_path);
 
     const eszip_pos = original_bin.length;
     const metadata_pos = eszip_pos + eszip.length;
