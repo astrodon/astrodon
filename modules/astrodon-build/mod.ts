@@ -33,6 +33,7 @@ export class Develop {
 
 export class Builder {
   private info: AppInfo;
+  private finalBinPath: string;
 
   constructor(
     private config: AppConfig,
@@ -40,6 +41,16 @@ export class Builder {
     private os: OSNames = Deno.build.os,
   ) {
     this.info = config.info;
+    
+    const binName = join(this.config.dist, this.info.name);
+    
+    // Put the OS name as sufix, this prevents overwriting between the darwin and linux builds
+    const binSufix = this.config?.build?.targets?.[this.os]?.sufix ?? this.os;
+    
+    // Simply add .exe on the Windows build
+    const binExtension = fileFormat(this.os);
+      
+    this.finalBinPath = `${binName}_${binSufix}${binExtension}`;
   }
 
   /**
@@ -55,32 +66,22 @@ export class Builder {
     const eszip = await build([entrypoint]);
 
     // Get the base runtime
-    const original_bin = await Deno.readFile(binPath);
+    const originalBin = await Deno.readFile(binPath);
 
     // Create the dist folder
     Deno.mkdir(this.config.dist, { recursive: true });
 
     // Prepare the final executable
-    
-    const binName = join(this.config.dist, this.info.name);
-    
-    // Put the OS name as sufix, this prevents overwriting between the darwin and linux builds
-    const binSufix = this.config?.build?.targets?.[this.os]?.sufix ?? this.os;
-    
-    // Simply add .exe on the Windows build
-    const binExtension = fileFormat(this.os);
 
-    const finalBinPath = `${binName}_${binSufix}${binExtension}`;
+    const finalBin = await Deno.create(this.finalBinPath);
 
-    const binalBin = await Deno.create(final_bin_path);
-
-    const eszip_pos = original_bin.length;
-    const metadata_pos = eszip_pos + eszip.length;
+    const eszipPos = original_bin.length;
+    const metadataPos = eszip_pos + eszip.length;
 
     const trailer = new Uint8Array([
       ...new TextEncoder().encode("4str0d0n"),
-      ...numberToByteArray(eszip_pos),
-      ...numberToByteArray(metadata_pos),
+      ...numberToByteArray(eszipPos),
+      ...numberToByteArray(metadataPos),
     ]);
 
     const metadata = {
@@ -89,15 +90,15 @@ export class Builder {
     };
 
     // Put it all together into the final executable
-    await writeAll(final_bin, original_bin);
-    await writeAll(final_bin, eszip);
+    await writeAll(finalBin, originalBin);
+    await writeAll(finalBin, eszip);
     await writeAll(
-      final_bin,
+      finalBin,
       new TextEncoder().encode(JSON.stringify(metadata)),
     );
-    await writeAll(final_bin, trailer);
+    await writeAll(finalBin, trailer);
 
-    await final_bin.close();
+    await finalBin.close();
   }
 
   /**
@@ -105,17 +106,11 @@ export class Builder {
    */
   async makeInstaller() {
     
-    const src_path = `${join(this.config.dist, this.info.name)}${
-      ["darwin", "linux"].includes(this.os)
-        ? `_${this.config?.build?.targets?.[this.os]?.sufix ?? this.os}`
-        : ""
-    }${fileFormat(this.os)}`;
-
     const out_path = join(this.config.dist, "installer");
 
     const installer = new Installer({
       out_path,
-      src_path,
+      src_path: this.finalBinPath,
       package: {
         product_name: this.info.name,
         version: this.info.version,
