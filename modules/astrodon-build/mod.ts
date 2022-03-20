@@ -50,7 +50,7 @@ export class Builder {
     // Simply add .exe on the Windows build
     const binExtension = fileFormat(this.os);
       
-    this.finalBinPath = `${binName}_${binSufix}${binExtension}`;
+    this.finalBinPath = `${binName}_${binSuffix}${binExtension}`;
   }
 
   /**
