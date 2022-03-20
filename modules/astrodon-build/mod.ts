@@ -45,7 +45,7 @@ export class Builder {
     const binName = join(this.config.dist, this.info.name);
     
     // Put the OS name as sufix, this prevents overwriting between the darwin and linux builds
-    const binSufix = this.config?.build?.targets?.[this.os]?.sufix ?? this.os;
+    const binSuffix = this.config?.build?.targets?.[this.os]?.suffix ?? this.os;
     
     // Simply add .exe on the Windows build
     const binExtension = fileFormat(this.os);
@@ -75,8 +75,8 @@ export class Builder {
 
     const finalBin = await Deno.create(this.finalBinPath);
 
-    const eszipPos = original_bin.length;
-    const metadataPos = eszip_pos + eszip.length;
+    const eszipPos = originalBin.length;
+    const metadataPos = eszipPos + eszip.length;
 
     const trailer = new Uint8Array([
       ...new TextEncoder().encode("4str0d0n"),
