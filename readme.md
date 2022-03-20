@@ -11,7 +11,11 @@
 
 ---
 
-**Important**: Only Windows and Linux are supported at the moment. And, some older versions of Windows, even some old builds of Windows 10 might not come with Webview2 support, currently, a solution to this is to install [Webview2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section) manually on the user's PC. This is a major issue if you are targeting users with "outdated" Windows, this **may** be solved by an installer that installs the webview2 and the app. We are open to suggestions.
+### !!! Important !!!
+
+- Only Windows and Linux are supported at the moment.
+- Even some older versions of Windows and old builds of Windows 10 might not come with Webview2 support.
+  - A solution to this is to install [Webview2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section) manually on the user's PC. This is a major issue if you are targeting users with "outdated" Windows, this **may** be solved by an installer that installs the webview2 and the app. We are open to suggestions.
 
 ### 😎 Features
 
