@@ -1,3 +1,4 @@
+import { OSNames } from "../astrodon/mod.ts";
 import {
   copy,
   exists,
@@ -10,7 +11,6 @@ import {
 
 export const fileFormat = (os: string) => os === "windows" ? ".exe" : "";
 
-export type OSNames = "windows" | "darwin" | "linux";
 type buildModes = "standalone" | "development";
 
 const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {

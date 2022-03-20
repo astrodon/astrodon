@@ -1,8 +1,7 @@
 import { Builder } from "../../astrodon-build/mod.ts";
 import { Logger } from "../utils.ts";
-import { AppConfig } from "../../astrodon/mod.ts";
+import { AppConfig, OSNames } from "../../astrodon/mod.ts";
 import { resolve } from "https://deno.land/std@0.122.0/path/mod.ts";
-import { OSNames } from "../../astrodon-manager/mod.ts";
 
 interface BuildOptions {
   config: string;

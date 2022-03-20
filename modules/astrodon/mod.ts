@@ -1,5 +1,6 @@
 export { AppWindow } from "./window.ts";
-import { OSNames } from "../astrodon-manager/mod.ts";
+
+export type OSNames = "windows" | "darwin" | "linux";
 
 export interface AppInfo {
   name: string;
