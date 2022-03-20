@@ -17,7 +17,7 @@ export interface AppInfo {
 export interface AppBuildOptions {
   targets?: {
     [key in OSNames]?: {
-      sufix?: string;
+      suffix?: string;
     };
   }
 }
