@@ -13,8 +13,8 @@ use tokio::sync::mpsc::Sender;
 use uuid::Uuid;
 
 use crate::events_manager::EventsManager;
-use crate::messages::WindowConfig;
 use crate::messages::SentToWindowMessage;
+use crate::messages::WindowConfig;
 use crate::AstrodonMessage;
 
 /**

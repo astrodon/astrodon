@@ -142,7 +142,7 @@ fn create_new_window(
 
     let handler = move |_: &Window, req: String| {
         let message = serde_json::from_str(&req);
-        
+
         let snd = snd.clone();
 
         // Handle the events emitted from the webview

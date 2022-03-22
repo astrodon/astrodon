@@ -98,7 +98,8 @@ impl DenoRuntime {
             .await
             .unwrap_or_else(error_handler);
 
-        worker.dispatch_load_event(&located_script_name!())
+        worker
+            .dispatch_load_event(&located_script_name!())
             .unwrap_or_else(error_handler);
 
         worker
@@ -106,9 +107,9 @@ impl DenoRuntime {
             .await
             .unwrap_or_else(error_handler);
 
-        worker.dispatch_load_event(&located_script_name!())
+        worker
+            .dispatch_load_event(&located_script_name!())
             .unwrap_or_else(error_handler);
-
     }
 }
 
