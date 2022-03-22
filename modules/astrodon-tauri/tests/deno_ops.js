@@ -20,6 +20,7 @@ await Deno.core.opAsync("runWindow", {
     }
 });
 
+// Close window
 await Deno.core.opAsync("closeWindow", {
     id: "window-id",
 })
