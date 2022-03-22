@@ -3,7 +3,9 @@ use std::{env::current_dir, thread, time::Duration};
 use astrodon_tauri::{
     deno_runtime::DenoRuntime,
     events_manager::EventsManager,
-    messages::{AstrodonMessage, SentToWindowMessage},
+    messages::{
+        AstrodonMessage, CloseWindowMessage, SentToWindowMessage, WindowConfig, WindowContent,
+    },
     AppInfo, Metadata,
 };
 use deno_core::{FsModuleLoader, ModuleSpecifier};
@@ -14,7 +16,7 @@ async fn deno_ops() {
     let entrypoint = ModuleSpecifier::from_file_path(
         current_dir()
             .unwrap()
-            .join("tests/test.js")
+            .join("tests/deno_ops.js")
             .to_str()
             .unwrap(),
     )
@@ -39,6 +41,7 @@ async fn deno_ops() {
             .block_on(deno_runtime.run_deno(FsModuleLoader));
     });
 
+    // Send a message to Deno
     tokio::spawn(async move {
         sleep(Duration::from_millis(500)).await;
         events_manager
@@ -47,6 +50,7 @@ async fn deno_ops() {
             .unwrap();
     });
 
+    // Wait for Deno's response
     let res = deno_receiver.recv().await.unwrap();
 
     assert_eq!(
@@ -55,6 +59,30 @@ async fn deno_ops() {
             id: "window-id".to_string(),
             event: "to-rust".to_string(),
             content: "{\"astrodon\":\"nice\"}".to_string()
+        })
+    );
+
+    // Wait for Window creation message
+    let res = deno_receiver.recv().await.unwrap();
+
+    assert_eq!(
+        res,
+        AstrodonMessage::RunWindow(WindowConfig {
+            id: "window-id".to_string(),
+            title: "Astrodon".to_string(),
+            content: WindowContent::Url {
+                url: "https://github.com/astrodon/astrodon".to_string()
+            }
+        })
+    );
+
+    // Wait for Window closing message
+    let res = deno_receiver.recv().await.unwrap();
+
+    assert_eq!(
+        res,
+        AstrodonMessage::CloseWindow(CloseWindowMessage {
+            id: "window-id".to_string()
         })
     );
 }
