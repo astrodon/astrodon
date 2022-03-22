@@ -1,5 +1,7 @@
-use deno_core::{futures::executor::block_on, serde_json};
+use deno_core::serde_json;
 use directories::ProjectDirs;
+use serde::Deserialize;
+use serde::Serialize;
 use std::collections::HashMap;
 use tokio::sync::mpsc::Receiver;
 use tokio::sync::mpsc::Sender;
@@ -14,7 +16,7 @@ use wry::{
 
 use crate::events_manager::EventsManager;
 use crate::{
-    messages::{IpcMessage, WindowContent, WryEvent},
+    messages::{WindowContent, WryEvent},
     AppInfo, AstrodonMessage, Metadata,
 };
 
@@ -33,7 +35,7 @@ impl WryRuntime {
 
         let proxy = event_loop.create_proxy();
 
-        // custom event loop - this basically process and forwards events to the wry event loop
+        // Handle messages emitted from the Deno runtime
         tokio::task::spawn(async move {
             loop {
                 match self.deno_receiver.recv().await.unwrap() {
@@ -50,11 +52,6 @@ impl WryRuntime {
                         proxy
                             .send_event(WryEvent::NewWindow(msg))
                             .expect("Could not open a new window");
-                    }
-                    AstrodonMessage::CloseWindow(msg) => {
-                        proxy
-                            .send_event(WryEvent::CloseWindow(msg))
-                            .expect("Could not close the window");
                     }
                     AstrodonMessage::SentToDeno(name, content) => self
                         .events_manager
@@ -99,22 +96,15 @@ impl WryRuntime {
                     }
                 }
                 Event::UserEvent(WryEvent::NewWindow(msg)) => {
-                    let new_window = block_on(create_new_window(
+                    let new_window = create_new_window(
                         msg.title,
                         msg.content,
                         event_loop,
                         self.deno_sender.clone(),
                         &mut web_context,
-                    ));
+                    );
                     custom_id_mapper.insert(msg.id, new_window.0);
                     webviews.insert(new_window.0, new_window.1);
-                }
-                Event::UserEvent(WryEvent::CloseWindow(msg)) => {
-                    let id = custom_id_mapper.get(&msg.id);
-                    if let Some(window_id) = id {
-                        webviews.remove(&window_id);
-                        custom_id_mapper.remove(&msg.id);
-                    }
                 }
                 _ => (),
             }
@@ -130,7 +120,13 @@ fn get_web_context(info: AppInfo) -> WebContext {
     WebContext::new(Some(bundle_path.config_dir().to_path_buf()))
 }
 
-async fn create_new_window(
+#[derive(Serialize, Deserialize)]
+#[serde(tag = "type")]
+enum IpcMessage {
+    SendEvent { name: String, content: String },
+}
+
+fn create_new_window(
     title: String,
     content: WindowContent,
     event_loop: &EventLoopWindowTarget<WryEvent>,
@@ -145,17 +141,20 @@ async fn create_new_window(
     let window_id = window.id();
 
     let handler = move |_: &Window, req: String| {
-        let message: IpcMessage = serde_json::from_str(&req).unwrap();
+        let message = serde_json::from_str(&req);
+        
         let snd = snd.clone();
 
+        // Handle the events emitted from the webview
         match message {
-            IpcMessage::SendEvent { name, content } => {
+            Ok(IpcMessage::SendEvent { name, content }) => {
                 tokio::spawn(async move {
                     snd.send(AstrodonMessage::SentToDeno(name, content))
                         .await
                         .unwrap();
                 });
             }
+            Err(_) => {}
         }
     };
 

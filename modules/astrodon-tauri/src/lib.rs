@@ -7,10 +7,10 @@ use tokio::sync::mpsc;
 
 pub use deno_core;
 
-mod deno_runtime;
-mod events_manager;
-mod messages;
-mod metadata;
+pub mod deno_runtime;
+pub mod events_manager;
+pub mod messages;
+pub mod metadata;
 mod wry_runtime;
 
 pub use metadata::{AppInfo, Metadata};
