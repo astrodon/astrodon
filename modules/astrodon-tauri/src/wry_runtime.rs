@@ -53,6 +53,11 @@ impl WryRuntime {
                             .send_event(WryEvent::NewWindow(msg))
                             .expect("Could not open a new window");
                     }
+                    AstrodonMessage::CloseWindow(msg) => {
+                        proxy
+                            .send_event(WryEvent::CloseWindow(msg))
+                            .expect("Could not close the window");
+                    }
                     AstrodonMessage::SentToDeno(name, content) => self
                         .events_manager
                         .send(name, content.clone())
