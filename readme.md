@@ -36,6 +36,7 @@ to-do
 - [ ] Match `deno_runtime` version (and also things like `Deno.build`) with Deno's releases
 - [ ] Implement Web Workers
 - [ ] Schematize and create plugin system
+- [ ] Organize configs by usage hierarchy (e.g. global.icon -> build.icon)
 - [ ] Cross process reactivity module (plugin)
 - [ ] Env variable manager and injection for builds (plugin)
 
