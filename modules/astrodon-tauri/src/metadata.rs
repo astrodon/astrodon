@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 /**
  * Information primarily used for deno_installer (tauri-bundler)
  */
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
 pub struct AppInfo {
     pub name: String,
     pub id: String,
@@ -21,7 +21,7 @@ pub struct AppInfo {
 }
 
 // Inspired by https://github.com/denoland/deno/blob/8b2989c417db9090913f1cb6074ae961f4c14d5e/cli/standalone.rs#L46
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct Metadata {
     pub entrypoint: ModuleSpecifier,
     pub info: AppInfo,

@@ -14,8 +14,8 @@ use uuid::Uuid;
 
 use crate::events_manager::EventsManager;
 use crate::messages::CloseWindowMessage;
-use crate::messages::RunWindowMessage;
 use crate::messages::SentToWindowMessage;
+use crate::messages::WindowConfig;
 use crate::AstrodonMessage;
 
 /**
@@ -25,9 +25,9 @@ pub fn new(sender: Sender<AstrodonMessage>, events_manager: EventsManager) -> Ex
     Extension::builder()
         .ops(vec![
             ("runWindow", op_async(run_window)),
-            ("closeWindow", op_async(close_window)),
             ("sendToWindow", op_async(send_to_window)),
             ("listenEvent", op_async(listen_event)),
+            ("closeWindow", op_async(close_window)),
         ])
         .state(move |s| {
             s.put(sender.clone());
@@ -35,6 +35,27 @@ pub fn new(sender: Sender<AstrodonMessage>, events_manager: EventsManager) -> Ex
             Ok(())
         })
         .build()
+}
+
+/**
+ * Close a webview window
+ */
+async fn close_window(
+    state: Rc<RefCell<OpState>>,
+    args: CloseWindowMessage,
+    _: (),
+) -> Result<(), AnyError> {
+    let sender: Sender<AstrodonMessage> = {
+        let state = state.borrow();
+        state
+            .try_borrow::<Sender<AstrodonMessage>>()
+            .unwrap()
+            .clone()
+    };
+
+    sender.send(AstrodonMessage::CloseWindow(args)).await?;
+
+    Ok(())
 }
 
 #[derive(Serialize, Deserialize, Debug)]
@@ -75,7 +96,7 @@ async fn listen_event(
  */
 async fn run_window(
     state: Rc<RefCell<OpState>>,
-    args: RunWindowMessage,
+    args: WindowConfig,
     _: (),
 ) -> Result<(), AnyError> {
     let sender: Sender<AstrodonMessage> = {
@@ -111,27 +132,6 @@ async fn send_to_window(
         .send(AstrodonMessage::SentToWindow(args))
         .await
         .unwrap();
-
-    Ok(())
-}
-
-/**
- * Close a webview window
- */
-async fn close_window(
-    state: Rc<RefCell<OpState>>,
-    args: CloseWindowMessage,
-    _: (),
-) -> Result<(), AnyError> {
-    let sender: Sender<AstrodonMessage> = {
-        let state = state.borrow();
-        state
-            .try_borrow::<Sender<AstrodonMessage>>()
-            .unwrap()
-            .clone()
-    };
-
-    sender.send(AstrodonMessage::CloseWindow(args)).await?;
 
     Ok(())
 }
