@@ -41,6 +41,7 @@ to-do
 - [ ] Cross process reactivity module (plugin)
 - [ ] Cross process store module (plugin)
 - [ ] Env variable manager and injection for builds (plugin)
+- [ ] Cli command `astrodon clean` to remove cached runtimes 
 
 ### 👩‍💻 Development
 
