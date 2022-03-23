@@ -18,7 +18,7 @@ export class AppWindow {
   }
 
   run() {
-    return (Deno as any).core.opAsync("runWindow", {
+    return (Deno as any).core.opAsync("run_window", {
       id: this.id,
       title: this.title,
       content: this.url != null
@@ -34,7 +34,7 @@ export class AppWindow {
   }
 
   send(event: string, content: any) {
-    return (Deno as any).core.opAsync("sendToWindow", {
+    return (Deno as any).core.opAsync("send_to_window", {
       id: this.id,
       event,
       content: JSON.stringify(content),
@@ -44,12 +44,12 @@ export class AppWindow {
   // Is an infinite while a good idea ? Not sure
   listen = async function* (name: string) {
     while (true) {
-      yield await (Deno as any).core.opAsync("listenEvent", { name });
+      yield await (Deno as any).core.opAsync("listen_event", { name });
     }
   };
 
   close() {
-    return (Deno as any).core.opAsync("closeWindow", {
+    return (Deno as any).core.opAsync("close_window", {
       id: this.id,
     });
   }

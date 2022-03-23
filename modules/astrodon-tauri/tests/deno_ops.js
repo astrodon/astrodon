@@ -1,8 +1,8 @@
 // Wait for the trigger event to be fired
-await Deno.core.opAsync("listenEvent", { name: "to-deno" });
+await Deno.core.opAsync("listen_event", { name: "to-deno" });
 
 // Send response to Rust
-await Deno.core.opAsync("sendToWindow", {
+await Deno.core.opAsync("send_to_window", {
   id: "window-id",
   event: "to-rust",
   content: JSON.stringify({
@@ -11,7 +11,7 @@ await Deno.core.opAsync("sendToWindow", {
 });
 
 // Create window
-await Deno.core.opAsync("runWindow", {
+await Deno.core.opAsync("run_window", {
   id: "window-id",
   title: "Astrodon",
   content: {
@@ -21,6 +21,6 @@ await Deno.core.opAsync("runWindow", {
 });
 
 // Close window
-await Deno.core.opAsync("closeWindow", {
+await Deno.core.opAsync("close_window", {
   id: "window-id",
 });

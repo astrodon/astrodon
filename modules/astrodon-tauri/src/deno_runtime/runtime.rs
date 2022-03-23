@@ -51,8 +51,8 @@ impl DenoRuntime {
                 enable_testing_features: false,
                 location: None,
                 no_color: false,
-                runtime_version: "0".to_string(),
-                ts_version: "0".to_string(),
+                runtime_version: "1.20.1".to_string(),
+                ts_version: "4.6.2".to_string(),
                 unstable: true,
             },
             extensions: vec![ops::new(
@@ -84,8 +84,6 @@ impl DenoRuntime {
             permissions,
             options,
         );
-
-        worker.js_runtime.sync_ops_cache();
 
         let error_handler = |err| {
             // TO-DO: Also display a small window with the error when running in astrodon-tauri-standalone

@@ -3,7 +3,7 @@ use std::rc::Rc;
 
 use deno_core::anyhow::Error;
 use deno_core::error::AnyError;
-use deno_core::op_async;
+use deno_core::op;
 use deno_core::serde::Deserialize;
 use deno_core::serde::Serialize;
 use deno_core::Extension;
@@ -24,10 +24,10 @@ use crate::AstrodonMessage;
 pub fn new(sender: Sender<AstrodonMessage>, events_manager: EventsManager) -> Extension {
     Extension::builder()
         .ops(vec![
-            ("runWindow", op_async(run_window)),
-            ("sendToWindow", op_async(send_to_window)),
-            ("listenEvent", op_async(listen_event)),
-            ("closeWindow", op_async(close_window)),
+            run_window::decl(),
+            send_to_window::decl(),
+            listen_event::decl(),
+            close_window::decl(),
         ])
         .state(move |s| {
             s.put(sender.clone());
@@ -40,6 +40,7 @@ pub fn new(sender: Sender<AstrodonMessage>, events_manager: EventsManager) -> Ex
 /**
  * Close a webview window
  */
+#[op]
 async fn close_window(
     state: Rc<RefCell<OpState>>,
     args: CloseWindowMessage,
@@ -66,6 +67,7 @@ struct EventListen {
 /**
  * Listen from an event emitted from the webview
  */
+#[op]
 async fn listen_event(
     state: Rc<RefCell<OpState>>,
     event: EventListen,
@@ -94,6 +96,7 @@ async fn listen_event(
 /**
  * Create a webview window
  */
+#[op]
 async fn run_window(
     state: Rc<RefCell<OpState>>,
     args: WindowConfig,
@@ -115,6 +118,7 @@ async fn run_window(
 /**
  * Emit an event to a webview window
  */
+#[op]
 async fn send_to_window(
     state: Rc<RefCell<OpState>>,
     args: SentToWindowMessage,
