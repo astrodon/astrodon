@@ -20,7 +20,7 @@ export interface AppBuildOptions {
     [key in OSNames]?: {
       suffix?: string;
     };
-  }
+  };
 }
 
 export interface AppConfig {

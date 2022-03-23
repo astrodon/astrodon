@@ -72,8 +72,8 @@ export const getBinaryPath = async (
   });
 
   // Make the runtime executable on Linux and MacOS
-  if(Deno.build.os != "windows"){
-    await Deno.chmod(binaryPath, 0o755)
+  if (Deno.build.os != "windows") {
+    await Deno.chmod(binaryPath, 0o755);
   }
 
   await copy(readerFromStreamReader(reader), file);

@@ -41,15 +41,15 @@ export class Builder {
     private os: OSNames = Deno.build.os,
   ) {
     this.info = config.info;
-    
+
     const binName = join(this.config.dist, this.info.name);
-    
+
     // Put the OS name as sufix, this prevents overwriting between the darwin and linux builds
     const binSuffix = this.config?.build?.targets?.[this.os]?.suffix ?? this.os;
-    
+
     // Simply add .exe on the Windows build
     const binExtension = fileFormat(this.os);
-      
+
     this.finalBinPath = `${binName}_${binSuffix}${binExtension}`;
   }
 
@@ -105,7 +105,6 @@ export class Builder {
    * Create an installer for the compiled executable
    */
   async makeInstaller() {
-    
     const out_path = join(this.config.dist, "installer");
 
     const installer = new Installer({

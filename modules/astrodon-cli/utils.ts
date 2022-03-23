@@ -1,9 +1,9 @@
 import {
-  bgYellow,
   bgBlack,
-  black,
+  bgBrightGreen,
   bgRed,
-  bgBrightGreen
+  bgYellow,
+  black,
 } from "https://deno.land/std@0.125.0/fmt/colors.ts";
 
 interface AcceptedModules {
@@ -16,12 +16,11 @@ interface AcceptedModules {
  * Agnostic logger that can be used in any module of the CLI to show messages with different states.
  */
 export class Logger {
-
   constructor(private readonly module: keyof AcceptedModules) {}
 
   public log = (...args: unknown[]) => {
     console.log(
-      `${bgBlack(' astrodon ')}${bgBrightGreen(black(` ${this.module} `))} ${
+      `${bgBlack(" astrodon ")}${bgBrightGreen(black(` ${this.module} `))} ${
         args.join(" ")
       }`,
     );
@@ -29,7 +28,7 @@ export class Logger {
 
   public error = (...args: unknown[]) => {
     console.error(
-      `${bgBlack(' astrodon ')}${bgRed(black(` ${this.module} `))} ${
+      `${bgBlack(" astrodon ")}${bgRed(black(` ${this.module} `))} ${
         args.join(" ")
       }`,
     );
@@ -37,7 +36,7 @@ export class Logger {
 
   public info = (...args: unknown[]) => {
     console.info(
-      `${bgBlack(' astrodon ')}${bgYellow(black(` ${this.module} `))} ${
+      `${bgBlack(" astrodon ")}${bgYellow(black(` ${this.module} `))} ${
         args.join(" ")
       }`,
     );

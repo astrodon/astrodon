@@ -133,7 +133,7 @@ export const init = async (options: InitOptions) => {
         : templateUrl;
 
       // For checking if the template is valid we pre-fetch the manifest to prevent cloning from untrusted repositories
-      
+
       const { data: templateManifest } = await axiod.get(
         `${formattedUrl}/raw/main/template_manifest.json`,
         // deno-lint-ignore no-explicit-any
@@ -236,7 +236,10 @@ const getDefaultResponse = (options: InitOptions): Record<string, string> => ({
 
 const writeConfig = async (config: AppConfig) => {
   const configFile = new TextEncoder().encode(
-    `export default ${JSON.stringify(config, null, 2)}`
+    `export default ${JSON.stringify(config, null, 2)}`,
   );
-  await Deno.writeFile(join(directory, config.info.name, 'astrodon.config.ts'), configFile);
+  await Deno.writeFile(
+    join(directory, config.info.name, "astrodon.config.ts"),
+    configFile,
+  );
 };

@@ -9,7 +9,7 @@ export {
   Input,
   Number,
   prompt,
-  Select
+  Select,
 } from "https://deno.land/x/cliffy@v0.20.1/prompt/mod.ts";
 export {
   basename,
