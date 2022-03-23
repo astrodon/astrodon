@@ -1,3 +1,5 @@
+// deno-lint-ignore-file no-explicit-any
+
 export class AppWindow {
   id: string = Math.random().toString();
   title: string;
@@ -46,7 +48,7 @@ export class AppWindow {
     }
   };
 
-  close(){
+  close() {
     return (Deno as any).core.opAsync("closeWindow", {
       id: this.id,
     });

@@ -1,0 +1,6 @@
+{
+    "tasks": {
+        "fmt": "deno fmt modules && cargo fmt",
+        "lint": "deno lint modules && cargo clippy"
+    }
+}
