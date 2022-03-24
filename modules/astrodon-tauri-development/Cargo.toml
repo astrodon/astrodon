@@ -7,5 +7,5 @@ edition = "2021"
 astrodon-tauri = { path = "../astrodon-tauri"}
 tokio = "1.10.1"
 rust-crypto = "0.2.36"
-deno_ast = { version = "0.12.0", features = ["transpiling"] }
+deno_ast = { version = "0.13.0", features = ["transpiling"] }
 directories = "4.0.1"
