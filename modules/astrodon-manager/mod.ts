@@ -11,9 +11,9 @@ import {
 
 export const fileFormat = (os: string) => os === "windows" ? ".exe" : "";
 
-type buildModes = "standalone" | "development";
+export type buildModes = "standalone" | "development";
 
-const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
+export const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
   // Exemple: astrodon-tauri-standalone-windows.exe
   const binName = `astrodon-tauri-${mode}${isDev ? "" : `-${os}`}${
     fileFormat(os)
