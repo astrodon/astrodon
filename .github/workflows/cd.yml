@@ -34,12 +34,12 @@ jobs:
 
     - uses: actions-rs/toolchain@v1
       with:
-        toolchain: nightly
+        toolchain: stable
 
     - name: Build runtimes
       uses: actions-rs/cargo@v1
       with:
-        toolchain: nightly
+        toolchain: stable
         command: build
         args: --release
 
