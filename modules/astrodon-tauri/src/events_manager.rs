@@ -26,11 +26,12 @@ impl EventsManager {
      */
     pub async fn listen_on(&self, name: String, listener_id: Uuid, listener: Sender<String>) {
         // Add event group if doesn't exist
-        self.listeners
-            .lock()
-            .await
-            .try_insert(name.clone(), HashMap::new())
-            .ok();
+        if !self.listeners.lock().await.contains_key(&name) {
+            self.listeners
+                .lock()
+                .await
+                .insert(name.clone(), HashMap::new());
+        }
 
         self.listeners
             .lock()

@@ -1,5 +1,3 @@
-#![feature(map_try_insert)]
-
 use crate::deno_runtime::DenoRuntime;
 use events_manager::EventsManager;
 use messages::AstrodonMessage;
