@@ -51,7 +51,7 @@ impl DenoRuntime {
                 enable_testing_features: false,
                 location: None,
                 no_color: false,
-                runtime_version: "1.20.1".to_string(),
+                runtime_version: "1.20.2".to_string(),
                 ts_version: "4.6.2".to_string(),
                 unstable: true,
             },
