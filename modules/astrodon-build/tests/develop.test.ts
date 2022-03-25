@@ -28,7 +28,18 @@ const config: AppConfig = {
   },
 };
 
+// Issue: There's no way to test the runtime because it blocks the process, ideally we should be able to get at least the output of the execution.
+
 Deno.test("develop", async () => {
   const develop = new Develop(config);
-  await develop.run();
+  develop.run().then(() => console.log("running"));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  const ws = new WebSocket("ws://localhost:8000");
+  ws.onmessage = (ev) => {
+    const msg = ev.data.toString();
+    console.log(msg);
+    if (msg === messages.success) {
+      ws.close();
+    }
+  }
 });
