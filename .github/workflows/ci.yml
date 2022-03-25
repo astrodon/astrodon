@@ -41,7 +41,6 @@ jobs:
       with:
         toolchain: stable
         command: build
-        args: --release
 
     - uses: denoland/setup-deno@v1
       with:
