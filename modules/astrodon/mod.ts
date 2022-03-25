@@ -2,6 +2,16 @@ export { AppWindow } from "./window.ts";
 
 export type OSNames = "windows" | "darwin" | "linux";
 
+export interface PermissionsOptions {
+  allow_env?: string[];
+  allow_hrtime: boolean;
+  allow_net?: string[];
+  allow_ffi?: string[];
+  allow_read?: string[];
+  allow_run?: string[];
+  allow_write?: string[];
+  prompt: boolean;
+}
 export interface AppInfo {
   name: string;
   id: string;
@@ -13,6 +23,7 @@ export interface AppInfo {
   homepage: string;
   icon: string[];
   resources: string[];
+  permissions?: PermissionsOptions;
 }
 
 export interface AppBuildOptions {

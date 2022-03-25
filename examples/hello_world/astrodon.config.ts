@@ -21,5 +21,10 @@ export default <AppConfig> {
     copyright: "2022",
     icon: [],
     resources: [],
+    permissions: {
+      allow_hrtime: true,
+      prompt: true,
+      allow_net: []
+    }
   },
 };

@@ -15,6 +15,7 @@ use std::iter::once;
 use std::rc::Rc;
 use std::sync::Arc;
 use tokio::sync::mpsc::Sender;
+use tokio::task;
 
 use super::ops;
 
@@ -25,6 +26,18 @@ pub struct DenoRuntime {
 }
 
 impl DenoRuntime {
+    pub fn new(
+        metadata: Metadata,
+        deno_sender: Sender<AstrodonMessage>,
+        events_manager: EventsManager,
+    ) -> Self {
+        Self {
+            metadata,
+            deno_sender,
+            events_manager,
+        }
+    }
+
     pub async fn run_deno(&self, module_loader: impl ModuleLoader + 'static) {
         let module_loader = Rc::new(module_loader);
         let create_web_worker_cb = Arc::new(|_| {
@@ -77,7 +90,7 @@ impl DenoRuntime {
             compiled_wasm_module_store: None,
         };
 
-        let permissions = Permissions::allow_all();
+        let permissions = Permissions::from_options(&self.metadata.info.permissions);
 
         let mut worker = MainWorker::bootstrap_from_options(
             self.metadata.entrypoint.clone(),
@@ -91,23 +104,29 @@ impl DenoRuntime {
             std::process::exit(1);
         };
 
-        worker
-            .execute_main_module(&self.metadata.entrypoint)
-            .await
-            .unwrap_or_else(error_handler);
+        let local = task::LocalSet::new();
 
-        worker
-            .dispatch_load_event(&located_script_name!())
-            .unwrap_or_else(error_handler);
+        local
+            .run_until(async move {
+                worker
+                    .execute_main_module(&self.metadata.entrypoint)
+                    .await
+                    .unwrap_or_else(error_handler);
 
-        worker
-            .run_event_loop(true)
-            .await
-            .unwrap_or_else(error_handler);
+                worker
+                    .dispatch_load_event(&located_script_name!())
+                    .unwrap_or_else(error_handler);
 
-        worker
-            .dispatch_load_event(&located_script_name!())
-            .unwrap_or_else(error_handler);
+                worker
+                    .run_event_loop(true)
+                    .await
+                    .unwrap_or_else(error_handler);
+
+                worker
+                    .dispatch_load_event(&located_script_name!())
+                    .unwrap_or_else(error_handler);
+            })
+            .await;
     }
 }
 

@@ -1,4 +1,5 @@
 use deno_core::ModuleSpecifier;
+use deno_runtime::permissions::PermissionsOptions;
 use serde::{Deserialize, Serialize};
 
 /**
@@ -18,6 +19,7 @@ pub struct AppInfo {
     pub homepage: String,
     pub icon: Vec<String>,
     pub resources: Vec<String>,
+    pub permissions: PermissionsOptions,
 }
 
 // Inspired by https://github.com/denoland/deno/blob/8b2989c417db9090913f1cb6074ae961f4c14d5e/cli/standalone.rs#L46

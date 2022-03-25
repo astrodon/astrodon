@@ -40,4 +40,3 @@ await win.run();
 for await (const msg of await win.listen("to-deno")) {
   win.send("from-deno", msg);
 }
-console.log(1);

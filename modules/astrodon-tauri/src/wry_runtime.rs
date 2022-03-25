@@ -151,6 +151,7 @@ fn create_new_window(
         let snd = snd.clone();
 
         // Handle the events emitted from the webview
+        #[allow(clippy::single_match)]
         match message {
             Ok(IpcMessage::SendEvent { name, content }) => {
                 tokio::spawn(async move {

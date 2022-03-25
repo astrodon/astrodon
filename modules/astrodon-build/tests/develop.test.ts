@@ -5,9 +5,8 @@ import {
   fromFileUrl,
   join,
 } from "https://deno.land/std@0.131.0/path/mod.ts";
-import { assertEquals } from "https://deno.land/std@0.131.0/testing/asserts.ts";
+import { serve } from "https://deno.land/std@0.131.0/http/mod.ts";
 
-import { readline } from "https://deno.land/x/readline@v1.1.0/mod.ts";
 import messages from "./messages.ts";
 const __dirname = dirname(fromFileUrl(import.meta.url));
 
@@ -25,21 +24,48 @@ const config: AppConfig = {
     homepage: "",
     icon: [],
     resources: [],
+    permissions: {
+      allow_hrtime: true,
+      prompt: true,
+      allow_net: [],
+    },
   },
 };
 
-// Issue: There's no way to test the runtime because it blocks the process, ideally we should be able to get at least the output of the execution.
+Deno.test({
+  name: "develop",
+  fn: async () => {
+    const develop = new Develop(config);
+    develop.run();
 
-Deno.test("develop", async () => {
-  const develop = new Develop(config);
-  develop.run().then(() => console.log("running"));
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-  const ws = new WebSocket("ws://localhost:8000");
-  ws.onmessage = (ev) => {
-    const msg = ev.data.toString();
-    console.log(msg);
-    if (msg === messages.success) {
-      ws.close();
-    }
-  }
+    await new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(reject, 15000);
+      const controller = new AbortController();
+
+      function reqHandler(req: Request) {
+        if (req.headers.get("upgrade") != "websocket") {
+          return new Response(null, { status: 501 });
+        }
+
+        const { socket, response } = Deno.upgradeWebSocket(req);
+
+        socket.onmessage = (ev) => {
+          const msg = ev.data.toString();
+          if (msg === messages.success) {
+            clearTimeout(timeout);
+            socket.close();
+            controller.abort();
+            resolve();
+          }
+        };
+        return response;
+      }
+
+      serve(reqHandler, { port: 8000, signal: controller.signal });
+    });
+
+    develop.close();
+  },
+  sanitizeOps: false,
+  sanitizeResources: false,
 });
