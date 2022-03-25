@@ -11,7 +11,7 @@ import messages from "./messages.ts";
 const __dirname = dirname(fromFileUrl(import.meta.url));
 
 const config: AppConfig = {
-  entry: join(__dirname, "./mod.ts"),
+  entry: join(__dirname, "./app.ts"),
   dist: join(__dirname, "./dist"),
   info: {
     name: "astrodon-build",
