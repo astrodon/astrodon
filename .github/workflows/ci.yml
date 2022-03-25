@@ -47,5 +47,6 @@ jobs:
         deno-version: vx.x.x
 
     - name: Run tests
+      uses: GabrielBB/xvfb-action@v1
       run: deno task test
 
