@@ -1,4 +1,4 @@
-name: Release libs
+name: Run tests
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    name: Release libs
+    name: Run tests
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
