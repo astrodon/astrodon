@@ -48,5 +48,6 @@ jobs:
 
     - name: Run tests
       uses: GabrielBB/xvfb-action@v1
-      run: deno task test
+      with:
+        run: deno task test
 
