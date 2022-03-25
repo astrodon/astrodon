@@ -32,6 +32,13 @@ jobs:
         patchelf \
         librsvg2-dev
 
+    - name: Install Windows dependencies (Webview2)
+      if: contains(matrix.platform.target, 'windows')
+      shell: pwsh
+      run: |
+        Invoke-WebRequest https://go.microsoft.com/fwlink/p/?LinkId=2124703 -OutFile installwebview.exe -UseBasicParsing
+        cmd /C start /wait installwebview.exe /silent /install
+
     - uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
