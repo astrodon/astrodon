@@ -11,9 +11,9 @@ import {
 
 export const fileFormat = (os: string) => os === "windows" ? ".exe" : "";
 
-type buildModes = "standalone" | "development";
+export type buildModes = "standalone" | "development";
 
-const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
+export const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
   // Exemple: astrodon-tauri-standalone-windows.exe
   const binName = `astrodon-tauri-${mode}${isDev ? "" : `-${os}`}${
     fileFormat(os)
@@ -32,11 +32,12 @@ export const getBinaryPath = async (
   mode: "standalone" | "development",
   logger?: Logger,
   os: OSNames = Deno.build.os,
+  useRemoteBinaries = false,
 ): Promise<string> => {
   // Return the local runtime if running in development mode
-  if (Deno.env.get("DEV") === "true") {
+  if (Deno.env.get("DEV") === "true" && useRemoteBinaries === false) {
     const [_, binaryName] = getBinaryInfo(os, mode, true);
-    return join(Deno.cwd(), "target", "release", binaryName);
+    return join(Deno.cwd(), "target", "debug", binaryName);
   }
 
   const homeDir = getHomeDir() as string;

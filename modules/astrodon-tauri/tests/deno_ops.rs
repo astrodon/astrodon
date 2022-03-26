@@ -26,14 +26,14 @@ async fn deno_ops() {
 
     let events_manager = EventsManager::new();
 
-    let deno_runtime = DenoRuntime {
-        metadata: Metadata {
+    let deno_runtime = DenoRuntime::new(
+        Metadata {
             entrypoint,
             info: AppInfo::default(),
         },
         deno_sender,
-        events_manager: events_manager.clone(),
-    };
+        events_manager.clone(),
+    );
 
     thread::spawn(move || {
         Runtime::new()

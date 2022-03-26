@@ -5,7 +5,7 @@
 
 use std::{env, thread};
 
-use astrodon_tauri::{deno_core::ModuleSpecifier, AppInfo, Metadata};
+use astrodon_tauri::{deno_core::serde_json, Metadata};
 
 mod typescript_loader;
 
@@ -27,25 +27,7 @@ async fn main() {
 async fn get_data_and_loader_from_args() -> (Metadata, TypescriptModuleLoader) {
     let mut args = env::args();
     args.next();
-    let file_path = args.next().unwrap();
-    let entrypoint = ModuleSpecifier::from_file_path(file_path).unwrap();
-    (
-        Metadata {
-            entrypoint,
-            info: AppInfo {
-                // TODO: This is wip
-                name: "Development".to_string(),
-                author: "Development".to_string(),
-                id: "Development".to_string(),
-                copyright: "Development".to_string(),
-                version: "Development".to_string(),
-                short_description: "Development".to_string(),
-                long_description: "Development".to_string(),
-                homepage: "Development".to_string(),
-                icon: vec![],
-                resources: vec![],
-            },
-        },
-        TypescriptModuleLoader::new(),
-    )
+    let metadata_json = args.next().unwrap();
+    let metadata: Metadata = serde_json::from_str(&metadata_json).unwrap();
+    (metadata, TypescriptModuleLoader::new())
 }

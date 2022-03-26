@@ -23,11 +23,11 @@ pub fn prepare(metadata: Metadata) -> (DenoRuntime, WryRuntime) {
     let events_manager = EventsManager::new();
 
     (
-        DenoRuntime {
-            metadata: metadata.clone(),
-            deno_sender: deno_sender.clone(),
-            events_manager: events_manager.clone(),
-        },
+        DenoRuntime::new(
+            metadata.clone(),
+            deno_sender.clone(),
+            events_manager.clone(),
+        ),
         WryRuntime {
             events_manager,
             deno_sender,

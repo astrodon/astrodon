@@ -1,24 +1,51 @@
 import { build } from "https://raw.githubusercontent.com/denoland/eszip/main/lib/mod.ts";
 import { writeAll } from "https://deno.land/std@0.128.0/streams/conversion.ts";
-import { AppConfig, AppInfo, OSNames } from "../astrodon/mod.ts";
+import {
+  AppConfig,
+  AppInfo,
+  OSNames,
+  PermissionsOptions,
+} from "../astrodon/mod.ts";
 import { Installer } from "https://deno.land/x/installer@0.1.1/mod.ts";
 import { fileFormat, getBinaryPath } from "../astrodon-manager/mod.ts";
 import { join } from "https://deno.land/std@0.122.0/path/mod.ts";
 import { Logger } from "../astrodon-manager/deps.ts";
 
-const exec = async (cmd: string) => {
+const exec = async (cmd: string, args: string[] = []) => {
   const p = Deno.run({
-    cmd: cmd.split(" "),
+    cmd: cmd.split(" ").concat(args),
   });
 
   await p.status();
+  p.close();
 };
+
+const DEFAULT_PERMISSIONS = <PermissionsOptions> {
+  allow_hrtime: false,
+  prompt: false,
+};
+
+const getSanitizedPermissions = (
+  perms: PermissionsOptions | undefined,
+): PermissionsOptions => {
+  return Object.assign(DEFAULT_PERMISSIONS, perms);
+};
+
+interface Metadata {
+  entrypoint: string;
+  info: AppInfo;
+}
 
 export class Develop {
   private info: AppInfo;
+  private process: Deno.Process<Deno.RunOptions> | undefined;
 
   constructor(private config: AppConfig, private logger = new Logger("run")) {
     this.info = config.info;
+    this.info.id = `${this.info.id}-dev`;
+
+    // Apply the default permissions if not specified
+    this.info.permissions = getSanitizedPermissions(this.info.permissions);
   }
 
   async run() {
@@ -27,7 +54,27 @@ export class Develop {
 
     // Launch the runtime
     const binPath = await getBinaryPath("development", this.logger);
-    await exec(`${binPath} ${this.config.entry}`);
+
+    const entrypoint = new URL(`file://${this.config.entry}`).href;
+
+    const metadata = <Metadata> {
+      entrypoint,
+      info: this.info,
+    };
+
+    const metadata_json = JSON.stringify(metadata);
+
+    console.log(binPath);
+
+    this.process = Deno.run({
+      cmd: [binPath, metadata_json],
+    });
+    this.process.status();
+  }
+
+  close() {
+    this.process?.kill("SIGTERM");
+    this.process?.close();
   }
 }
 
@@ -41,6 +88,9 @@ export class Builder {
     private os: OSNames = Deno.build.os,
   ) {
     this.info = config.info;
+
+    // Apply the default permissions if not specified
+    this.info.permissions = getSanitizedPermissions(this.info.permissions);
 
     const binName = join(this.config.dist, this.info.name);
 
@@ -84,7 +134,7 @@ export class Builder {
       ...numberToByteArray(metadataPos),
     ]);
 
-    const metadata = {
+    const metadata = <Metadata> {
       entrypoint,
       info: this.info,
     };
