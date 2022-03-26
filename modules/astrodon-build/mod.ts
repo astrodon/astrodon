@@ -64,8 +64,6 @@ export class Develop {
 
     const metadata_json = JSON.stringify(metadata);
 
-    console.log(binPath);
-
     this.process = Deno.run({
       cmd: [binPath, metadata_json],
     });
