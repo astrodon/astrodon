@@ -39,7 +39,7 @@ Deno.test({
     develop.run();
 
     await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(reject, 15000);
+      const timeout = setTimeout(reject, 60000);
       const controller = new AbortController();
 
       function reqHandler(req: Request) {
