@@ -2,11 +2,11 @@ name: Run tests
 
 on:
   workflow_dispatch:
-    branches: [ main ]
+    branches: [ feat/unit-tests, feature/deno_tauri ]
   push:
-    branches: [ main ]
+    branches: [ feat/unit-tests, feature/deno_tauri ]
   pull_request:
-    branches: [ main ]
+    branches: [ feat/unit-tests, feature/deno_tauri ]
 
 jobs:
   build:
