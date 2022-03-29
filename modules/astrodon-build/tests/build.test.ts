@@ -13,28 +13,30 @@ Deno.test({
       for (const os of platforms) {
         await t.step(os, async () => {
           const binName = `${config.info.name}_${os}${fileFormat(os)}`;
-          console.log(join(config.dist, binName));
+          const binPath = join(config.dist, binName);
           const builder = new Builder({ config, os });
           await builder.compile();
-          const exists = await Deno.stat(join(config.dist, binName));
+          const exists = await Deno.stat(binPath);
           assertEquals(exists.isFile, true);
         });
       }
     });
     const os = Deno.build.os;
     await t.step(`Check app health for OS ${os}`, async (t) => {
-      if (platforms.includes(os)) {
-        await t.step(os, async () => {
-          const binName = `${config.info.name}_${os}${fileFormat(os)}`;
-          const process = Deno.run({
-            cmd: [join(config.dist, binName)],
-          });
-          process.status();
-          await driver();
-          process?.kill("SIGTERM");
-          process?.close();
+      await t.step(os, async () => {
+        const binName = `${config.info.name}_${os}${fileFormat(os)}`;
+        const binPath = join(config.dist, binName);
+        if (Deno.build.os != "windows") {
+          await Deno.chmod(binPath, 0o755);
+        }
+        const process = Deno.run({
+          cmd: [binPath],
         });
-      }
+        process.status();
+        await driver();
+        process?.kill("SIGTERM");
+        process?.close();
+      });
     });
   },
   sanitizeOps: false,
