@@ -16,7 +16,11 @@ export async function build(options: BuildOptions) {
   const { default: projectInfo }: { default: AppConfig } = await import(
     configPath
   );
-  const builder = new Builder(projectInfo, buildLogger, options.target);
+  const builder = new Builder({
+    config: projectInfo,
+    logger: buildLogger,
+    os: options.target,
+  });
   buildLogger.info(
     `Compiling ${projectInfo.info.name} v${projectInfo.info.version}...`,
   );

@@ -36,16 +36,31 @@ interface Metadata {
   info: AppInfo;
 }
 
-export class Develop {
-  private info: AppInfo;
-  private process: Deno.Process<Deno.RunOptions> | undefined;
+interface DevelopOptions {
+  config: AppConfig;
+  logger?: Logger;
+  useLocalBinaries?: boolean;
+}
 
-  constructor(private config: AppConfig, private logger = new Logger("run")) {
-    this.info = config.info;
-    this.info.id = `${this.info.id}-dev`;
+export class Develop {
+  private config: AppConfig;
+  private logger: Logger;
+  private process: Deno.Process<Deno.RunOptions> | undefined;
+  private useLocalBinaries: boolean;
+
+  constructor(
+    { config, logger = new Logger("run"), useLocalBinaries = false }:
+      DevelopOptions,
+  ) {
+    this.config = config;
+    this.logger = logger;
+    this.config.info.id = `${this.config.info.id}-dev`;
+    this.useLocalBinaries = useLocalBinaries;
 
     // Apply the default permissions if not specified
-    this.info.permissions = getSanitizedPermissions(this.info.permissions);
+    this.config.info.permissions = getSanitizedPermissions(
+      this.config.info.permissions,
+    );
   }
 
   async run() {
@@ -53,13 +68,18 @@ export class Develop {
     await exec(`${Deno.execPath()} cache ${this.config.entry}`);
 
     // Launch the runtime
-    const binPath = await getBinaryPath("development", this.logger);
+    const binPath = await getBinaryPath(
+      "development",
+      this.logger,
+      Deno.build.os,
+      this.useLocalBinaries,
+    );
 
     const entrypoint = new URL(`file://${this.config.entry}`).href;
 
     const metadata = <Metadata> {
       entrypoint,
-      info: this.info,
+      info: this.config.info,
     };
 
     const metadata_json = JSON.stringify(metadata);
@@ -76,21 +96,39 @@ export class Develop {
   }
 }
 
+interface BuilderOptions {
+  config: AppConfig;
+  logger?: Logger;
+  os?: OSNames;
+  useLocalBinaries?: boolean;
+}
+
 export class Builder {
-  private info: AppInfo;
+  private config: AppConfig;
   private finalBinPath: string;
+  private os: OSNames;
+  private logger: Logger;
+  private useLocalBinaries: boolean;
 
   constructor(
-    private config: AppConfig,
-    private logger = new Logger("build"),
-    private os: OSNames = Deno.build.os,
+    {
+      config,
+      logger = new Logger("build"),
+      os = Deno.build.os,
+      useLocalBinaries = false,
+    }: BuilderOptions,
   ) {
-    this.info = config.info;
+    this.config = config;
+    this.logger = logger;
+    this.os = os;
+    this.useLocalBinaries = useLocalBinaries;
 
     // Apply the default permissions if not specified
-    this.info.permissions = getSanitizedPermissions(this.info.permissions);
+    this.config.info.permissions = getSanitizedPermissions(
+      this.config.info.permissions,
+    );
 
-    const binName = join(this.config.dist, this.info.name);
+    const binName = join(this.config.dist, this.config.info.name);
 
     // Put the OS name as sufix, this prevents overwriting between the darwin and linux builds
     const binSuffix = this.config?.build?.targets?.[this.os]?.suffix ?? this.os;
@@ -106,7 +144,12 @@ export class Builder {
    */
 
   async compile() {
-    const binPath = await getBinaryPath("standalone", this.logger, this.os);
+    const binPath = await getBinaryPath(
+      "standalone",
+      this.logger,
+      this.os,
+      this.useLocalBinaries,
+    );
 
     const entrypoint = new URL(`file://${this.config.entry}`).href;
 
@@ -134,7 +177,7 @@ export class Builder {
 
     const metadata = <Metadata> {
       entrypoint,
-      info: this.info,
+      info: this.config.info,
     };
 
     // Put it all together into the final executable
@@ -154,25 +197,26 @@ export class Builder {
    */
   async makeInstaller() {
     const out_path = join(this.config.dist, "installer");
+    const info = this.config.info;
 
     const installer = new Installer({
       out_path,
       src_path: this.finalBinPath,
       package: {
-        product_name: this.info.name,
-        version: this.info.version,
-        description: this.info.shortDescription,
-        homepage: this.info.homepage,
-        authors: [this.info.author],
-        default_run: this.info.name,
+        product_name: info.name,
+        version: info.version,
+        description: info.shortDescription,
+        homepage: info.homepage,
+        authors: [info.author],
+        default_run: info.name,
       },
       bundle: {
-        identifier: this.info.id,
-        icon: this.info.icon,
-        resources: this.info.resources,
-        copyright: this.info.copyright,
-        short_description: this.info.shortDescription,
-        long_description: this.info.longDescription,
+        identifier: info.id,
+        icon: info.icon,
+        resources: info.resources,
+        copyright: info.copyright,
+        short_description: info.shortDescription,
+        long_description: info.longDescription,
       },
     });
 

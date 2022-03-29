@@ -26,7 +26,7 @@ Deno.test("Local binary existence", async (t) => {
       for (const mode of modes) {
         await t.step(mode, async () => {
           // Download the remote binaries
-          const binaryPath = await getBinaryPath(mode, undefined, os, true);
+          const binaryPath = await getBinaryPath(mode, undefined, os);
           const exists = await Deno.stat(binaryPath);
           assertEquals(exists.isFile, true);
           if (exists.isFile) await Deno.remove(binaryPath);

@@ -54,15 +54,15 @@ export const driver = () =>
         }
       };
       return response;
-    }
+    };
 
     serve(reqHandler, { port: 8000, signal: controller.signal });
   });
 
 Deno.test({
-  name: "Develop",
+  name: `Run in development mode in ${Deno.build.os} `,
   fn: async () => {
-    const develop = new Develop(config);
+    const develop = new Develop({ config });
     develop.run();
 
     await driver();

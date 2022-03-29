@@ -1,7 +1,7 @@
 import { Builder } from "../../modules/astrodon-build/mod.ts";
-import manifest from "./astrodon.config.ts";
+import config from "./astrodon.config.ts";
 
-const builder = new Builder(manifest);
+const builder = new Builder({ config });
 
 await builder.compile();
 

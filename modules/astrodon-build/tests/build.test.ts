@@ -7,22 +7,22 @@ import { config, driver } from "./develop.test.ts";
 
 const platforms: OSNames[] = ["windows", "linux", "darwin"];
 Deno.test({
-  name: "Compile",
+  name: "Cross-compiling using remote binaries",
   fn: async (t) => {
     await t.step("Emit file", async (t) => {
       for (const os of platforms) {
         await t.step(os, async () => {
           const binName = `${config.info.name}_${os}${fileFormat(os)}`;
           console.log(join(config.dist, binName));
-          const builder = new Builder(config, undefined, os);
+          const builder = new Builder({ config, os });
           await builder.compile();
           const exists = await Deno.stat(join(config.dist, binName));
           assertEquals(exists.isFile, true);
         });
       }
     });
-    await t.step("Check app health", async (t) => {
-      const os = Deno.build.os;
+    const os = Deno.build.os;
+    await t.step(`Check app health for OS ${os}`, async (t) => {
       if (platforms.includes(os)) {
         await t.step(os, async () => {
           const binName = `${config.info.name}_${os}${fileFormat(os)}`;

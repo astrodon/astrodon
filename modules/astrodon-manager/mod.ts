@@ -32,10 +32,10 @@ export const getBinaryPath = async (
   mode: "standalone" | "development",
   logger?: Logger,
   os: OSNames = Deno.build.os,
-  useRemoteBinaries = false,
+  useLocalBinaries = false,
 ): Promise<string> => {
   // Return the local runtime if running in development mode
-  if (Deno.env.get("DEV") === "true" && useRemoteBinaries === false) {
+  if (useLocalBinaries) {
     const [_, binaryName] = getBinaryInfo(os, mode, true);
     return join(Deno.cwd(), "target", "debug", binaryName);
   }

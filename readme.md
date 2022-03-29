@@ -28,12 +28,15 @@ to-do
 
 - [ ] Unit tests
 - [x] Cross-platform compiling (missing: Apple Silicon)
-- [ ] Typescript checking in the background (astrodon-build's Develop should manage this)
-- [ ] Pass permission and arguments as flags and also put them in the executable metadata
+- [ ] Typescript checking in the background (astrodon-build's Develop should
+      manage this)
+- [ ] Pass permission and arguments as flags and also put them in the executable
+      metadata
 - [x] Organize project a little bit better (e.g move dependencies to deps.ts)
 - [x] A real-world app example
 - [ ] Update the templates
-- [ ] Match `deno_runtime` version (and also things like `Deno.build`) with Deno's releases
+- [ ] Match `deno_runtime` version (and also things like `Deno.build`) with
+      Deno's releases
 - [ ] Implement Web Workers
 - [ ] Schematize and create plugin system
 - [ ] Organize configs by usage hierarchy (e.g. global.icon -> build.icon)
@@ -41,7 +44,7 @@ to-do
 - [ ] Cross process reactivity module (plugin)
 - [ ] Cross process store module (plugin)
 - [ ] Env variable manager and injection for builds (plugin)
-- [ ] Cli command `astrodon clean` to remove cached runtimes 
+- [ ] Cli command `astrodon clean` to remove cached runtimes
 
 ### 👩‍💻 Development
 
