@@ -43,62 +43,98 @@ jobs:
         command: build
         args: --release
 
+    - name: ZIP MacOS standalone Runtime
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-standalone
+        dest: astrodon-tauri-standalone.zip
+
     - name: Release MacOS standalone runtime
       if: runner.os == 'MacOS'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/astrodon-tauri-standalone
+        file: astrodon-tauri-standalone.zip
         tag: ${{ github.event.inputs.version }}
-        asset_name:  astrodon-tauri-standalone-darwin
+        asset_name:  astrodon-tauri-standalone-darwin.zip
         overwrite: true
+
+    - name: ZIP MacOS development Runtime
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-development
+        dest: astrodon-tauri-development.zip
 
     - name: Release MacOS development runtime
       if: runner.os == 'MacOS'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/astrodon-tauri-development
+        file: astrodon-tauri-development.zip
         tag: ${{ github.event.inputs.version }}
-        asset_name:  astrodon-tauri-development-darwin
+        asset_name:  astrodon-tauri-development-darwin.zip
         overwrite: true
+
+    - name: ZIP Linux standalone Runtime
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-standalone
+        dest: astrodon-tauri-standalone.zip
 
     - name:  Release Linux standalone runtime
       if: runner.os == 'Linux'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/astrodon-tauri-standalone
+        file:  astrodon-tauri-standalone.zip
         tag: ${{ github.event.inputs.version }}
-        asset_name:  astrodon-tauri-standalone-linux
+        asset_name: astrodon-tauri-standalone-linux.zip
         overwrite: true
+
+    - name: ZIP Linux development Runtime
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-development
+        dest: astrodon-tauri-development.zip
 
     - name:  Release Linux development runtime
       if: runner.os == 'Linux'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/astrodon-tauri-development
+        file: astrodon-tauri-development.zip
         tag: ${{ github.event.inputs.version }}
-        asset_name:  astrodon-tauri-development-linux
+        asset_name: astrodon-tauri-development-linux.zip
         overwrite: true
+
+    - name: ZIP Windows standalone Runtime
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-standalone.exe
+        dest: astrodon-tauri-standalone.zip
 
     - name:  Release Windows standalone runtime
       if: runner.os == 'Windows'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/astrodon-tauri-standalone.exe
+        file: astrodon-tauri-standalone.zip
         tag: ${{ github.event.inputs.version }}
-        asset_name: astrodon-tauri-standalone-windows.exe
+        asset_name: astrodon-tauri-standalone-windows.zip
         overwrite: true
+
+    - name: ZIP Linux development Runtime
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-development.exe
+        dest: astrodon-tauri-development.zip
 
     - name:  Release Windows development runtime
       if: runner.os == 'Windows'
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: target/release/astrodon-tauri-development.exe
+        file: astrodon-tauri-development.zip
         tag: ${{ github.event.inputs.version }}
-        asset_name: astrodon-tauri-development-windows.exe
+        asset_name: astrodon-tauri-development-windows.zip
         overwrite: true
