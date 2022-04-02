@@ -43,7 +43,8 @@ jobs:
         command: build
         args: --release
 
-    - name: ZIP MacOS standalone Runtime
+    - name: Zip MacOS standalone Runtime
+      if: runner.os == 'MacOS'
       uses: vimtor/action-zip@v1
       with:
         files: target/release/astrodon-tauri-standalone
@@ -59,7 +60,8 @@ jobs:
         asset_name:  astrodon-tauri-standalone-darwin.zip
         overwrite: true
 
-    - name: ZIP MacOS development Runtime
+    - name: Zip MacOS development Runtime
+      if: runner.os == 'MacOS'
       uses: vimtor/action-zip@v1
       with:
         files: target/release/astrodon-tauri-development
@@ -75,7 +77,8 @@ jobs:
         asset_name:  astrodon-tauri-development-darwin.zip
         overwrite: true
 
-    - name: ZIP Linux standalone Runtime
+    - name: Zip Linux standalone Runtime
+      if: runner.os == 'Linux'
       uses: vimtor/action-zip@v1
       with:
         files: target/release/astrodon-tauri-standalone
@@ -91,7 +94,8 @@ jobs:
         asset_name: astrodon-tauri-standalone-linux.zip
         overwrite: true
 
-    - name: ZIP Linux development Runtime
+    - name: Zip Linux development Runtime
+      if: runner.os == 'Linux'
       uses: vimtor/action-zip@v1
       with:
         files: target/release/astrodon-tauri-development
@@ -107,7 +111,8 @@ jobs:
         asset_name: astrodon-tauri-development-linux.zip
         overwrite: true
 
-    - name: ZIP Windows standalone Runtime
+    - name: Zip Windows standalone Runtime
+      if: runner.os == 'Windows'
       uses: vimtor/action-zip@v1
       with:
         files: target/release/astrodon-tauri-standalone.exe
@@ -123,13 +128,14 @@ jobs:
         asset_name: astrodon-tauri-standalone-windows.zip
         overwrite: true
 
-    - name: ZIP Linux development Runtime
+    - name: Zip Windows development Runtime
+      if: runner.os == 'Windows'
       uses: vimtor/action-zip@v1
       with:
         files: target/release/astrodon-tauri-development.exe
         dest: astrodon-tauri-development.zip
 
-    - name:  Release Windows development runtime
+    - name: Release Windows development runtime
       if: runner.os == 'Windows'
       uses: svenstaro/upload-release-action@v2
       with:
