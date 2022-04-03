@@ -85,14 +85,14 @@ export const getBinaryPath = async (
 
   zippedFile.close();
 
+  const zip = await readZip(binaryZipPath);
+
+  await zip.unzip(outputDir);
+
   //Make the runtime executable on Linux and MacOS
   if (Deno.build.os != "windows") {
     await Deno.chmod(binaryPath, 0o755);
   }
-
-  const zip = await readZip(binaryZipPath);
-
-  await zip.unzip(outputDir);
 
   await Deno.remove(binaryZipPath);
 
