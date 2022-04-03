@@ -1,7 +1,9 @@
 import { AppWindow } from "../../modules/astrodon/mod.ts";
 import { getAllBreeds } from "https://deno.land/x/dog@1.0.0/mod.ts";
 
-const breeds = Object.keys(await getAllBreeds()).map((breed) => `<li>${breed}</li>`).join("");
+const breeds = Object.keys(await getAllBreeds()).map((breed) =>
+  `<li>${breed}</li>`
+).join("");
 
 const html = `
     <html>

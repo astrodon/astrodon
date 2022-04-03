@@ -7,6 +7,7 @@ import {
   Logger,
   meta,
   readerFromStreamReader,
+  readZip
 } from "./deps.ts";
 
 export const fileFormat = (os: string) => os === "windows" ? ".exe" : "";
@@ -15,12 +16,11 @@ export type buildModes = "standalone" | "development";
 
 export const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
   // Exemple: astrodon-tauri-standalone-windows.exe
-  const binName = `astrodon-tauri-${mode}${isDev ? "" : `-${os}`}${
-    fileFormat(os)
-  }`;
+  const binName = `astrodon-tauri-${mode}${isDev ? "" : `-${os}`}`;
   return [
-    `https://github.com/marc2332/astrodon/releases/download/${meta.version}/${binName}`,
-    binName,
+    `https://github.com/marc2332/astrodon/releases/download/${meta.version}/${binName}.zip`,
+    `${binName}${fileFormat(os)}`,
+    binName
   ];
 };
 
@@ -32,10 +32,10 @@ export const getBinaryPath = async (
   mode: "standalone" | "development",
   logger?: Logger,
   os: OSNames = Deno.build.os,
-  useRemoteBinaries = false,
+  useLocalBinaries = false,
 ): Promise<string> => {
   // Return the local runtime if running in development mode
-  if (Deno.env.get("DEV") === "true" && useRemoteBinaries === false) {
+  if (useLocalBinaries) {
     const [_, binaryName] = getBinaryInfo(os, mode, true);
     return join(Deno.cwd(), "target", "debug", binaryName);
   }
@@ -43,7 +43,7 @@ export const getBinaryPath = async (
   const homeDir = getHomeDir() as string;
   const outputDir = join(homeDir, `.${meta.name}`, meta.version);
 
-  const [binaryURL, binaryName] = getBinaryInfo(os, mode);
+  const [binaryZipURL, binaryName, binaryRawName] = getBinaryInfo(os, mode);
   const binaryPath = join(outputDir, binaryName);
 
   // Return the binary's location if it is already downloaded
@@ -51,9 +51,18 @@ export const getBinaryPath = async (
     return binaryPath;
   }
 
+  const binaryRawPath = join(outputDir, binaryRawName);
+  const binaryZipPath = `${binaryRawPath}.zip`;
+
+  try {
+    await Deno.remove(binaryZipPath, { recursive: true });
+  } catch {
+    // File might or not exist, both are ok
+  }
+
   await Deno.mkdir(outputDir, { recursive: true });
 
-  const response = await fetch(binaryURL);
+  const response = await fetch(binaryZipURL);
   if (logger) {
     logger.log(
       `Downloading Astrodon runtime v${meta.version} (${os}) [${mode}]`,
@@ -66,20 +75,26 @@ export const getBinaryPath = async (
   const reader = response?.body?.getReader();
   if (!reader) throw new Error("Failed when download Astrodon runtime");
 
-  const file = await Deno.open(binaryPath, {
+  const zippedFile = await Deno.open(binaryZipPath, {
     create: true,
     write: true,
     truncate: true,
   });
 
-  // Make the runtime executable on Linux and MacOS
+  await copy(readerFromStreamReader(reader), zippedFile);
+
+  zippedFile.close();
+
+  const zip = await readZip(binaryZipPath);
+
+  await zip.unzip(outputDir);
+
+  //Make the runtime executable on Linux and MacOS
   if (Deno.build.os != "windows") {
     await Deno.chmod(binaryPath, 0o755);
   }
 
-  await copy(readerFromStreamReader(reader), file);
-
-  file.close();
+  await Deno.remove(binaryZipPath);
 
   return binaryPath;
 };

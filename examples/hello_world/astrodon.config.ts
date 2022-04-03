@@ -24,7 +24,7 @@ export default <AppConfig> {
     permissions: {
       allow_hrtime: true,
       prompt: true,
-      allow_net: []
-    }
+      allow_net: [],
+    },
   },
 };

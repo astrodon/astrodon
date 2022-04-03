@@ -1,7 +1,7 @@
 {
-    "tasks": {
-        "fmt": "deno fmt modules && cargo fmt",
-        "lint": "deno lint modules && cargo clippy",
-        "test": "export DEV=true; deno test -A --unstable && cargo test"
-    }
+  "tasks": {
+    "fmt": "deno fmt modules && cargo fmt",
+    "lint": "deno lint modules && cargo clippy",
+    "test": "deno test -A --unstable && cargo test"
+  }
 }

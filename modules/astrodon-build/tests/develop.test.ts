@@ -10,7 +10,7 @@ import { serve } from "https://deno.land/std@0.131.0/http/mod.ts";
 import messages from "./messages.ts";
 const __dirname = dirname(fromFileUrl(import.meta.url));
 
-const config: AppConfig = {
+export const config: AppConfig = {
   entry: join(__dirname, "./app.ts"),
   dist: join(__dirname, "./dist"),
   info: {
@@ -32,37 +32,40 @@ const config: AppConfig = {
   },
 };
 
-Deno.test({
-  name: "develop",
-  fn: async () => {
-    const develop = new Develop(config);
-    develop.run();
+export const driver = () =>
+  new Promise<void>((resolve, reject) => {
+    const timeout = setTimeout(reject, 60000);
+    const controller = new AbortController();
 
-    await new Promise<void>((resolve, reject) => {
-      const timeout = setTimeout(reject, 60000);
-      const controller = new AbortController();
-
-      function reqHandler(req: Request) {
-        if (req.headers.get("upgrade") != "websocket") {
-          return new Response(null, { status: 501 });
-        }
-
-        const { socket, response } = Deno.upgradeWebSocket(req);
-
-        socket.onmessage = (ev) => {
-          const msg = ev.data.toString();
-          if (msg === messages.success) {
-            clearTimeout(timeout);
-            socket.close();
-            controller.abort();
-            resolve();
-          }
-        };
-        return response;
+    const reqHandler = (req: Request) => {
+      if (req.headers.get("upgrade") != "websocket") {
+        return new Response(null, { status: 501 });
       }
 
-      serve(reqHandler, { port: 8000, signal: controller.signal });
-    });
+      const { socket, response } = Deno.upgradeWebSocket(req);
+
+      socket.onmessage = (ev) => {
+        const msg = ev.data.toString();
+        if (msg === messages.success) {
+          clearTimeout(timeout);
+          socket.close();
+          controller.abort();
+          resolve();
+        }
+      };
+      return response;
+    };
+
+    serve(reqHandler, { port: 8000, signal: controller.signal });
+  });
+
+Deno.test({
+  name: `Run in development mode in ${Deno.build.os} `,
+  fn: async () => {
+    const develop = new Develop({ config, useLocalBinaries: true });
+    develop.run();
+
+    await driver();
 
     develop.close();
   },
