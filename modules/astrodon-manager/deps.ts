@@ -23,3 +23,4 @@ export {
 } from "https://deno.land/std@0.125.0/fmt/colors.ts";
 export { readerFromStreamReader } from "https://deno.land/std@0.129.0/streams/conversion.ts";
 export { copy } from "https://deno.land/std@0.129.0/streams/mod.ts";
+export { readZip } from "https://deno.land/x/jszip/mod.ts";

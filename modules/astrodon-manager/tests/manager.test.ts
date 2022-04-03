@@ -29,7 +29,6 @@ Deno.test("Local binary existence", async (t) => {
           const binaryPath = await getBinaryPath(mode, undefined, os);
           const exists = await Deno.stat(binaryPath);
           assertEquals(exists.isFile, true);
-          if (exists.isFile) await Deno.remove(binaryPath);
         });
       }
     });
