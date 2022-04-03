@@ -160,7 +160,7 @@ export class Builder {
     const originalBin = await Deno.readFile(binPath);
 
     // Create the dist folder
-    Deno.mkdir(this.config.dist, { recursive: true });
+    await Deno.mkdir(this.config.dist, { recursive: true });
 
     // Prepare the final executable
 
