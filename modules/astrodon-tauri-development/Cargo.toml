@@ -1,0 +1,11 @@
+[package]
+name = "astrodon-tauri-development"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+astrodon-tauri = { path = "../astrodon-tauri"}
+tokio = "1.10.1"
+rust-crypto = "0.2.36"
+deno_ast = { version = "0.13.2", features = ["transpiling"] }
+directories = "4.0.1"

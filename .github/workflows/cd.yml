@@ -1,0 +1,164 @@
+name: Release libs
+
+on:
+  workflow_dispatch:
+    branches: [ main ]
+    inputs:
+      version:
+        description: 'Version'     
+        required: true
+
+jobs:
+  build:
+    name: Release libs
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt update && sudo apt install libwebkit2gtk-4.0-dev \
+        build-essential \
+        curl \
+        wget \
+        libssl-dev \
+        libgtk-3-dev \
+        libappindicator3-dev \
+        patchelf \
+        librsvg2-dev
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Build runtimes
+      uses: actions-rs/cargo@v1
+      with:
+        toolchain: stable
+        command: build
+        args: --release
+
+    - name: Rename MacOS Runtimes
+      if: runner.os == 'MacOS'
+      run: |
+        mv target/release/astrodon-tauri-development target/release/astrodon-tauri-development-darwin
+        mv target/release/astrodon-tauri-standalone target/release/astrodon-tauri-standalone-darwin
+
+    - name: Zip MacOS standalone Runtime
+      if: runner.os == 'MacOS'
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-standalone-darwin
+        dest: astrodon-tauri-standalone.zip
+
+    - name: Release MacOS standalone runtime
+      if: runner.os == 'MacOS'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: astrodon-tauri-standalone.zip
+        tag: ${{ github.event.inputs.version }}
+        asset_name:  astrodon-tauri-standalone-darwin.zip
+        overwrite: true
+
+    - name: Zip MacOS development Runtime
+      if: runner.os == 'MacOS'
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-development-darwin
+        dest: astrodon-tauri-development.zip
+
+    - name: Release MacOS development runtime
+      if: runner.os == 'MacOS'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: astrodon-tauri-development.zip
+        tag: ${{ github.event.inputs.version }}
+        asset_name:  astrodon-tauri-development-darwin.zip
+        overwrite: true
+
+    - name: Rename Linux Runtimes
+      if: runner.os == 'Linux'
+      run: |
+        mv target/release/astrodon-tauri-development target/release/astrodon-tauri-development-linux
+        mv target/release/astrodon-tauri-standalone target/release/astrodon-tauri-standalone-linux
+
+    - name: Zip Linux standalone Runtime
+      if: runner.os == 'Linux'
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-standalone-linux
+        dest: astrodon-tauri-standalone.zip
+
+    - name:  Release Linux standalone runtime
+      if: runner.os == 'Linux'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file:  astrodon-tauri-standalone.zip
+        tag: ${{ github.event.inputs.version }}
+        asset_name: astrodon-tauri-standalone-linux.zip
+        overwrite: true
+
+    - name: Zip Linux development Runtime
+      if: runner.os == 'Linux'
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-development-linux
+        dest: astrodon-tauri-development.zip
+
+    - name:  Release Linux development runtime
+      if: runner.os == 'Linux'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: astrodon-tauri-development.zip
+        tag: ${{ github.event.inputs.version }}
+        asset_name: astrodon-tauri-development-linux.zip
+        overwrite: true
+
+    - name: Rename Windows Runtimes
+      if: runner.os == 'Windows'
+      run: |
+        mv target/release/astrodon-tauri-development.exe target/release/astrodon-tauri-development-windows.exe
+        mv target/release/astrodon-tauri-standalone.exe target/release/astrodon-tauri-standalone-windows.exe
+
+    - name: Zip Windows standalone Runtime
+      if: runner.os == 'Windows'
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-standalone-windows.exe
+        dest: astrodon-tauri-standalone.zip
+
+    - name:  Release Windows standalone runtime
+      if: runner.os == 'Windows'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: astrodon-tauri-standalone.zip
+        tag: ${{ github.event.inputs.version }}
+        asset_name: astrodon-tauri-standalone-windows.zip
+        overwrite: true
+
+    - name: Zip Windows development Runtime
+      if: runner.os == 'Windows'
+      uses: vimtor/action-zip@v1
+      with:
+        files: target/release/astrodon-tauri-development-windows.exe
+        dest: astrodon-tauri-development.zip
+
+    - name: Release Windows development runtime
+      if: runner.os == 'Windows'
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: astrodon-tauri-development.zip
+        tag: ${{ github.event.inputs.version }}
+        asset_name: astrodon-tauri-development-windows.zip
+        overwrite: true

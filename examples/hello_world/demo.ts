@@ -1,26 +1,44 @@
-import { App } from "../../mod.ts";
+import { AppWindow } from "../../modules/astrodon/mod.ts";
+import { getAllBreeds } from "https://deno.land/x/dog@1.0.0/mod.ts";
 
-export const getIndex = async () => {
-  const isDev = Deno.env.get("DEV") == "true";
- 
-  //deno-lint-ignore no-explicit-any
-  const isProd = (globalThis as any).astrodonProduction
+const breeds = Object.keys(await getAllBreeds()).map((breed) =>
+  `<li>${breed}</li>`
+).join("");
 
-  if (isDev || isProd) {
-    return `file://${ await Deno.realPath('./renderer/index.html')}`;
-  } else {
-    return `https://raw.githack.com/astrodon/astrodon/dev/examples/hello_world/renderer/index.html` //"<your_remote_html>";
-  }
-};
+const html = `
+    <html>
+        <body>
+            <p>Send to Deno:</p>
+            <input id="input"></input>
+            <p>Received from Deno:</p>
+            <b id="output">Output: ...</b>
+            <p>Also... here u have some doggos breeds:<p>
+            <ul>
+                ${breeds}
+            </ul>
+        </body>
+        <script>
+            window.addEventListener("from-deno", (ev) => {
+                document.getElementById("output").innerText = ev.detail.input;
+            })
 
-const indexPath = await getIndex();
+            document.getElementById("input").addEventListener("keyup", async (ev) => {
+                console.log(ev.target.value)
+                await window.sendToDeno("to-deno", { input: ev.target.value});
+            })
 
-const app = await App.new();
+        </script>
+    </html>
+`;
 
-await app.registerWindow({ title: "spaghettis > ravioli", url: indexPath });
+const win = new AppWindow("Window A");
 
-setInterval(() => {
-  app.send(`Hello Tauri: ${Math.random()}`);
-}, 500);
+// win.setUrl("https://google.com") can also be used!
 
-app.run();
+win.setHtml(html);
+
+await win.run();
+
+for await (const msg of await win.listen("to-deno")) {
+  win.send("from-deno", msg);
+}

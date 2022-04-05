@@ -7,55 +7,66 @@
 
 [![Discord Server](https://discordapp.com/api/guilds/928673465882513430/widget.png)](https://discord.gg/adYYqHHDBA)
 [![deno module](https://shield.deno.dev/x/astrodon)](https://deno.land/x/astrodon)
-![deno compatibility](https://shield.deno.dev/deno/^1.17)
+![deno compatibility](https://shield.deno.dev/deno/^1.20.2)
 
 ---
-
-**Important**: Only Windows and Linux are supported at the moment. And, some older versions of Windows, even some old builds of Windows 10 might not come with Webview2 support, currently, a solution to this is to install [Webview2](https://developer.microsoft.com/en-us/microsoft-edge/webview2/#download-section) manually on the user's PC. This is a major issue if you are targeting users with "outdated" Windows, this **may** be solved by an installer that installs the webview2 and the app. We are open to suggestions.
 
 ### 😎 Features
 
 - Create webview windows with your own title and URL
-- Send messages from Deno -> Webview
-- Compile your apps as executables
+- Bidirectional communication between your frontend and backend
+- Compile your apps as executables and even make installers
+- And most of what you get with Deno, e.g, TypeScript out of the box...
 
 A lot is still missing, but we will get there!
 
 ### 🎁 Demo
 
-**Note**: Only Windows and Linux are supported, macOS isn't supported **yet** (see https://github.com/astrodon/astrodon/issues/11)
 
-Easily run the demo:
+**Note**: Latest public release only supports Windows and Linux, MacOS is not supported. This will be fixed in the next release.
+
+Run the demo:
 
 ```
 deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examples/hello_world/demo.ts
 ```
 
-> This snippet always contains the most stable latest version of Astrodon, but you can always use the unstable versions by using github raw URLs on `dev` branch.
-
 ### 📜 To-do
 
-- [ ] Port more features from Tauri
-- [ ] Create a Tauri context on the fly instead of relying in `tauri.conf.json`
-- [ ] An optional cli to create and manage Astrodon projects
-- [ ] Support macOS
-- [ ] Support Webview -> Deno messages (waiting for https://github.com/denoland/deno/pull/13162)
-- [ ] Fix https://github.com/tauri-apps/tauri/issues/3172 instead of relying on a fork
+- [x] Unit tests
+- [x] Cross-platform compiling (missing: Apple Silicon)
+- [ ] Typescript checking in the background (astrodon-build's Develop should
+      manage this)
+- [ ] Pass permission and arguments as flags and also put them in the executable
+      metadata (wip)
+- [x] Organize project a little bit better (e.g move dependencies to deps.ts)
+- [x] A real-world app example
+- [ ] Update the templates
+- [x] Match `deno_runtime` version (and also things like `Deno.build`) with
+      Deno's releases
+- [ ] Implement Web Workers
+- [ ] Schematize and create plugin system
+- [ ] Organize configs by usage hierarchy (e.g. global.icon -> build.icon)
+- [ ] Ability apps register custom system URI protocols (installer)
+- [ ] Add Cli command `astrodon clean` to remove cached runtimes
+- [ ] Make Cli's command `astrodon run` also support HTTPs uris
+
+## 🤔 Plugins ideas 
+- [ ] Cross process reactivity module (plugin)
+- [ ] Cross process store module (plugin)
+- [ ] Env variable manager and injection for builds (plugin)
 
 ### 👩‍💻 Development
 
 Requisites:
 
-- If you want to compile the binaries yourself: install the dependencies as
-  indicated in
-  [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
-- Create a `.env` file, use `examples/.env.example` as a template.
+- Install the tauri dependencies as indicated in [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
+- Rust (stable toolchain)
+- Deno
 
-Run the demo locally:
-
+Running both Deno and Rust tests:
 ```
-cargo build
-deno run -A --unstable examples/hello_world/demo.ts
+deno task test
 ```
 
 MIT License

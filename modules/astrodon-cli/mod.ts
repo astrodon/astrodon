@@ -1,68 +1,51 @@
-import {
-  Command,
-  CompletionsCommand,
-  HelpCommand,
-  join, 
-  basename
-} from "./deps.ts";
+import { Command, CompletionsCommand, HelpCommand } from "./deps.ts";
 import meta from "../../astrodon.meta.ts";
 import { build } from "./commands/build.ts";
 import { init } from "./commands/init.ts";
-import { upgrade } from "./commands/upgrade.ts";
-
-// CLI configuration
+import { run } from "./commands/run.ts";
 
 await new Command()
   .name(meta.name)
   .version(meta.version)
   .global()
-  .description(`Project manager for Astrodon`)
+  .description(`Manage Astrodon projects`)
   .command("help", new HelpCommand().global())
   .command("completions", new CompletionsCommand())
-  // Start of CLI commands
+  .command(
+    "run",
+    new Command()
+      .description("Run the app.")
+      .allowEmpty(false)
+      .option("-c, --config [type:string]", "Configuration file", {
+        default: "./astrodon.config.ts",
+      })
+      .action(async (options) => await run(options)),
+  )
   .command(
     "build",
     new Command()
-      //Build command
       .description("Build the app.")
       .allowEmpty(false)
-      .option("-i, --entry [type:string]", "Entry point for the app.", {
-        default: join(Deno.cwd(), './mod.ts'),
+      .option("-c, --config [type:string]", "Configuration file", {
+        default: "./astrodon.config.ts",
       })
-      .option("-d, --out [type:string]", "Output directory.", {
-        default: join(Deno.cwd(), './dist')
-      })
-      .option("-n, --name [type:string]", "Custom name for build.", {
-        default: basename(Deno.cwd())
-      })
-      .option("-a, --assets [type:string]", "Custom assets path.",{
-        default: join(Deno.cwd(), './renderer/src')
-       })
+      .option("-t, --target [type:string]", "Target os")
       .action(async (options) => await build(options)),
   )
   .command(
     "init",
     new Command()
-      //Init command
       .description("Initialize a new project.")
       .allowEmpty(false)
+      .option("-y, --yes [type:boolean]", "Skip prompts", {
+        default: false,
+      })
       .option("-t, --template [type:string]", "Template to use.", {
         default: "default",
       })
       .option("-n, --name [type:string]", "Name of the project.", {
         default: "my-astrodon-app",
       })
-      .action(async (options) => await init(options))
-  )
-  .command(
-    "upgrade",
-    new Command()
-      //Upgrade command
-      .description("Upgrade astrodon to the latest version.")
-      .allowEmpty(false)
-      .option("-t, --toolchain [type:string]", "Toolchain to upgrade to.", {
-        default: "stable",
-      })
-      .action(async (options) => await upgrade(options))
+      .action(async (options) => await init(options)),
   )
   .parse(Deno.args);

@@ -1,0 +1,60 @@
+name: Run tests
+
+on:
+  workflow_dispatch:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Run tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install Linux dependencies
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt update && sudo apt install libwebkit2gtk-4.0-dev \
+        build-essential \
+        curl \
+        wget \
+        libssl-dev \
+        libgtk-3-dev \
+        libappindicator3-dev \
+        patchelf \
+        librsvg2-dev
+
+    - name: Install Windows dependencies (Webview2)
+      if: contains(matrix.platform.target, 'windows')
+      shell: pwsh
+      run: |
+        Invoke-WebRequest https://go.microsoft.com/fwlink/p/?LinkId=2124703 -OutFile installwebview.exe -UseBasicParsing
+        cmd /C start /wait installwebview.exe /silent /install
+
+    - uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+
+    - name: Build runtimes
+      uses: actions-rs/cargo@v1
+      with:
+        toolchain: stable
+        command: build
+
+    - uses: denoland/setup-deno@v1
+      with:
+        deno-version: vx.x.x
+
+    - name: Run tests
+      uses: GabrielBB/xvfb-action@v1
+      with:
+        run: deno task test
+

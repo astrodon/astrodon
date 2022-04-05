@@ -1,4 +1,7 @@
 [workspace]
+resolver = "2"
 members = [
-    "modules/astrodon-tauri"
+    "modules/astrodon-tauri",
+    "modules/astrodon-tauri-standalone",
+    "modules/astrodon-tauri-development"
 ]
