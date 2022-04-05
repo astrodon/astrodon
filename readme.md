@@ -48,7 +48,8 @@ deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examp
 - [ ] Schematize and create plugin system
 - [ ] Organize configs by usage hierarchy (e.g. global.icon -> build.icon)
 - [ ] Ability apps register custom system URI protocols (installer)
-- [ ] Cli command `astrodon clean` to remove cached runtimes
+- [ ] Add Cli command `astrodon clean` to remove cached runtimes
+- [ ] Make Cli's command `astrodon run` also support HTTPs uris
 
 ## 🤔 Plugins ideas 
 - [ ] Cross process reactivity module (plugin)
