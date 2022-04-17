@@ -20,7 +20,7 @@ pub struct AppInfo {
     pub icon: Vec<String>,
     pub resources: Vec<String>,
     pub permissions: PermissionsOptions,
-    pub unstable: bool
+    pub unstable: bool,
 }
 
 // Inspired by https://github.com/denoland/deno/blob/8b2989c417db9090913f1cb6074ae961f4c14d5e/cli/standalone.rs#L46

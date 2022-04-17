@@ -74,9 +74,7 @@ export class Develop {
     // Cache modules
     await exec(
       `${Deno.execPath()} cache ${
-        this.config.info?.unstable
-          ? "--unstable"
-          : ""
+        this.config.info?.unstable ? "--unstable" : ""
       } ${this.config.entry}`,
     );
 
