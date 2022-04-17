@@ -30,8 +30,7 @@ jobs:
         libgtk-3-dev \
         libappindicator3-dev \
         patchelf \
-        librsvg2-dev \
-        libappindicator
+        librsvg2-dev
 
     - uses: actions-rs/toolchain@v1
       with:
