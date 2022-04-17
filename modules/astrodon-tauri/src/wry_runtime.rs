@@ -172,7 +172,7 @@ fn create_new_window(
         }
          ")
         .with_ipc_handler(handler)
-        .with_dev_tool(true)
+        .with_devtools(true)
         .with_web_context(web_context);
 
     webview = match content {

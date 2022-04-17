@@ -6,4 +6,4 @@ edition = "2021"
 [dependencies]
 astrodon-tauri = { path = "../astrodon-tauri"}
 tokio = "1.10.1"
-eszip = "0.18.0"
+eszip = "0.19.0"
