@@ -22,17 +22,20 @@ const exec = async (cmd: string, args: string[] = []) => {
 
 const DEFAULT_PERMISSIONS = <PermissionsOptions> {
   allow_hrtime: false,
-  prompt: false
+  prompt: false,
 };
 
 const getSanitizedConfig = (
- config: AppConfig,
+  config: AppConfig,
 ): AppConfig => {
   // Apply default permissions if not specified
-  config.info.permissions  = Object.assign(DEFAULT_PERMISSIONS, config.info.permissions);
+  config.info.permissions = Object.assign(
+    DEFAULT_PERMISSIONS,
+    config.info.permissions,
+  );
 
   // Disable unstable mode by default
-  config.info.unstable  = config.info.unstable ?? false;
+  config.info.unstable = config.info.unstable ?? false;
 
   return config;
 };
@@ -64,12 +67,18 @@ export class Develop {
     this.useLocalBinaries = useLocalBinaries;
 
     // Sanitize config
-    this.config = getSanitizedConfig( this.config);
+    this.config = getSanitizedConfig(this.config);
   }
 
   async run() {
     // Cache modules
-    await exec(`${Deno.execPath()} cache ${this.config.info?.unstable ? "--unstable": ""} ${this.config.entry}`);
+    await exec(
+      `${Deno.execPath()} cache ${
+        this.config.info?.unstable
+          ? "--unstable"
+          : ""
+      } ${this.config.entry}`,
+    );
 
     // Launch the runtime
     const binPath = await getBinaryPath(
@@ -128,7 +137,7 @@ export class Builder {
     this.useLocalBinaries = useLocalBinaries;
 
     // Sanitize config
-    this.config = getSanitizedConfig( this.config);
+    this.config = getSanitizedConfig(this.config);
 
     const binName = join(this.config.dist, this.config.info.name);
 

@@ -7,10 +7,6 @@ init a new project with a template just run:
 
     $ astrodon init --template <template-name>
 
-> See the
-> [astrodon cli documentation](https://docs.astrodon.land/docs/astrodon_cli) for
-> more information.
-
 Here is a table of all available templates:
 
 | Template name | Description      | Module URL                                            |

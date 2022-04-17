@@ -22,8 +22,8 @@ A lot is still missing, but we will get there!
 
 ### 🎁 Demo
 
-
-**Note**: Latest public release only supports Windows and Linux, MacOS is not supported. This will be fixed in the next release.
+**Note**: Latest public release only supports Windows and Linux, MacOS is not
+supported. This will be fixed in the next release.
 
 Run the demo:
 
@@ -51,7 +51,8 @@ deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examp
 - [ ] Add Cli command `astrodon clean` to remove cached runtimes
 - [ ] Make Cli's command `astrodon run` also support HTTPs uris
 
-## 🤔 Plugins ideas 
+## 🤔 Plugins ideas
+
 - [ ] Cross process reactivity module (plugin)
 - [ ] Cross process store module (plugin)
 - [ ] Env variable manager and injection for builds (plugin)
@@ -60,11 +61,13 @@ deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examp
 
 Requisites:
 
-- Install the tauri dependencies as indicated in [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
+- Install the tauri dependencies as indicated in
+  [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
 - Rust (stable toolchain)
 - Deno
 
 Running both Deno and Rust tests:
+
 ```
 deno task test
 ```

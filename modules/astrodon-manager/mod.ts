@@ -7,7 +7,7 @@ import {
   Logger,
   meta,
   readerFromStreamReader,
-  readZip
+  readZip,
 } from "./deps.ts";
 
 export const fileFormat = (os: string) => os === "windows" ? ".exe" : "";
@@ -20,7 +20,7 @@ export const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
   return [
     `https://github.com/marc2332/astrodon/releases/download/${meta.version}/${binName}.zip`,
     `${binName}${fileFormat(os)}`,
-    binName
+    binName,
   ];
 };
 
