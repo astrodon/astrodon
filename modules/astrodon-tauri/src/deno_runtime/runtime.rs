@@ -66,7 +66,7 @@ impl DenoRuntime {
                 no_color: false,
                 runtime_version: "1.20.2".to_string(),
                 ts_version: "4.6.2".to_string(),
-                unstable: true,
+                unstable: self.metadata.info.unstable,
             },
             extensions: vec![ops::new(
                 self.deno_sender.clone(),

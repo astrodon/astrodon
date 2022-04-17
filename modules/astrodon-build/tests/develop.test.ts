@@ -29,6 +29,7 @@ export const config: AppConfig = {
       prompt: true,
       allow_net: [],
     },
+    unstable: true
   },
 };
 

@@ -24,6 +24,7 @@ export interface AppInfo {
   icon: string[];
   resources: string[];
   permissions?: PermissionsOptions;
+  unstable?: boolean;
 }
 
 export interface AppBuildOptions {

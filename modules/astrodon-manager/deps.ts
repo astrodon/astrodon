@@ -1,12 +1,6 @@
 export { default as meta } from "../../astrodon.meta.ts";
 export { Logger } from "../astrodon-cli/utils.ts";
 export { default as getHomeDir } from "https://deno.land/x/dir@v1.2.0/home_dir/mod.ts";
-
-export {
-  Command,
-  CompletionsCommand,
-  HelpCommand,
-} from "https://deno.land/x/cliffy@v0.20.1/mod.ts";
 export {
   basename,
   dirname,
@@ -23,4 +17,4 @@ export {
 } from "https://deno.land/std@0.125.0/fmt/colors.ts";
 export { readerFromStreamReader } from "https://deno.land/std@0.129.0/streams/conversion.ts";
 export { copy } from "https://deno.land/std@0.129.0/streams/mod.ts";
-export { readZip } from "https://deno.land/x/jszip/mod.ts";
+export { readZip } from "https://deno.land/x/jszip@0.11.0/mod.ts";

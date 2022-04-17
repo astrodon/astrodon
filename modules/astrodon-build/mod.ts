@@ -22,13 +22,19 @@ const exec = async (cmd: string, args: string[] = []) => {
 
 const DEFAULT_PERMISSIONS = <PermissionsOptions> {
   allow_hrtime: false,
-  prompt: false,
+  prompt: false
 };
 
-const getSanitizedPermissions = (
-  perms: PermissionsOptions | undefined,
-): PermissionsOptions => {
-  return Object.assign(DEFAULT_PERMISSIONS, perms);
+const getSanitizedConfig = (
+ config: AppConfig,
+): AppConfig => {
+  // Apply default permissions if not specified
+  config.info.permissions  = Object.assign(DEFAULT_PERMISSIONS, config.info.permissions);
+
+  // Disable unstable mode by default
+  config.info.unstable  = config.info.unstable ?? false;
+
+  return config;
 };
 
 interface Metadata {
@@ -57,15 +63,13 @@ export class Develop {
     this.config.info.id = `${this.config.info.id}-dev`;
     this.useLocalBinaries = useLocalBinaries;
 
-    // Apply the default permissions if not specified
-    this.config.info.permissions = getSanitizedPermissions(
-      this.config.info.permissions,
-    );
+    // Sanitize config
+    this.config = getSanitizedConfig( this.config);
   }
 
   async run() {
     // Cache modules
-    await exec(`${Deno.execPath()} cache ${this.config.entry}`);
+    await exec(`${Deno.execPath()} cache ${this.config.info?.unstable ? "--unstable": ""} ${this.config.entry}`);
 
     // Launch the runtime
     const binPath = await getBinaryPath(
@@ -123,10 +127,8 @@ export class Builder {
     this.os = os;
     this.useLocalBinaries = useLocalBinaries;
 
-    // Apply the default permissions if not specified
-    this.config.info.permissions = getSanitizedPermissions(
-      this.config.info.permissions,
-    );
+    // Sanitize config
+    this.config = getSanitizedConfig( this.config);
 
     const binName = join(this.config.dist, this.config.info.name);
 
