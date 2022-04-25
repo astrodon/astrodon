@@ -41,11 +41,11 @@ impl DenoRuntime {
     pub async fn run_deno(&self, module_loader: impl ModuleLoader + 'static) {
         let module_loader = Rc::new(module_loader);
         let create_web_worker_cb = Arc::new(|_| {
-            todo!("Web workers are not supported in the example");
+            todo!("Web workers are not supported");
         });
 
         let web_worker_preload_module_cb = Arc::new(|_| {
-            todo!("Web workers are not supported in the example");
+            todo!("Web workers are not supported");
         });
 
         v8_set_flags(
@@ -56,7 +56,6 @@ impl DenoRuntime {
 
         let options = WorkerOptions {
             bootstrap: BootstrapOptions {
-                apply_source_maps: false,
                 args: vec![],
                 is_tty: false,
                 cpu_count: 1,
@@ -64,7 +63,7 @@ impl DenoRuntime {
                 enable_testing_features: false,
                 location: None,
                 no_color: false,
-                runtime_version: "1.20.6".to_string(),
+                runtime_version: "1.21.0".to_string(),
                 ts_version: "4.6.2".to_string(),
                 unstable: self.metadata.info.unstable,
             },
@@ -88,6 +87,7 @@ impl DenoRuntime {
             broadcast_channel: InMemoryBroadcastChannel::default(),
             shared_array_buffer_store: None,
             compiled_wasm_module_store: None,
+            source_map_getter: None,
         };
 
         let permissions = Permissions::from_options(&self.metadata.info.permissions);
