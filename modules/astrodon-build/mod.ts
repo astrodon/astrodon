@@ -13,7 +13,7 @@ import { Logger } from "../astrodon-manager/deps.ts";
 
 const exec = async (cmd: string, args: string[] = []) => {
   const p = Deno.run({
-    cmd: cmd.split(" ").concat(args),
+    cmd: cmd.split(" ").concat(args).filter(Boolean),
   });
 
   await p.status();
