@@ -2,7 +2,7 @@ import { Command, CompletionsCommand, HelpCommand } from "./deps.ts";
 import meta from "../../astrodon.meta.ts";
 import { build } from "./commands/build.ts";
 import { init } from "./commands/init.ts";
-import { run } from "./commands/run.ts";
+import { run, RunOptions } from "./commands/run.ts";
 
 await new Command()
   .name(meta.name)
@@ -16,10 +16,13 @@ await new Command()
     new Command()
       .description("Run the app.")
       .allowEmpty(false)
+      .arguments("[file]")
       .option("-c, --config [type:string]", "Configuration file", {
         default: "./astrodon.config.ts",
       })
-      .action(async (options) => await run(options)),
+      .action(async (options: RunOptions, file?: string) => {
+        await run(options, file);
+      }),
   )
   .command(
     "build",

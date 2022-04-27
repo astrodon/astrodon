@@ -37,11 +37,11 @@ deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examp
 - [x] Cross-platform compiling (missing: Apple Silicon)
 - [ ] Typescript checking in the background (astrodon-build's Develop should
       manage this)
-- [ ] Pass permission and arguments as flags and also put them in the executable
-      metadata (wip)
+- [x] Pass permission and arguments as flags and also put them in the executable
+      metadata
 - [x] Organize project a little bit better (e.g move dependencies to deps.ts)
 - [x] A real-world app example
-- [ ] Update the templates
+- [ ] Update the templates (wip)
 - [x] Match `deno_runtime` version (and also things like `Deno.build`) with
       Deno's releases
 - [ ] Implement Web Workers
@@ -49,7 +49,8 @@ deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examp
 - [ ] Organize configs by usage hierarchy (e.g. global.icon -> build.icon)
 - [ ] Ability apps register custom system URI protocols (installer)
 - [ ] Add Cli command `astrodon clean` to remove cached runtimes
-- [ ] Make Cli's command `astrodon run` also support HTTPs uris
+- [x] Make Cli's command `astrodon run` also support HTTPs uris
+      - [ ] Add support for common permission flags as CLI arguments
 
 ## 🤔 Plugins ideas
 

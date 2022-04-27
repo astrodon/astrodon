@@ -86,7 +86,12 @@ export class Develop {
       this.useLocalBinaries,
     );
 
-    const entrypoint = new URL(`file://${this.config.entry}`).href;
+    // Assume it's a local file by default
+    let entrypoint = `file://${this.config.entry}`;
+
+    if(this.config.entry.startsWith("http")){
+      entrypoint = this.config.entry;
+    }
 
     const metadata = <Metadata> {
       entrypoint,
