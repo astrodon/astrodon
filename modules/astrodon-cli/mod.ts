@@ -4,6 +4,8 @@ import { build } from "./commands/build.ts";
 import { init } from "./commands/init.ts";
 import { run, RunOptions } from "./commands/run.ts";
 
+const value = (value: undefined | string[]) => Array.isArray(value) && value.length > 0 ? value : [];
+
 await new Command()
   .name(meta.name)
   .version(meta.version)
@@ -20,6 +22,27 @@ await new Command()
       .option("-c, --config [type:string]", "Configuration file", {
         default: "./astrodon.config.ts",
       })
+      .option("-a, --allow-env [permissionString...:string]", "Allow environment variables", {
+        value,
+      })
+      .option("-b, --allow-hrtime", "Allow hrtime")
+      .option("-n, --allow-net [permissionString...:string]", "Allow network connections", {
+        value,
+      })
+      .option("-f, --allow-ffi [permissionString...:string]", "Allow FFI", {
+        value,
+      })
+      .option("-r, --allow-read [permissionString...:string]", "Allow read", {
+        value,
+      })
+      .option("-w, --allow-write [permissionString...:string]", "Allow write", {
+        value,
+      })
+      .option('-r, --allow-run [permissionString...:string]', 'Allow run', {
+        value,
+      })
+      .option("-A, --allow-all", "Allow all permissions")
+      .option("-p, --prompt", "Prompt for permissions")
       .action(async (options: RunOptions, file?: string) => {
         await run(options, file);
       }),
