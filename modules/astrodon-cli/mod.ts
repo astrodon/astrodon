@@ -17,32 +17,29 @@ await new Command()
     "run",
     new Command()
       .description("Run the app.")
-      .allowEmpty(false)
-      .arguments("[file]")
-      .option("-c, --config [type:string]", "Configuration file", {
-        default: "./astrodon.config.ts",
-      })
-      .option("-a, --allow-env [permissionString...:string]", "Allow environment variables", {
+      .option("-c, --config [type:string]", "Configuration file")
+      .option("-A, --allow-all", "Allow all permissions")
+      .option("-p, --prompt", "Prompt for permissions")
+      .option("-a, --allow-env [permissionString:string[]]", "Allow environment variables", {
         value,
       })
       .option("-b, --allow-hrtime", "Allow hrtime")
-      .option("-n, --allow-net [permissionString...:string]", "Allow network connections", {
+      .option("-n, --allow-net [permissionString:string[]]", "Allow network connections", {
         value,
       })
-      .option("-f, --allow-ffi [permissionString...:string]", "Allow FFI", {
+      .option("-f, --allow-ffi [permissionString:string[]]", "Allow FFI", {
         value,
       })
-      .option("-r, --allow-read [permissionString...:string]", "Allow read", {
+      .option("-r, --allow-read [permissionString:string[]]", "Allow read", {
         value,
       })
-      .option("-w, --allow-write [permissionString...:string]", "Allow write", {
+      .option("-w, --allow-write [permissionString:string[]]", "Allow write", {
         value,
       })
-      .option('-r, --allow-run [permissionString...:string]', 'Allow run', {
+      .option('-r, --allow-run [permissionString:string[]]', 'Allow run', {
         value,
       })
-      .option("-A, --allow-all", "Allow all permissions")
-      .option("-p, --prompt", "Prompt for permissions")
+      .arguments("[file]")
       .action(async (options: RunOptions, file?: string) => {
         await run(options, file);
       }),
@@ -51,7 +48,6 @@ await new Command()
     "build",
     new Command()
       .description("Build the app.")
-      .allowEmpty(false)
       .option("-c, --config [type:string]", "Configuration file", {
         default: "./astrodon.config.ts",
       })

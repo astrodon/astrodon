@@ -1,11 +1,10 @@
 import { Develop } from "../../astrodon-build/mod.ts";
 import { AppConfig } from "../../astrodon/mod.ts";
-import { resolve } from "https://deno.land/std@0.122.0/path/mod.ts";
 import { Logger } from "../utils.ts";
-import { exists } from "../deps.ts";
+import { dirname, fromFileUrl, join, resolve } from "../deps.ts";
 
 export interface RunOptions {
-  config: string;
+  config?: string;
   allowAll?: boolean;
   allowEnv?: string[];
   allowHrtime?: boolean;
@@ -17,85 +16,103 @@ export interface RunOptions {
   prompt?: boolean;
 }
 
+// TODO(marc2332): The default config could inherit some env values such as: user -> author, year -> year
+const DEFAULT_CONFIG: AppConfig = {
+  entry: "",
+  dist: "",
+  info: {
+    name: "Astrodon",
+    id: "Astrodon",
+    copyright: "2022",
+    version: "0.0.0",
+    author: "",
+    shortDescription: "",
+    longDescription: "",
+    homepage: "",
+    icon: [],
+    resources: [],
+    permissions: {
+      allow_hrtime: false,
+      prompt: false,
+    },
+    unstable: false,
+  },
+};
+
 const runLogger = new Logger("run");
 
-export async function run(options: RunOptions, file?: string) {
-  let projectInfo: AppConfig = {
-    entry: "",
-    dist: "",
-    info: {
-      name: "Astrodon",
-      id: "Astrodon",
-      copyright: "2022",
-      version: "0.0.0",
-      author: "",
-      shortDescription: "",
-      longDescription: "",
-      homepage: "",
-      icon: [],
-      resources: [],
-      permissions: {
-        allow_hrtime: true,
-        prompt: false,
-      },
-      unstable: false,
-    },
-  };
+async function resolveConfiguration(
+  options: RunOptions,
+  file?: string,
+): Promise<AppConfig | null> {
+  // Default Local path config
+  let configFile = `file://${resolve(Deno.cwd(), "astrodon.config.ts")}`;
 
-  if (file && !(await exists(options.config))) {
-    // check in the future if we can fetch the config from remote
-    projectInfo.entry = file;
-  } else {
-    // Assign url checking if it is local or remote
-    const filePath = options.config.startsWith("http")
-      ? options.config
-      : `file://${resolve(Deno.cwd(), options.config)}`;
-
-    // Get the config file path
-    const configPath = new URL(filePath).href;
-
-    // Try to import the config file
-    try {
-      const { default: loadedProjectInfo }: { default: AppConfig } =
-        await import(
-          configPath
-        );
-
-      projectInfo = loadedProjectInfo;
-      projectInfo.entry = file ? file : projectInfo.entry;
-    } catch (_e) {
-      runLogger.error(`Could not find ${options.config}`);
-      return;
-    }
+  if (options.config?.startsWith("http")) {
+    // Custom HTTP path config
+    configFile = options.config;
+  } else if (options.config) {
+    // Custom Local path config
+    configFile = `file://${resolve(Deno.cwd(), options.config)}`;
+  } else if (file?.startsWith("http")) {
+    // Default HTTP path config
+    const remoteDirname = dirname(fromFileUrl(import.meta.url));
+    configFile = `https://${join(remoteDirname, "astrodon.config.ts")}`;
   }
 
-  // if it isn't undefined or false, we return an empty array to set the permissions to true
+  const configPath = new URL(configFile).href;
 
-  const placeAllowAll = options.allowAll ? [] : false;
+  try {
+    // Fetch the configuration file
+    const { default: projectInfo }: { default: AppConfig } = await import(
+      configPath
+    );
+    return projectInfo;
+  } catch (_e) {
+    if (file) {
+      // Use the default config if no file is found
+      runLogger.warn(`Could not find a valid configuration file, using default.`);
+      return {
+        ...DEFAULT_CONFIG,
+        entry: file,
+      };
+    } else {
+      // Throw error when neither a config file or a run file are found
+      runLogger.error(`Configuration file <astrodon.config.ts> not found.`);
+      return null;
+    }
+  }
+}
 
-  /* 
-  * Set the permissions:
-  * If the permissions are defined in the config file, we overwrite them because cli hierachy is higher
-  */
+export async function run(options: RunOptions, file?: string) {
+  const config = await resolveConfiguration(options, file);
 
-  projectInfo.info.permissions = Object.assign(
-    projectInfo.info.permissions || {},
-    {
-      allow_env: placeAllowAll || options.allowEnv,
-      allow_net: placeAllowAll || options.allowNet,
-      allow_ffi: placeAllowAll || options.allowFFI,
-      allow_read: placeAllowAll || options.allowRead,
-      allow_run: placeAllowAll || options.allowRun,
-      allow_write: placeAllowAll || options.allowWrite,
-      prompt: Boolean(options.allowAll) || Boolean(options.prompt),
-      allow_hrtime: Boolean(options.allowAll) || Boolean(options.allowHrtime),
-    },
-  );
+  if (config != null) {
+    // Set to an empty array (true), otherwise set it to false
 
-  const dev = new Develop({
-    config: projectInfo,
-    logger: runLogger,
-  });
+    const placeAllowAll = options.allowAll ? [] : false;
 
-  await dev.run();
+    // CLI permissions have priority over the config-defined ones
+
+    config.info.permissions = Object.assign(
+      config.info.permissions || {},
+      {
+        allow_env: placeAllowAll || !options.allowEnv ? config.info.permissions?.allow_env : options.allowEnv,
+        allow_net: placeAllowAll || !options.allowNet ? config.info.permissions?.allow_net : options.allowNet,
+        allow_ffi: placeAllowAll || !options.allowFFI ? config.info.permissions?.allow_ffi : options.allowFFI,
+        allow_read: placeAllowAll || !options.allowRead ? config.info.permissions?.allow_read : options.allowRead,
+        allow_run: placeAllowAll || !options.allowRun ? config.info.permissions?.allow_run : options.allowRun,
+        allow_write: placeAllowAll || !options.allowWrite ? config.info.permissions?.allow_write : options.allowWrite,
+        prompt: Boolean(options.allowAll) || !options.prompt ? Boolean(config.info.permissions?.prompt) : Boolean(options.prompt),
+        allow_hrtime: Boolean(options.allowAll) || !options.allowHrtime ?  Boolean(config.info.permissions?.allow_hrtime) : Boolean(options.allowHrtime),
+      },
+    );
+
+    const dev = new Develop({
+      config,
+      logger: runLogger,
+    });
+
+    await dev.run();
+  }
 }
