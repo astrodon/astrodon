@@ -1,5 +1,5 @@
 import { Develop } from "../mod.ts";
-import { AppConfig } from "../../astrodon/mod.ts";
+import { IAppConfig } from "../../astrodon/mod.ts";
 import {
   dirname,
   fromFileUrl,
@@ -10,26 +10,26 @@ import { serve } from "https://deno.land/std@0.131.0/http/mod.ts";
 import messages from "./messages.ts";
 const __dirname = dirname(fromFileUrl(import.meta.url));
 
-export const config: AppConfig = {
-  entry: join(__dirname, "./app.ts"),
-  dist: join(__dirname, "./dist"),
-  info: {
-    name: "astrodon-build",
-    version: "0.0.1",
-    id: "astrodon-build",
-    longDescription: "Astrodon Build",
-    shortDescription: "Astrodon Build",
-    copyright: "",
-    author: "",
-    homepage: "",
-    icon: [],
+export const config: IAppConfig = {
+  name: "astrodon-build",
+  version: "0.0.1",
+  id: "astrodon-build",
+  longDescription: "Astrodon Build",
+  shortDescription: "Astrodon Build",
+  copyright: "",
+  author: "",
+  homepage: "",
+  permissions: {
+    allow_hrtime: true,
+    prompt: true,
+    allow_net: [],
+  },
+  unstable: true,
+  main: join(__dirname, "./app.ts"),
+  build: {
+    output: join(__dirname, "./dist"),
     resources: [],
-    permissions: {
-      allow_hrtime: true,
-      prompt: true,
-      allow_net: [],
-    },
-    unstable: true,
+    icons: [],
   },
 };
 

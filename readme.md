@@ -50,7 +50,7 @@ deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examp
 - [ ] Ability apps register custom system URI protocols (installer)
 - [ ] Add Cli command `astrodon clean` to remove cached runtimes
 - [x] Make Cli's command `astrodon run` also support HTTPs uris
-    - [ ] Add support for common permission flags as CLI arguments
+  - [ ] Add support for common permission flags as CLI arguments
 
 ## 🤔 Plugins ideas
 
