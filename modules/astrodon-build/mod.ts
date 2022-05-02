@@ -37,9 +37,7 @@ const getSanitizedConfig = (
 
 interface Metadata {
   entrypoint: string;
-  // Please provide a correction for this to work with the new interface on rust side, once it is done we can
-  // provide the correct data to this interface
-  info: AppInfo;
+  config: IAppConfig;
 }
 
 interface DevelopOptions {
@@ -90,11 +88,14 @@ export class Develop {
       entrypoint = this.config.main;
     }
 
+    const config = {...this.config};
+
+    // There is no need for the build config
+    delete config.build
+
     const metadata = <Metadata> {
       entrypoint,
-      // Please provide a correction for this to work with the new interface on rust side, once it is done we can
-      // provide the correct data to this interface
-      info: this.config.info,
+      config
     };
 
     const metadata_json = JSON.stringify(metadata);
@@ -193,11 +194,14 @@ export class Builder {
       ...numberToByteArray(metadataPos),
     ]);
 
+    const config = {...this.config};
+
+    // There is no need for the build config
+    delete config.build
+
     const metadata = <Metadata> {
       entrypoint,
-      // Please provide a correction for this to work with the new interface on rust side, once it is done we can
-      // provide the correct data to this interface
-      info: this.config.info,
+      config
     };
 
     // Put it all together into the final executable
@@ -217,28 +221,25 @@ export class Builder {
    */
   async makeInstaller() {
     const out_path = join(this.config.build?.output || "./dist", "installer");
-    // Please provide a correction for this to work with the new interface on rust side, once it is done we can
-    // provide the correct data to this variable
-    const info = this.config.info;
 
     const installer = new Installer({
       out_path,
       src_path: this.finalBinPath,
       package: {
-        product_name: info.name,
-        version: info.version,
-        description: info.shortDescription,
-        homepage: info.homepage,
-        authors: [info.author],
-        default_run: info.name,
+        product_name:  this.config.name,
+        version:  this.config.version,
+        description:  this.config.shortDescription || "",
+        homepage:  this.config.homepage,
+        authors: this.config.author ? [this.config.author] : [],
+        default_run:  this.config.name,
       },
       bundle: {
-        identifier: info.id,
-        icon: info.icon,
-        resources: info.resources,
-        copyright: info.copyright,
-        short_description: info.shortDescription,
-        long_description: info.longDescription,
+        identifier: this.config.id,
+        icon: this.config.build?.resources,
+        resources: this.config.build?.resources,
+        copyright: this.config.copyright,
+        short_description: this.config.shortDescription,
+        long_description: this.config.longDescription,
       },
     });
 

@@ -17,7 +17,7 @@ use wry::{
 use crate::events_manager::EventsManager;
 use crate::{
     messages::{WindowContent, WryEvent},
-    AppInfo, AstrodonMessage, Metadata,
+    AppConfig, AstrodonMessage, Metadata,
 };
 
 pub struct WryRuntime {
@@ -67,7 +67,7 @@ impl WryRuntime {
             }
         });
 
-        let mut web_context = get_web_context(self.metadata.info);
+        let mut web_context = get_web_context(self.metadata.config);
 
         // Run the wry event loop
         event_loop.run(move |event, event_loop, control_flow| {
@@ -120,7 +120,7 @@ impl WryRuntime {
 /**
  * Specifying a custom directly rather than using the same as the installation prevents a permission error in Windows.
  */
-fn get_web_context(info: AppInfo) -> WebContext {
+fn get_web_context(info: AppConfig) -> WebContext {
     let bundle_path = ProjectDirs::from("", &info.author, &info.name).unwrap();
     WebContext::new(Some(bundle_path.config_dir().to_path_buf()))
 }

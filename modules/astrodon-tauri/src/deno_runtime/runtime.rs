@@ -65,7 +65,7 @@ impl DenoRuntime {
                 no_color: false,
                 runtime_version: "1.21.0".to_string(),
                 ts_version: "4.6.2".to_string(),
-                unstable: self.metadata.info.unstable,
+                unstable: self.metadata.config.unstable,
             },
             extensions: vec![ops::new(
                 self.deno_sender.clone(),
@@ -90,7 +90,7 @@ impl DenoRuntime {
             source_map_getter: None,
         };
 
-        let permissions = Permissions::from_options(&self.metadata.info.permissions);
+        let permissions = Permissions::from_options(&self.metadata.config.permissions);
 
         let mut worker = MainWorker::bootstrap_from_options(
             self.metadata.entrypoint.clone(),

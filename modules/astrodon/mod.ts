@@ -31,7 +31,7 @@ export interface IAppConfig {
   main: string;
   copyright?: string;
   version: string;
-  author?: string;
+  author: string;
   shortDescription?: string;
   longDescription?: string;
   homepage?: string;
