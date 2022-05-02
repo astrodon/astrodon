@@ -1,7 +1,7 @@
 import { Develop } from "../../astrodon-build/mod.ts";
-import { AppConfig } from "../../astrodon/mod.ts";
+import { IAppConfig } from "../../astrodon/mod.ts";
 import { Logger } from "../utils.ts";
-import { dirname, fromFileUrl, join, resolve } from "../deps.ts";
+import { dirname, resolve } from "../deps.ts";
 
 export interface RunOptions {
   config?: string;
@@ -17,25 +17,25 @@ export interface RunOptions {
 }
 
 // TODO(marc2332): The default config could inherit some env values such as: user -> author, year -> year
-const DEFAULT_CONFIG: AppConfig = {
-  entry: "",
-  dist: "",
-  info: {
-    name: "Astrodon",
-    id: "Astrodon",
-    copyright: "2022",
-    version: "0.0.0",
-    author: "",
-    shortDescription: "",
-    longDescription: "",
-    homepage: "",
-    icon: [],
+const DEFAULT_CONFIG: IAppConfig = {
+  name: "Astrodon",
+  id: "Astrodon",
+  main: "",
+  copyright: "2022",
+  version: "0.0.0",
+  author: "",
+  shortDescription: "",
+  longDescription: "",
+  homepage: "",
+  permissions: {
+    allow_hrtime: false,
+    prompt: false,
+  },
+  unstable: false,
+  build: {
+    output: "",
+    icons: [],
     resources: [],
-    permissions: {
-      allow_hrtime: false,
-      prompt: false,
-    },
-    unstable: false,
   },
 };
 
@@ -44,37 +44,46 @@ const runLogger = new Logger("run");
 async function resolveConfiguration(
   options: RunOptions,
   file?: string,
-): Promise<AppConfig | null> {
+): Promise<IAppConfig | null> {
   // Default Local path config
   let configFile = `file://${resolve(Deno.cwd(), "astrodon.config.ts")}`;
 
   if (options.config?.startsWith("http")) {
-    // Custom HTTP path config
     configFile = options.config;
+  } else if (file?.startsWith("http")) {
+    // Default HTTP path config
+    const fileUrl = new URL(file);
+    const { origin, pathname } = fileUrl;
+    const remoteDirname = dirname(pathname);
+    configFile = `https://${origin}${remoteDirname}/astrodon.config.ts`;
+
   } else if (options.config) {
     // Custom Local path config
     configFile = `file://${resolve(Deno.cwd(), options.config)}`;
-  } else if (file?.startsWith("http")) {
-    // Default HTTP path config
-    const remoteDirname = dirname(fromFileUrl(import.meta.url));
-    configFile = `https://${join(remoteDirname, "astrodon.config.ts")}`;
   }
 
   const configPath = new URL(configFile).href;
 
   try {
     // Fetch the configuration file
-    const { default: projectInfo }: { default: AppConfig } = await import(
+    const { default: projectInfo }: { default: IAppConfig } = await import(
       configPath
     );
+    if (file) return {
+      ...projectInfo,
+      main: file,
+    }
     return projectInfo;
+
   } catch (_e) {
     if (file) {
       // Use the default config if no file is found
-      runLogger.warn(`Could not find a valid configuration file, using default.`);
+      runLogger.warn(
+        `Could not find a valid configuration file, using default.`,
+      );
       return {
         ...DEFAULT_CONFIG,
-        entry: file,
+        main: file,
       };
     } else {
       // Throw error when neither a config file or a run file are found
@@ -94,17 +103,33 @@ export async function run(options: RunOptions, file?: string) {
 
     // CLI permissions have priority over the config-defined ones
 
-    config.info.permissions = Object.assign(
-      config.info.permissions || {},
+    config.permissions = Object.assign(
+      config.permissions || {},
       {
-        allow_env: placeAllowAll || !options.allowEnv ? config.info.permissions?.allow_env : options.allowEnv,
-        allow_net: placeAllowAll || !options.allowNet ? config.info.permissions?.allow_net : options.allowNet,
-        allow_ffi: placeAllowAll || !options.allowFFI ? config.info.permissions?.allow_ffi : options.allowFFI,
-        allow_read: placeAllowAll || !options.allowRead ? config.info.permissions?.allow_read : options.allowRead,
-        allow_run: placeAllowAll || !options.allowRun ? config.info.permissions?.allow_run : options.allowRun,
-        allow_write: placeAllowAll || !options.allowWrite ? config.info.permissions?.allow_write : options.allowWrite,
-        prompt: Boolean(options.allowAll) || !options.prompt ? Boolean(config.info.permissions?.prompt) : Boolean(options.prompt),
-        allow_hrtime: Boolean(options.allowAll) || !options.allowHrtime ?  Boolean(config.info.permissions?.allow_hrtime) : Boolean(options.allowHrtime),
+        allow_env: placeAllowAll || !options.allowEnv
+          ? config.permissions?.allow_env
+          : options.allowEnv,
+        allow_net: placeAllowAll || !options.allowNet
+          ? config.permissions?.allow_net
+          : options.allowNet,
+        allow_ffi: placeAllowAll || !options.allowFFI
+          ? config.permissions?.allow_ffi
+          : options.allowFFI,
+        allow_read: placeAllowAll || !options.allowRead
+          ? config.permissions?.allow_read
+          : options.allowRead,
+        allow_run: placeAllowAll || !options.allowRun
+          ? config.permissions?.allow_run
+          : options.allowRun,
+        allow_write: placeAllowAll || !options.allowWrite
+          ? config.permissions?.allow_write
+          : options.allowWrite,
+        prompt: Boolean(options.allowAll) || !options.prompt
+          ? Boolean(config.permissions?.prompt)
+          : Boolean(options.prompt),
+        allow_hrtime: Boolean(options.allowAll) || !options.allowHrtime
+          ? Boolean(config.permissions?.allow_hrtime)
+          : Boolean(options.allowHrtime),
       },
     );
 

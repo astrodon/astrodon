@@ -6,7 +6,7 @@ use astrodon_tauri::{
     messages::{
         AstrodonMessage, CloseWindowMessage, SentToWindowMessage, WindowConfig, WindowContent,
     },
-    AppInfo, Metadata,
+    AppConfig, Metadata,
 };
 use deno_core::{FsModuleLoader, ModuleSpecifier};
 use tokio::{runtime::Runtime, sync::mpsc, time::sleep};
@@ -29,7 +29,7 @@ async fn deno_ops() {
     let deno_runtime = DenoRuntime::new(
         Metadata {
             entrypoint,
-            info: AppInfo::default(),
+            config: AppConfig::default(),
         },
         deno_sender,
         events_manager.clone(),

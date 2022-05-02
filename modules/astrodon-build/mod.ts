@@ -1,11 +1,6 @@
 import { build } from "https://raw.githubusercontent.com/denoland/eszip/main/lib/mod.ts";
 import { writeAll } from "https://deno.land/std@0.128.0/streams/conversion.ts";
-import {
-  AppConfig,
-  AppInfo,
-  OSNames,
-  PermissionsOptions,
-} from "../astrodon/mod.ts";
+import { IAppConfig, IPermissionsOptions, OSNames } from "../astrodon/mod.ts";
 import { Installer } from "https://deno.land/x/installer@0.1.1/mod.ts";
 import { fileFormat, getBinaryPath } from "../astrodon-manager/mod.ts";
 import { join } from "https://deno.land/std@0.122.0/path/mod.ts";
@@ -20,39 +15,39 @@ const exec = async (cmd: string, args: string[] = []) => {
   p.close();
 };
 
-const DEFAULT_PERMISSIONS = <PermissionsOptions> {
+const DEFAULT_PERMISSIONS = <IPermissionsOptions> {
   allow_hrtime: false,
   prompt: false,
 };
 
 const getSanitizedConfig = (
-  config: AppConfig,
-): AppConfig => {
+  config: IAppConfig,
+): IAppConfig => {
   // Apply default permissions if not specified
-  config.info.permissions = Object.assign(
+  config.permissions = Object.assign(
     DEFAULT_PERMISSIONS,
-    config.info.permissions,
+    config.permissions,
   );
 
   // Disable unstable mode by default
-  config.info.unstable = config.info.unstable ?? false;
+  config.unstable = config.unstable ?? false;
 
   return config;
 };
 
 interface Metadata {
   entrypoint: string;
-  info: AppInfo;
+  config: IAppConfig;
 }
 
 interface DevelopOptions {
-  config: AppConfig;
+  config: IAppConfig;
   logger?: Logger;
   useLocalBinaries?: boolean;
 }
 
 export class Develop {
-  private config: AppConfig;
+  private config: IAppConfig;
   private logger: Logger;
   private process: Deno.Process<Deno.RunOptions> | undefined;
   private useLocalBinaries: boolean;
@@ -63,7 +58,7 @@ export class Develop {
   ) {
     this.config = config;
     this.logger = logger;
-    this.config.info.id = `${this.config.info.id}-dev`;
+    this.config.id = `${this.config.id}-dev`;
     this.useLocalBinaries = useLocalBinaries;
 
     // Sanitize config
@@ -74,8 +69,8 @@ export class Develop {
     // Cache modules
     await exec(
       `${Deno.execPath()} cache ${
-        this.config.info?.unstable ? "--unstable" : ""
-      } ${this.config.entry}`,
+        this.config?.unstable ? "--unstable" : ""
+      } ${this.config.main}`,
     );
 
     // Launch the runtime
@@ -87,15 +82,20 @@ export class Develop {
     );
 
     // Assume it's a local file by default
-    let entrypoint = `file://${this.config.entry}`;
+    let entrypoint = `file://${this.config.main}`;
 
-    if(this.config.entry.startsWith("http")){
-      entrypoint = this.config.entry;
+    if (this.config.main.startsWith("http")) {
+      entrypoint = this.config.main;
     }
+
+    const config = {...this.config};
+
+    // There is no need for the build config
+    delete config.build
 
     const metadata = <Metadata> {
       entrypoint,
-      info: this.config.info,
+      config
     };
 
     const metadata_json = JSON.stringify(metadata);
@@ -113,14 +113,14 @@ export class Develop {
 }
 
 interface BuilderOptions {
-  config: AppConfig;
+  config: IAppConfig;
   logger?: Logger;
   os?: OSNames;
   useLocalBinaries?: boolean;
 }
 
 export class Builder {
-  private config: AppConfig;
+  private config: IAppConfig;
   private finalBinPath: string;
   private os: OSNames;
   private logger: Logger;
@@ -141,8 +141,11 @@ export class Builder {
 
     // Sanitize config
     this.config = getSanitizedConfig(this.config);
-
-    const binName = join(this.config.dist, this.config.info.name);
+    // Make this prettier for now it is hardcoded
+    const binName = join(
+      this.config.build?.output || "./dist",
+      this.config.name,
+    );
 
     // Put the OS name as sufix, this prevents overwriting between the darwin and linux builds
     const binSuffix = this.config?.build?.targets?.[this.os]?.suffix ?? this.os;
@@ -165,7 +168,7 @@ export class Builder {
       this.useLocalBinaries,
     );
 
-    const entrypoint = new URL(`file://${this.config.entry}`).href;
+    const entrypoint = new URL(`file://${this.config.main}`).href;
 
     // Bundle the soure code
     const eszip = await build([entrypoint]);
@@ -174,7 +177,9 @@ export class Builder {
     const originalBin = await Deno.readFile(binPath);
 
     // Create the dist folder
-    await Deno.mkdir(this.config.dist, { recursive: true });
+    await Deno.mkdir(this.config.build?.output || "./dist", {
+      recursive: true,
+    });
 
     // Prepare the final executable
 
@@ -189,9 +194,14 @@ export class Builder {
       ...numberToByteArray(metadataPos),
     ]);
 
+    const config = {...this.config};
+
+    // There is no need for the build config
+    delete config.build
+
     const metadata = <Metadata> {
       entrypoint,
-      info: this.config.info,
+      config
     };
 
     // Put it all together into the final executable
@@ -210,27 +220,26 @@ export class Builder {
    * Create an installer for the compiled executable
    */
   async makeInstaller() {
-    const out_path = join(this.config.dist, "installer");
-    const info = this.config.info;
+    const out_path = join(this.config.build?.output || "./dist", "installer");
 
     const installer = new Installer({
       out_path,
       src_path: this.finalBinPath,
       package: {
-        product_name: info.name,
-        version: info.version,
-        description: info.shortDescription,
-        homepage: info.homepage,
-        authors: [info.author],
-        default_run: info.name,
+        product_name:  this.config.name,
+        version:  this.config.version,
+        description:  this.config.shortDescription || "",
+        homepage:  this.config.homepage,
+        authors: this.config.author ? [this.config.author] : [],
+        default_run:  this.config.name,
       },
       bundle: {
-        identifier: info.id,
-        icon: info.icon,
-        resources: info.resources,
-        copyright: info.copyright,
-        short_description: info.shortDescription,
-        long_description: info.longDescription,
+        identifier: this.config.id,
+        icon: this.config.build?.resources,
+        resources: this.config.build?.resources,
+        copyright: this.config.copyright,
+        short_description: this.config.shortDescription,
+        long_description: this.config.longDescription,
       },
     });
 

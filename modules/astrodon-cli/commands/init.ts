@@ -9,7 +9,7 @@ import {
   Select,
 } from "../deps.ts";
 import { Logger } from "../utils.ts";
-import { AppConfig } from "../../astrodon/mod.ts";
+import { IAppConfig } from "../../astrodon/mod.ts";
 
 // List of official templates
 
@@ -54,13 +54,13 @@ export const init = async (options: InitOptions) => {
       before: async (value, next) => {
         if (options.template && !availableTemplates[options.template]) {
           value.template = options.template;
-          return await next("entry");
+          return await next("main");
         }
         await next();
       },
     }, {
-      name: "entry",
-      message: "entry point",
+      name: "main",
+      message: "main entry point",
       type: Input,
       default: "mod.ts",
     }, {
@@ -202,19 +202,19 @@ const success = (name: string) => {
 
 const getAstrodonConfig = (
   value: Record<string, string>,
-): AppConfig => ({
-  entry: value.entry,
-  dist: join(value.name, "dist"),
-  info: {
-    name: value.name,
-    id: `com.${value.name.toLowerCase()}.astrodon`,
-    version: value.version,
-    shortDescription: value.short_description,
-    longDescription: "",
-    homepage: value.homepage,
-    author: value.author,
-    copyright: value.copyright,
-    icon: [],
+): IAppConfig => ({
+  name: value.name,
+  id: `com.${value.name.toLowerCase()}.astrodon`,
+  main: value.main,
+  version: value.version,
+  shortDescription: value.short_description,
+  longDescription: "",
+  homepage: value.homepage,
+  author: value.author,
+  copyright: value.copyright,
+  build: {
+    output: join(value.name, "dist"),
+    icons: [],
     resources: [],
   },
 });
@@ -226,7 +226,7 @@ const getDefaultResponse = (options: InitOptions): Record<string, string> => ({
   version: "1.0.0",
   short_description: "",
   template: options.template,
-  entry: "mod.ts",
+  main: "mod.ts",
   homepage: "",
   author: "",
   copyright: "MIT",
@@ -234,12 +234,12 @@ const getDefaultResponse = (options: InitOptions): Record<string, string> => ({
 
 //
 
-const writeConfig = async (config: AppConfig) => {
+const writeConfig = async (config: IAppConfig) => {
   const configFile = new TextEncoder().encode(
     `export default ${JSON.stringify(config, null, 2)}`,
   );
   await Deno.writeFile(
-    join(directory, config.info.name, "astrodon.config.ts"),
+    join(directory, config.name, "astrodon.config.ts"),
     configFile,
   );
 };

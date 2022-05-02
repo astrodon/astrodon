@@ -11,7 +11,7 @@ pub mod messages;
 pub mod metadata;
 mod wry_runtime;
 
-pub use metadata::{AppInfo, Metadata};
+pub use metadata::{AppConfig, Metadata};
 use wry_runtime::WryRuntime;
 
 /**
