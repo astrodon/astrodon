@@ -17,6 +17,7 @@ export {
   join,
   toFileUrl,
   fromFileUrl,
+  isAbsolute,
   resolve
 } from "https://deno.land/std@0.125.0/path/mod.ts";
 

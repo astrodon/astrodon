@@ -48,9 +48,7 @@ await new Command()
     "build",
     new Command()
       .description("Build the app.")
-      .option("-c, --config [type:string]", "Configuration file", {
-        default: "./astrodon.config.ts",
-      })
+      .option("-c, --config [type:string]", "Configuration file")
       .option("-t, --target [type:string]", "Target os")
       .action(async (options) => await build(options)),
   )

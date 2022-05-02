@@ -1,7 +1,7 @@
 import { Develop } from "../../astrodon-build/mod.ts";
 import { IAppConfig } from "../../astrodon/mod.ts";
 import { Logger } from "../utils.ts";
-import { dirname, resolve } from "../deps.ts";
+import { dirname, isAbsolute, resolve } from "../deps.ts";
 
 export interface RunOptions {
   config?: string;
@@ -45,8 +45,18 @@ async function resolveConfiguration(
   options: RunOptions,
   file?: string,
 ): Promise<IAppConfig | null> {
+
   // Default Local path config
-  let configFile = `file://${resolve(Deno.cwd(), "astrodon.config.ts")}`;
+  let configFile = `file://${
+    resolve(Deno.cwd(), dirname(file || ""), "astrodon.config.ts")
+  }`;
+
+  // Check if the user has provided a config file which is a local path
+  // And if it isn't an absolute path we will resolve it
+
+  if (file && !file?.startsWith("http")) {
+    file = isAbsolute(file) ? file : resolve(Deno.cwd(), file || "");
+  }
 
   if (options.config?.startsWith("http")) {
     configFile = options.config;
@@ -55,26 +65,45 @@ async function resolveConfiguration(
     const fileUrl = new URL(file);
     const { origin, pathname } = fileUrl;
     const remoteDirname = dirname(pathname);
-    configFile = `https://${origin}${remoteDirname}/astrodon.config.ts`;
-
+    configFile = `${origin}${remoteDirname}/astrodon.config.ts`;
   } else if (options.config) {
     // Custom Local path config
-    configFile = `file://${resolve(Deno.cwd(), options.config)}`;
+    configFile = `file://${
+      resolve(Deno.cwd(), dirname(file || ""), options.config)
+    }`;
   }
 
-  const configPath = new URL(configFile).href;
+  const { href: configPath } = new URL(configFile);
+
+  /*
+  * NOTE:
+  * We must implement logig for resolving main files if file option doesn't exist as seen in line #57:
+  * main: "./main.ts" -> main: "relative/path/to/config-file/main.ts"
+  * This should apply even if is a http path and if it is not an absolute path already.
+  * Probably we should move all this logic to runtime core API's.
+  */
 
   try {
     // Fetch the configuration file
     const { default: projectInfo }: { default: IAppConfig } = await import(
       configPath
     );
-    if (file) return {
-      ...projectInfo,
-      main: file,
+    /* 
+    * This is implemented by now just to make apps run if file and config 
+    * are provided at the same time or if we're running a remote file without 
+    * a config but it has been found anyway relative to it
+    * (e.g.astrodon run -c ./astrodon.config.ts ../main.ts)
+    * (e.g.astrodon run https://remote.com/main.ts) (config found trelative to file)
+    * if file is provided it should always override config.main even if remote or not
+    * Can be improved or re-thought in the future (meh)
+    */
+    if (file) {
+      return {
+        ...projectInfo,
+        main: file,
+      };
     }
     return projectInfo;
-
   } catch (_e) {
     if (file) {
       // Use the default config if no file is found
@@ -85,11 +114,10 @@ async function resolveConfiguration(
         ...DEFAULT_CONFIG,
         main: file,
       };
-    } else {
-      // Throw error when neither a config file or a run file are found
-      runLogger.error(`Configuration file <astrodon.config.ts> not found.`);
-      return null;
     }
+    // Throw error when neither a config file or a run file are found
+    runLogger.error(`Configuration file <astrodon.config.ts> not found.`);
+    return null;
   }
 }
 
