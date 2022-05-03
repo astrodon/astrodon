@@ -1,10 +1,10 @@
 import { Command, CompletionsCommand, HelpCommand } from "./deps.ts";
 import meta from "../../astrodon.meta.ts";
-import { build } from "./commands/build.ts";
-import { init } from "./commands/init.ts";
+import { build, BuildOptions } from "./commands/build.ts";
+import { init, InitOptions } from "./commands/init.ts";
 import { run, RunOptions } from "./commands/run.ts";
 
-const value = (value: undefined | string[]) => Array.isArray(value) && value.length > 0 ? value : [];
+const value = (value: true | string[]) => Array.isArray(value) && value.length > 0 ? value : [];
 
 await new Command()
   .name(meta.name)
@@ -40,8 +40,9 @@ await new Command()
         value,
       })
       .arguments("[file]")
-      .action(async (options: RunOptions, file?: string) => {
-        await run(options, file);
+      .action(async (options, file?: string) => {
+        // Improve types (Dani)
+        await run(options as RunOptions, file);
       }),
   )
   .command(
@@ -50,7 +51,8 @@ await new Command()
       .description("Build the app.")
       .option("-c, --config [type:string]", "Configuration file")
       .option("-t, --target [type:string]", "Target os")
-      .action(async (options) => await build(options)),
+      // Improve types (Dani)
+      .action(async (options) => await build(options as BuildOptions)),
   )
   .command(
     "init",
@@ -66,6 +68,7 @@ await new Command()
       .option("-n, --name [type:string]", "Name of the project.", {
         default: "my-astrodon-app",
       })
-      .action(async (options) => await init(options)),
+      // Improve types (Dani)
+      .action(async (options) => await init(options as InitOptions)),
   )
   .parse(Deno.args);
