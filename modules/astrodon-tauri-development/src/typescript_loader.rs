@@ -1,4 +1,5 @@
 use astrodon_tauri::deno_core;
+use astrodon_tauri::deno_core::ModuleType;
 use crypto::digest::Digest;
 use crypto::sha2::Sha256;
 use deno_ast::parse_module;
@@ -47,17 +48,19 @@ impl ModuleLoader for TypescriptModuleLoader {
         async move {
             let protocol = module_specifier.scheme();
 
-            let code = match protocol {
+            let output = match protocol {
                 "http" | "https" => {
                     let path = module_specifier.path();
+
                     let search = if let Some(search) = module_specifier.query() {
                         search
                     } else {
                         ""
                     };
+
                     let url = format!("{path}{search}");
 
-                    // create a SHA3-256 object
+                    // create a SHA2-256 object
                     let mut hasher = Sha256::new();
 
                     // write input message
@@ -77,13 +80,15 @@ impl ModuleLoader for TypescriptModuleLoader {
                 _ => fs::read_to_string(module_specifier.to_file_path().unwrap()).await?,
             };
 
-            let source_text = Arc::new(code);
+            let media_type: MediaType = MediaType::from(&module_specifier.to_file_path().unwrap());
+
+            let source_text = Arc::new(output);
 
             let source_text_info = SourceTextInfo::new(source_text);
 
             let parsed_source = parse_module(ParseParams {
                 specifier: module_specifier.as_str().to_string(),
-                media_type: MediaType::TypeScript,
+                media_type,
                 source: source_text_info,
                 capture_tokens: true,
                 maybe_syntax: None,
@@ -94,7 +99,10 @@ impl ModuleLoader for TypescriptModuleLoader {
 
             Ok(deno_core::ModuleSource {
                 code: output.text,
-                module_type: deno_core::ModuleType::JavaScript,
+                module_type: match media_type {
+                    MediaType::Json => ModuleType::Json,
+                    _ => ModuleType::JavaScript
+                },
                 module_url_specified: module_specifier.to_string(),
                 module_url_found: module_specifier.to_string(),
             })
