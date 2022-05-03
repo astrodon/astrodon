@@ -134,24 +134,24 @@ export async function run(options: RunOptions, file?: string) {
     config.permissions = Object.assign(
       config.permissions || {},
       {
-        allow_env: placeAllowAll || !options.allowEnv
+        allow_env: placeAllowAll || (!options.allowEnv
           ? config.permissions?.allow_env
-          : options.allowEnv,
-        allow_net: placeAllowAll || !options.allowNet
+          : options.allowEnv),
+        allow_net: placeAllowAll || (!options.allowNet
           ? config.permissions?.allow_net
-          : options.allowNet,
-        allow_ffi: placeAllowAll || !options.allowFFI
+          : options.allowNet),
+        allow_ffi: placeAllowAll || (!options.allowFFI
           ? config.permissions?.allow_ffi
-          : options.allowFFI,
-        allow_read: placeAllowAll || !options.allowRead
+          : options.allowFFI),
+        allow_read: placeAllowAll || (!options.allowRead
           ? config.permissions?.allow_read
-          : options.allowRead,
-        allow_run: placeAllowAll || !options.allowRun
+          : options.allowRead),
+        allow_run: placeAllowAll || (!options.allowRun
           ? config.permissions?.allow_run
-          : options.allowRun,
-        allow_write: placeAllowAll || !options.allowWrite
+          : options.allowRun),
+        allow_write: placeAllowAll || (!options.allowWrite
           ? config.permissions?.allow_write
-          : options.allowWrite,
+          : options.allowWrite),
         prompt: Boolean(options.allowAll) || !options.prompt
           ? Boolean(config.permissions?.prompt)
           : Boolean(options.prompt),

@@ -10,7 +10,7 @@ export {
   Number,
   prompt,
   Select,
-} from "https://deno.land/x/cliffy@v0.20.1/prompt/mod.ts";
+} from "https://deno.land/x/cliffy@v0.24.0/prompt/mod.ts";
 export {
   basename,
   dirname,

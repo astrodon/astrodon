@@ -20,23 +20,23 @@ await new Command()
       .option("-c, --config [type:string]", "Configuration file")
       .option("-A, --allow-all", "Allow all permissions")
       .option("-p, --prompt", "Prompt for permissions")
-      .option("-a, --allow-env [permissionString:string[]]", "Allow environment variables", {
+      .option("-a, --allow-env=[env:string[]]", "Allow environment variables", {
         value,
       })
       .option("-b, --allow-hrtime", "Allow hrtime")
-      .option("-n, --allow-net [permissionString:string[]]", "Allow network connections", {
+      .option("-n, --allow-net=[net:string[]]", "Allow network connections", {
         value,
       })
-      .option("-f, --allow-ffi [permissionString:string[]]", "Allow FFI", {
+      .option("-f, --allow-ffi=[ffi:string[]]", "Allow FFI", {
         value,
       })
-      .option("-r, --allow-read [permissionString:string[]]", "Allow read", {
+      .option("-r, --allow-read=[read:string[]]", "Allow read", {
         value,
       })
-      .option("-w, --allow-write [permissionString:string[]]", "Allow write", {
+      .option("-w, --allow-write=[write:string[]]", "Allow write", {
         value,
       })
-      .option('-r, --allow-run [permissionString:string[]]', 'Allow run', {
+      .option('-r, --allow-run=[run:string[]]', 'Allow run', {
         value,
       })
       .arguments("[file]")
