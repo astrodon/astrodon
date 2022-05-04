@@ -22,6 +22,7 @@ export async function build(options: BuildOptions) {
     config: projectInfo,
     logger: buildLogger,
     os: options.target,
+    useCwd: false
   });
   buildLogger.info(
     `Compiling ${projectInfo.name} v${projectInfo.version}...`,

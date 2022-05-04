@@ -119,6 +119,7 @@ interface BuilderOptions {
   logger?: Logger;
   os?: OSNames;
   useLocalBinaries?: boolean;
+  useCwd?: boolean
 }
 
 export class Builder {
@@ -134,12 +135,14 @@ export class Builder {
       logger = new Logger("build"),
       os = Deno.build.os,
       useLocalBinaries = false,
+      useCwd = true
     }: BuilderOptions,
   ) {
     this.config = config;
     this.logger = logger;
     this.os = os;
     this.useLocalBinaries = useLocalBinaries;
+    if(useCwd) this.config.main = join(Deno.cwd(), this.config.main)
 
     // Sanitize config
     this.config = getSanitizedConfig(this.config);
