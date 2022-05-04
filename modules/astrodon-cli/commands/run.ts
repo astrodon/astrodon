@@ -168,6 +168,7 @@ export async function run(options: RunOptions, file?: string) {
     const dev = new Develop({
       config,
       logger: runLogger,
+      useCwd: false
     });
 
     await dev.run();

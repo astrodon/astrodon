@@ -44,6 +44,7 @@ interface DevelopOptions {
   config: IAppConfig;
   logger?: Logger;
   useLocalBinaries?: boolean;
+  useCwd?: boolean
 }
 
 export class Develop {
@@ -53,13 +54,14 @@ export class Develop {
   private useLocalBinaries: boolean;
 
   constructor(
-    { config, logger = new Logger("run"), useLocalBinaries = false }:
+    { config, logger = new Logger("run"), useLocalBinaries = false, useCwd = true }:
       DevelopOptions,
   ) {
     this.config = config;
     this.logger = logger;
     this.config.id = `${this.config.id}-dev`;
     this.useLocalBinaries = useLocalBinaries;
+    if(useCwd) this.config.main = join(Deno.cwd(), this.config.main)
 
     // Sanitize config
     this.config = getSanitizedConfig(this.config);
