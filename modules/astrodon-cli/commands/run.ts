@@ -90,11 +90,12 @@ async function resolveConfiguration(
     } else if (options.config?.startsWith("http")) {
       // Use the relative entry file of the HTTP path config
       
-      const fileUrl = new URL(options.config);
-      const { origin, pathname } = fileUrl;
-      const remoteDirname = dirname(pathname);
+      const remoteUrl = new URL(options.config);
+      const remoteDirname = dirname(remoteUrl.pathname);
       const remoteFile = join(remoteDirname, projectInfo.main)
-      projectInfo.main = `${origin}${remoteFile}`;
+
+      remoteUrl.pathname = remoteFile;
+      projectInfo.main = remoteUrl.toString()
 
       return projectInfo
     } else if (options.config) {
