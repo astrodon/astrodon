@@ -80,7 +80,6 @@ async function resolveConfiguration(
     const { default: projectInfo }: { default: IAppConfig } = await import(
       configPath
     );
-
   
     if (file) {
       // Use the custom file if specified
@@ -90,18 +89,20 @@ async function resolveConfiguration(
       };
     } else if (options.config?.startsWith("http")) {
       // Use the relative entry file of the HTTP path config
+      
       const fileUrl = new URL(options.config);
       const { origin, pathname } = fileUrl;
       const remoteDirname = dirname(pathname);
-      projectInfo.main = `${origin}${remoteDirname}/${projectInfo.main}`;
+      const remoteFile = join(remoteDirname, projectInfo.main)
+      projectInfo.main = `${origin}${remoteFile}`;
 
       return projectInfo
     } else if (options.config) {
       // Use the relative entry file of the Local path config
 
-      const configFile = file = isAbsolute(options.config) ? options.config : resolve(Deno.cwd(), options.config);
-      const localeDirname = dirname(configFile);
-      projectInfo.main = join(localeDirname,projectInfo.main);
+      file = isAbsolute(options.config) ? options.config : resolve(Deno.cwd(), options.config);
+      const localeDirname = dirname(file);
+      projectInfo.main = resolve(localeDirname,projectInfo.main);
 
       return projectInfo
     }
