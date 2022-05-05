@@ -44,7 +44,7 @@ interface DevelopOptions {
   config: IAppConfig;
   logger?: Logger;
   useLocalBinaries?: boolean;
-  useCwd?: boolean
+  useCwd?: boolean;
 }
 
 export class Develop {
@@ -54,14 +54,18 @@ export class Develop {
   private useLocalBinaries: boolean;
 
   constructor(
-    { config, logger = new Logger("run"), useLocalBinaries = false, useCwd = true }:
-      DevelopOptions,
+    {
+      config,
+      logger = new Logger("run"),
+      useLocalBinaries = false,
+      useCwd = true,
+    }: DevelopOptions,
   ) {
     this.config = config;
     this.logger = logger;
     this.config.id = `${this.config.id}-dev`;
     this.useLocalBinaries = useLocalBinaries;
-    if(useCwd) this.config.main = join(Deno.cwd(), this.config.main)
+    if (useCwd) this.config.main = join(Deno.cwd(), this.config.main);
 
     // Sanitize config
     this.config = getSanitizedConfig(this.config);
@@ -90,14 +94,14 @@ export class Develop {
       entrypoint = this.config.main;
     }
 
-    const config = {...this.config};
+    const config = { ...this.config };
 
     // There is no need for the build config
-    delete config.build
+    delete config.build;
 
     const metadata = <Metadata> {
       entrypoint,
-      config
+      config,
     };
 
     const metadata_json = JSON.stringify(metadata);
@@ -119,7 +123,7 @@ interface BuilderOptions {
   logger?: Logger;
   os?: OSNames;
   useLocalBinaries?: boolean;
-  useCwd?: boolean
+  useCwd?: boolean;
 }
 
 export class Builder {
@@ -135,14 +139,14 @@ export class Builder {
       logger = new Logger("build"),
       os = Deno.build.os,
       useLocalBinaries = false,
-      useCwd = true
+      useCwd = true,
     }: BuilderOptions,
   ) {
     this.config = config;
     this.logger = logger;
     this.os = os;
     this.useLocalBinaries = useLocalBinaries;
-    if(useCwd) this.config.main = join(Deno.cwd(), this.config.main)
+    if (useCwd) this.config.main = join(Deno.cwd(), this.config.main);
 
     // Sanitize config
     this.config = getSanitizedConfig(this.config);
@@ -199,14 +203,14 @@ export class Builder {
       ...numberToByteArray(metadataPos),
     ]);
 
-    const config = {...this.config};
+    const config = { ...this.config };
 
     // There is no need for the build config
-    delete config.build
+    delete config.build;
 
     const metadata = <Metadata> {
       entrypoint,
-      config
+      config,
     };
 
     // Put it all together into the final executable
@@ -231,12 +235,12 @@ export class Builder {
       out_path,
       src_path: this.finalBinPath,
       package: {
-        product_name:  this.config.name,
-        version:  this.config.version,
-        description:  this.config.shortDescription || "",
-        homepage:  this.config.homepage,
+        product_name: this.config.name,
+        version: this.config.version,
+        description: this.config.shortDescription || "",
+        homepage: this.config.homepage,
         authors: this.config.author ? [this.config.author] : [],
-        default_run:  this.config.name,
+        default_run: this.config.name,
       },
       bundle: {
         identifier: this.config.id,

@@ -7,7 +7,7 @@ import { dirname } from "../deps.ts";
 export type BuildOptions = DenoPermissions & {
   config: string;
   target?: OSNames;
-}
+};
 
 const buildLogger = new Logger("build");
 
@@ -23,13 +23,13 @@ export async function build(options: BuildOptions) {
   config.main = resolve(dirname(configPath), config.main);
 
   // CLI permissions have priority over the config-defined ones
-  config.permissions = mergeDenoPermissions(options, config.permissions)
+  config.permissions = mergeDenoPermissions(options, config.permissions);
 
   const builder = new Builder({
     config: config,
     logger: buildLogger,
     os: options.target,
-    useCwd: false
+    useCwd: false,
   });
 
   buildLogger.info(

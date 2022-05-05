@@ -63,7 +63,11 @@ export const driver = () =>
 Deno.test({
   name: `Run in development mode in ${Deno.build.os} `,
   fn: async () => {
-    const develop = new Develop({ config, useLocalBinaries: true, useCwd: false });
+    const develop = new Develop({
+      config,
+      useLocalBinaries: true,
+      useCwd: false,
+    });
     develop.run();
 
     await driver();

@@ -4,7 +4,8 @@ import { build, BuildOptions } from "./commands/build.ts";
 import { init, InitOptions } from "./commands/init.ts";
 import { run, RunOptions } from "./commands/run.ts";
 
-const value = (value: true | string[]) => Array.isArray(value) && value.length > 0 ? value : [];
+const value = (value: true | string[]) =>
+  Array.isArray(value) && value.length > 0 ? value : [];
 
 await new Command()
   .name(meta.name)
@@ -36,7 +37,7 @@ await new Command()
       .option("-w, --allow-write=[write:string[]]", "Allow write", {
         value,
       })
-      .option('-r, --allow-run=[run:string[]]', 'Allow run', {
+      .option("-r, --allow-run=[run:string[]]", "Allow run", {
         value,
       })
       .arguments("[file]")
@@ -50,7 +51,7 @@ await new Command()
     new Command()
       .description("Build the app.")
       .option("-c, --config [type:string]", "Configuration file", {
-        default: "astrodon.config.ts"
+        default: "astrodon.config.ts",
       })
       .option("-t, --target [type:string]", "Target os")
       .option("-A, --allow-all", "Allow all permissions")
@@ -71,7 +72,7 @@ await new Command()
       .option("-w, --allow-write=[write:string[]]", "Allow write", {
         value,
       })
-      .option('-r, --allow-run=[run:string[]]', 'Allow run', {
+      .option("-r, --allow-run=[run:string[]]", "Allow run", {
         value,
       })
       // Improve types (Dani)

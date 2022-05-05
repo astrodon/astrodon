@@ -5,7 +5,7 @@ import { dirname, isAbsolute, join, resolve } from "../deps.ts";
 
 export type RunOptions = DenoPermissions & {
   config?: string;
-}
+};
 
 // TODO(marc2332): The default config could inherit some env values such as: user -> author, year -> year
 const DEFAULT_CONFIG: IAppConfig = {
@@ -36,7 +36,6 @@ async function resolveConfiguration(
   options: RunOptions,
   file?: string,
 ): Promise<IAppConfig | null> {
-
   // Default Local path config
   let configFile = `file://${
     resolve(Deno.cwd(), dirname(file || ""), "astrodon.config.ts")
@@ -71,7 +70,7 @@ async function resolveConfiguration(
     const { default: projectInfo }: { default: IAppConfig } = await import(
       configPath
     );
-  
+
     if (file) {
       // Use the custom file if specified
       return {
@@ -80,23 +79,25 @@ async function resolveConfiguration(
       };
     } else if (options.config?.startsWith("http")) {
       // Use the relative entry file of the HTTP path config
-      
+
       const remoteUrl = new URL(options.config);
       const remoteDirname = dirname(remoteUrl.pathname);
-      const remoteFile = join(remoteDirname, projectInfo.main)
+      const remoteFile = join(remoteDirname, projectInfo.main);
 
       remoteUrl.pathname = remoteFile;
-      projectInfo.main = remoteUrl.toString()
+      projectInfo.main = remoteUrl.toString();
 
-      return projectInfo
+      return projectInfo;
     } else if (options.config) {
       // Use the relative entry file of the Local path config
 
-      file = isAbsolute(options.config) ? options.config : resolve(Deno.cwd(), options.config);
+      file = isAbsolute(options.config)
+        ? options.config
+        : resolve(Deno.cwd(), options.config);
       const localeDirname = dirname(file);
-      projectInfo.main = resolve(localeDirname,projectInfo.main);
+      projectInfo.main = resolve(localeDirname, projectInfo.main);
 
-      return projectInfo
+      return projectInfo;
     }
     return projectInfo;
   } catch (_e) {
@@ -120,14 +121,13 @@ export async function run(options: RunOptions, file?: string) {
   const config = await resolveConfiguration(options, file);
 
   if (config != null) {
-   
     // CLI permissions have priority over the config-defined ones
-    config.permissions = mergeDenoPermissions(options, config.permissions)
+    config.permissions = mergeDenoPermissions(options, config.permissions);
 
     const dev = new Develop({
       config,
       logger: runLogger,
-      useCwd: false
+      useCwd: false,
     });
 
     await dev.run();

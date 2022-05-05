@@ -15,11 +15,11 @@ export {
 export {
   basename,
   dirname,
-  join,
-  toFileUrl,
   fromFileUrl,
   isAbsolute,
-  resolve
+  join,
+  resolve,
+  toFileUrl,
 } from "https://deno.land/std@0.125.0/path/mod.ts";
 
 export { exec, OutputMode } from "https://deno.land/x/exec@0.0.5/mod.ts";
