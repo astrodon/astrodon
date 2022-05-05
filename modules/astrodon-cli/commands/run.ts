@@ -1,7 +1,7 @@
 import { Develop } from "../../astrodon-build/mod.ts";
 import { IAppConfig } from "../../astrodon/mod.ts";
 import { DenoPermissions, Logger, mergeDenoPermissions } from "../utils.ts";
-import { dirname, isAbsolute, join, resolve } from "../deps.ts";
+import { dirname, fromFileUrl, isAbsolute, join, resolve } from "../deps.ts";
 
 export type RunOptions = DenoPermissions & {
   config?: string;
@@ -77,10 +77,10 @@ async function resolveConfiguration(
         ...projectInfo,
         main: file,
       };
-    } else if (options.config?.startsWith("http")) {
+    } else if (configFile.startsWith("http")) {
       // Use the relative entry file of the HTTP path config
 
-      const remoteUrl = new URL(options.config);
+      const remoteUrl = new URL(configFile);
       const remoteDirname = dirname(remoteUrl.pathname);
       const remoteFile = join(remoteDirname, projectInfo.main);
 
@@ -88,18 +88,19 @@ async function resolveConfiguration(
       projectInfo.main = remoteUrl.toString();
 
       return projectInfo;
-    } else if (options.config) {
+    } else {
       // Use the relative entry file of the Local path config
+      const configPath = fromFileUrl(configFile);
 
-      file = isAbsolute(options.config)
+      file = isAbsolute(configPath)
         ? options.config
-        : resolve(Deno.cwd(), options.config);
-      const localeDirname = dirname(file);
-      projectInfo.main = resolve(localeDirname, projectInfo.main);
+        : resolve(Deno.cwd(), configPath);
+
+      const localDirname = dirname(configPath);
+      projectInfo.main = resolve(localDirname, projectInfo.main);
 
       return projectInfo;
-    }
-    return projectInfo;
+    } 
   } catch (_e) {
     if (file) {
       // Use the default config if no file is found
