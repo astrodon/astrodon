@@ -20,7 +20,7 @@ Deno.test("Resolve remote configuration", async () => {
   const config = await resolveConfiguration(options);
   controller.abort();
   assertEquals(config?.name, DEFAULT_CONFIG.name);
-  await delay(1000);
+  await delay(2000);
 });
 
 Deno.test({
