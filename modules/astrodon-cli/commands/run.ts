@@ -102,7 +102,7 @@ async function resolveConfiguration(
   } catch (_e) {
     if (file) {
       // Use the default config if no file is found
-      runLogger.warn(
+      runLogger.info(
         `Could not find a valid configuration file, using default.`,
       );
       return {

@@ -42,14 +42,6 @@ export class Logger {
       }`,
     );
   };
-
-  public warn = (...args: unknown[]) => {
-    console.info(
-      `${bgYellow(" astrodon ")}${bgYellow(black(` ${this.module} `))} ${
-        args.join(" ")
-      }`,
-    );
-  };
 }
 
 export interface DenoPermissions {
