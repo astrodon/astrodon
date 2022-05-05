@@ -10,17 +10,21 @@ const handler = async (req: Request) => {
   return await serveDir(req, { fsRoot: Deno.cwd() });
 };
 
-Deno.test("Resolve remote configuration", async () => {
-  const controller = new AbortController();
-  serve(handler, { port: PORT, signal: controller.signal });
-  await delay(1000);
-  const options = {
-    config: `http://localhost:${PORT}/modules/astrodon-cli/tests/astrodon.config.ts`,
-  };
-  const config = await resolveConfiguration(options);
-  controller.abort();
-  assertEquals(config?.name, DEFAULT_CONFIG.name);
-  await delay(2000);
+Deno.test({
+  name: "Resolve remote configuration", 
+  fn: async () => {
+    const controller = new AbortController();
+    serve(handler, { port: PORT, signal: controller.signal });
+    await delay(1000);
+    const options = {
+      config: `http://localhost:${PORT}/modules/astrodon-cli/tests/astrodon.config.ts`,
+    };
+    const config = await resolveConfiguration(options);
+    controller.abort();
+    assertEquals(config?.name, DEFAULT_CONFIG.name);
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
 });
 
 Deno.test({
@@ -32,6 +36,6 @@ Deno.test({
     const config = await resolveConfiguration(options);
     assertEquals(config?.name, DEFAULT_CONFIG.name);
   },
-  sanitizeOps: false,
   sanitizeResources: false,
+  sanitizeOps: false,
 });
