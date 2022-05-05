@@ -1,19 +1,10 @@
 import { Develop } from "../../astrodon-build/mod.ts";
 import { IAppConfig } from "../../astrodon/mod.ts";
-import { Logger } from "../utils.ts";
+import { DenoPermissions, Logger, mergeDenoPermissions } from "../utils.ts";
 import { dirname, isAbsolute, join, resolve } from "../deps.ts";
 
-export interface RunOptions {
+export type RunOptions = DenoPermissions & {
   config?: string;
-  allowAll?: boolean;
-  allowEnv?: string[];
-  allowHrtime?: boolean;
-  allowNet?: string[];
-  allowFFI?: string[];
-  allowRead?: string[];
-  allowWrite?: string[];
-  allowRun?: string[];
-  prompt?: boolean;
 }
 
 // TODO(marc2332): The default config could inherit some env values such as: user -> author, year -> year
@@ -129,41 +120,9 @@ export async function run(options: RunOptions, file?: string) {
   const config = await resolveConfiguration(options, file);
 
   if (config != null) {
-    // Set to an empty array (true), otherwise set it to false
-
-    const placeAllowAll = options.allowAll ? [] : false;
-
+   
     // CLI permissions have priority over the config-defined ones
-
-    config.permissions = Object.assign(
-      config.permissions || {},
-      {
-        allow_env: placeAllowAll || (!options.allowEnv
-          ? config.permissions?.allow_env
-          : options.allowEnv),
-        allow_net: placeAllowAll || (!options.allowNet
-          ? config.permissions?.allow_net
-          : options.allowNet),
-        allow_ffi: placeAllowAll || (!options.allowFFI
-          ? config.permissions?.allow_ffi
-          : options.allowFFI),
-        allow_read: placeAllowAll || (!options.allowRead
-          ? config.permissions?.allow_read
-          : options.allowRead),
-        allow_run: placeAllowAll || (!options.allowRun
-          ? config.permissions?.allow_run
-          : options.allowRun),
-        allow_write: placeAllowAll || (!options.allowWrite
-          ? config.permissions?.allow_write
-          : options.allowWrite),
-        prompt: Boolean(options.allowAll) || !options.prompt
-          ? Boolean(config.permissions?.prompt)
-          : Boolean(options.prompt),
-        allow_hrtime: Boolean(options.allowAll) || !options.allowHrtime
-          ? Boolean(config.permissions?.allow_hrtime)
-          : Boolean(options.allowHrtime),
-      },
-    );
+    config.permissions = mergeDenoPermissions(options, config.permissions)
 
     const dev = new Develop({
       config,

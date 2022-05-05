@@ -49,8 +49,31 @@ await new Command()
     "build",
     new Command()
       .description("Build the app.")
-      .option("-c, --config [type:string]", "Configuration file")
+      .option("-c, --config [type:string]", "Configuration file", {
+        default: "astrodon.config.ts"
+      })
       .option("-t, --target [type:string]", "Target os")
+      .option("-A, --allow-all", "Allow all permissions")
+      .option("-p, --prompt", "Prompt for permissions")
+      .option("-a, --allow-env=[env:string[]]", "Allow environment variables", {
+        value,
+      })
+      .option("-b, --allow-hrtime", "Allow hrtime")
+      .option("-n, --allow-net=[net:string[]]", "Allow network connections", {
+        value,
+      })
+      .option("-f, --allow-ffi=[ffi:string[]]", "Allow FFI", {
+        value,
+      })
+      .option("-r, --allow-read=[read:string[]]", "Allow read", {
+        value,
+      })
+      .option("-w, --allow-write=[write:string[]]", "Allow write", {
+        value,
+      })
+      .option('-r, --allow-run=[run:string[]]', 'Allow run', {
+        value,
+      })
       // Improve types (Dani)
       .action(async (options) => await build(options as BuildOptions)),
   )
