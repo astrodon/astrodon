@@ -8,7 +8,7 @@ export type RunOptions = DenoPermissions & {
 };
 
 // TODO(marc2332): The default config could inherit some env values such as: user -> author, year -> year
-const DEFAULT_CONFIG: IAppConfig = {
+export const DEFAULT_CONFIG: IAppConfig = {
   name: "Astrodon",
   id: "Astrodon",
   main: "",
@@ -32,7 +32,7 @@ const DEFAULT_CONFIG: IAppConfig = {
 
 const runLogger = new Logger("run");
 
-async function resolveConfiguration(
+export async function resolveConfiguration(
   options: RunOptions,
   file?: string,
 ): Promise<IAppConfig | null> {
