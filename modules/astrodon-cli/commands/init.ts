@@ -20,7 +20,7 @@ const availableTemplates = {
   svelte: "https://github.com/astrodon/astrodon-svelte-template",
 };
 
-interface InitOptions {
+export interface InitOptions {
   template: keyof typeof availableTemplates;
   name: string;
   yes: boolean;
