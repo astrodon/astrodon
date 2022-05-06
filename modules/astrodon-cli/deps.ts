@@ -2,7 +2,8 @@ export {
   Command,
   CompletionsCommand,
   HelpCommand,
-} from "https://deno.land/x/cliffy@v0.20.1/mod.ts";
+} from "https://deno.land/x/cliffy@v0.24.0/mod.ts";
+export type { IFlagValueHandler } from "https://deno.land/x/cliffy@v0.24.0/mod.ts";
 export {
   Checkbox,
   Confirm,
@@ -10,11 +11,14 @@ export {
   Number,
   prompt,
   Select,
-} from "https://deno.land/x/cliffy@v0.20.1/prompt/mod.ts";
+} from "https://deno.land/x/cliffy@v0.24.0/prompt/mod.ts";
 export {
   basename,
   dirname,
+  fromFileUrl,
+  isAbsolute,
   join,
+  resolve,
   toFileUrl,
 } from "https://deno.land/std@0.125.0/path/mod.ts";
 

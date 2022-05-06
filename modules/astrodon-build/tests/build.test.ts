@@ -15,7 +15,7 @@ Deno.test({
         await t.step(os, async () => {
           const binName = `${config.name}_${os}${fileFormat(os)}`;
           const binPath = join(config.build?.output || "./dist", binName);
-          const builder = new Builder({ config, os });
+          const builder = new Builder({ config, os, useCwd: false });
           await builder.compile();
           const exists = await Deno.stat(binPath);
           assertEquals(exists.isFile, true);
