@@ -2,7 +2,7 @@ import { IAppConfig } from "../../astrodon/mod.ts";
 export default <IAppConfig> {
   name: "Astrodon",
   id: "Astrodon",
-  main: "",
+  main: "doesnt_exist.ts",
   copyright: "2022",
   version: "0.0.0",
   author: "",

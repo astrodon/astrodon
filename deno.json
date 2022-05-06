@@ -2,6 +2,6 @@
   "tasks": {
     "fmt": "deno fmt modules && cargo fmt",
     "lint": "deno lint modules && cargo clippy",
-    "test": "deno test -A --unstable && cargo test"
+    "test": "deno test -A --unstable --quiet && cargo test"
   }
 }
