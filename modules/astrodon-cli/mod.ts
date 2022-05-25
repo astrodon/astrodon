@@ -41,7 +41,8 @@ await new Command()
         value,
       })
       .arguments("[file]")
-      .action(async (options, file?: string) => {
+      // deno-lint-ignore no-explicit-any
+      .action(async (options: any, file?: string) => {
         // Improve types (Dani)
         await run(options as RunOptions, file);
       }),
@@ -76,7 +77,8 @@ await new Command()
         value,
       })
       // Improve types (Dani)
-      .action(async (options) => await build(options as BuildOptions)),
+      // deno-lint-ignore no-explicit-any
+      .action(async (options: any) => await build(options as BuildOptions)),
   )
   .command(
     "init",
@@ -93,6 +95,7 @@ await new Command()
         default: "my-astrodon-app",
       })
       // Improve types (Dani)
-      .action(async (options) => await init(options as InitOptions)),
+      // deno-lint-ignore no-explicit-any
+      .action(async (options: any) => await init(options as InitOptions)),
   )
   .parse(Deno.args);
