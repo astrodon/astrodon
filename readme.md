@@ -63,7 +63,7 @@ deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examp
 Requisites:
 
 - Install the tauri dependencies as indicated in
-  [Tauri's Guide](https://tauri.studio/en/docs/getting-started/intro).
+  [Tauri's Guide](https://tauri.studio/v1/guides/getting-started/prerequisites).
 - Rust (stable toolchain)
 - Deno
 
