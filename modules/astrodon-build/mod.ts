@@ -1,7 +1,7 @@
 import { build } from "https://raw.githubusercontent.com/denoland/eszip/main/lib/mod.ts";
 import { writeAll } from "https://deno.land/std@0.128.0/streams/conversion.ts";
 import { IAppConfig, IPermissionsOptions, OSNames } from "../astrodon/mod.ts";
-import { Installer } from "https://deno.land/x/installer@0.1.1/mod.ts";
+import { Installer } from "https://deno.land/x/installer@0.1.3/mod.ts";
 import { fileFormat, getBinaryPath } from "../astrodon-manager/mod.ts";
 import { join } from "https://deno.land/std@0.122.0/path/mod.ts";
 import { Logger } from "../astrodon-manager/deps.ts";
