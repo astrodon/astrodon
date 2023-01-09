@@ -15,7 +15,7 @@ export const fileFormat = (os: string) => os === "windows" ? ".exe" : "";
 export type buildModes = "standalone" | "development";
 
 export const getBinaryInfo = (os: OSNames, mode: buildModes, isDev = false) => {
-  // Exemple: astrodon-tauri-standalone-windows.exe
+  // Example: astrodon-tauri-standalone-windows.exe
   const binName = `astrodon-tauri-${mode}${isDev ? "" : `-${os}`}`;
   return [
     `https://github.com/marc2332/astrodon/releases/download/${meta.version}/${binName}.zip`,
