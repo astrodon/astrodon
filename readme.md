@@ -1,3 +1,5 @@
+# ⚠️ CURRENTLY UNMAINTAINED ⚠️
+
 <p align="center">
 	<img align="center" src="https://avatars.githubusercontent.com/u/97196209?s=200&v=4"  />
 	<br>
@@ -22,10 +24,12 @@ A lot is still missing, but we will get there!
 
 ### 🎁 Demo
 
-**Note**: Latest public release only supports Windows and Linux, MacOS is not
-supported. This will be fixed in the next release.
+~~**Note**: Latest public release only supports Windows and Linux, MacOS is not
+supported. This will be fixed in the next release.~~
 
-Run the demo:
+⚠️ **This will fail as Astrodon is currently unmaintained**
+
+~~Run the demo:~~
 
 ```
 deno run -A --unstable --reload https://deno.land/x/astrodon@0.1.0-alpha.2/examples/hello_world/demo.ts
